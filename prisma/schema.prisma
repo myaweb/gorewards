@@ -1,0 +1,124 @@
+// This is your Prisma schema file for Credit Card Rewards Optimization Engine
+// Learn more: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum for card networks
+enum CardNetwork {
+  VISA
+  MASTERCARD
+  AMEX
+  DISCOVER
+}
+
+// Enum for spending categories with multipliers
+enum SpendingCategory {
+  GROCERY
+  GAS
+  DINING
+  TRAVEL
+  RECURRING
+  ENTERTAINMENT
+  SHOPPING
+  UTILITIES
+  OTHER
+}
+
+// Enum for point types/programs
+enum PointType {
+  AEROPLAN
+  AVION
+  MEMBERSHIP_REWARDS
+  CASHBACK
+  SCENE_PLUS
+  AIR_MILES
+  AVENTURA
+  MARRIOTT_BONVOY
+  HILTON_HONORS
+  AMERICAN_EXPRESS_POINTS
+  OTHER
+}
+
+// Main Card model
+model Card {
+  id           String   @id @default(cuid())
+  name         String
+  bank         String
+  network      CardNetwork
+  annualFee    Decimal  @db.Decimal(10, 2)
+  currency     String   @default("CAD")
+  baseImageUrl String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  bonuses     CardBonus[]
+  multipliers CardMultiplier[]
+
+  @@index([bank])
+  @@index([network])
+  @@index([isActive])
+}
+
+// Card signup/welcome bonuses
+model CardBonus {
+  id                 String    @id @default(cuid())
+  cardId             String
+  bonusPoints        Int
+  pointType          PointType
+  minimumSpendAmount Decimal   @db.Decimal(10, 2)
+  spendPeriodMonths  Int
+  description        String?
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+  @@index([pointType])
+}
+
+// Category-based earning multipliers
+model CardMultiplier {
+  id              String           @id @default(cuid())
+  cardId          String
+  category        SpendingCategory
+  multiplierValue Decimal          @db.Decimal(5, 2)
+  description     String?
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, category])
+  @@index([cardId])
+  @@index([category])
+}
+
+// User goals for point redemption
+model Goal {
+  id             String    @id @default(cuid())
+  name           String
+  requiredPoints Int
+  pointType      PointType
+  description    String?
+  estimatedValue Decimal?  @db.Decimal(10, 2)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([pointType])
+  @@index([isActive])
+}
