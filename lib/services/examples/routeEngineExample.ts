@@ -32,6 +32,7 @@ export function exampleBasicUsage() {
       bank: 'TD',
       network: 'VISA',
       annualFee: 139,
+      baseRewardRate: 0.01,
       bonuses: [
         {
           id: 'bonus-1',
@@ -54,6 +55,7 @@ export function exampleBasicUsage() {
       bank: 'CIBC',
       network: 'VISA',
       annualFee: 0,
+      baseRewardRate: 0.01,
       bonuses: [
         {
           id: 'bonus-2',
@@ -132,6 +134,7 @@ export function exampleCompareCards() {
     bank: 'Bank A',
     network: 'VISA',
     annualFee: 120,
+    baseRewardRate: 0.01,
     bonuses: [
       {
         id: 'bonus-a',
@@ -155,6 +158,7 @@ export function exampleCompareCards() {
     bank: 'Bank B',
     network: 'MASTERCARD',
     annualFee: 95,
+    baseRewardRate: 0.01,
     bonuses: [
       {
         id: 'bonus-b',

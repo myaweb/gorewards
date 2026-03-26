@@ -1,0 +1,64 @@
+﻿<svg width="300" height="190" viewBox="0 0 300 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card Background with Gradient -->
+  <rect width="300" height="190" rx="12" fill="url(#cardGradient)"/>
+  
+  <!-- Glass Effect Overlay -->
+  <rect width="300" height="190" rx="12" fill="url(#glassEffect)" opacity="0.1"/>
+  
+  <!-- Chip -->
+  <rect x="30" y="70" width="45" height="35" rx="4" fill="url(#chipGradient)"/>
+  <rect x="32" y="72" width="41" height="31" rx="3" stroke="rgba(255,255,255,0.2)" stroke-width="1" fill="none"/>
+  
+  <!-- Card Number Placeholder -->
+  <g opacity="0.4">
+    <rect x="30" y="120" width="35" height="8" rx="2" fill="rgba(255,255,255,0.3)"/>
+    <rect x="70" y="120" width="35" height="8" rx="2" fill="rgba(255,255,255,0.3)"/>
+    <rect x="110" y="120" width="35" height="8" rx="2" fill="rgba(255,255,255,0.3)"/>
+    <rect x="150" y="120" width="35" height="8" rx="2" fill="rgba(255,255,255,0.3)"/>
+  </g>
+  
+  <!-- CreditRich Logo -->
+  <text x="30" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="url(#logoGradient)">CreditRich</text>
+  
+  <!-- Network Logo Placeholder (top right) -->
+  <circle cx="260" cy="35" r="20" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="260" cy="35" r="15" stroke="url(#logoGradient)" stroke-width="2" fill="none"/>
+  
+  <!-- Cardholder Name Placeholder -->
+  <rect x="30" y="155" width="80" height="8" rx="2" fill="rgba(255,255,255,0.2)"/>
+  
+  <!-- Expiry Date Placeholder -->
+  <rect x="200" y="155" width="40" height="8" rx="2" fill="rgba(255,255,255,0.2)"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="250" cy="150" r="40" fill="url(#decorGradient)" opacity="0.1"/>
+  <circle cx="280" cy="120" r="30" fill="url(#decorGradient)" opacity="0.08"/>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="cardGradient" x1="0" y1="0" x2="300" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1a1b26"/>
+      <stop offset="100%" stop-color="#0f1117"/>
+    </linearGradient>
+    
+    <linearGradient id="glassEffect" x1="0" y1="0" x2="300" y2="190" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    
+    <linearGradient id="chipGradient" x1="30" y1="70" x2="75" y2="105" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="100%" stop-color="#ffed4e"/>
+    </linearGradient>
+    
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    
+    <radialGradient id="decorGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </radialGradient>
+  </defs>
+</svg>

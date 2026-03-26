@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BonusGo Compare - Amex Cobalt vs TD Aeroplan Visa Infinite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #13131a;
+            --bg-tertiary: #1a1a24;
+            --bg-card: #1e1e2e;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border-color: #2d2d3d;
+            --winner-glow: rgba(99, 102, 241, 0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .back-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--accent-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 60px 0;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+        }
+
+        .hero-title {
+            text-align: center;
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 48px;
+        }
+
+        .cards-compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 24px;
+        }
+
+        .card-hero {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card-hero:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-premium {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--accent-secondary);
+        }
+
+        .badge-travel {
+            background: rgba(99, 102, 241, 0.2);
+            color: var(--accent-primary);
+        }
+
+        .card-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .card-bank {
+            color: var(--text-muted);
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        .card-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: right;
+        }
+
+        .stat-value.highlight {
+            color: var(--accent-success);
+        }
+
+        /* Winner Summary Section */
+        .winner-summary {
+            padding: 80px 0;
+            background: var(--bg-primary);
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 48px;
+        }
+
+        .winner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .winner-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .winner-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .winner-card:hover {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 30px var(--winner-glow);
+        }
+
+        .winner-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .winner-category {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 12px;
+        }
+
+        .winner-name {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .winner-reason {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Comparison Table */
+        .comparison-table-section {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .comparison-table {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            background: var(--bg-tertiary);
+            padding: 24px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .table-row:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .table-cell {
+            display: flex;
+            align-items: center;
+        }
+
+        .table-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .table-value {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .table-value.winner {
+            color: var(--accent-success);
+            position: relative;
+        }
+
+        .table-value.winner::after {
+            content: '✓';
+            margin-left: 8px;
+            font-size: 16px;
+        }
+
+        /* Who Should Choose Section */
+        .who-should-choose {
+            padding: 80px 0;
+            background: var(--bg-primary);
+        }
+
+        .choice-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .choice-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+        }
+
+        .choice-card-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .choice-list {
+            list-style: none;
+        }
+
+        .choice-list li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .choice-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        /* Scenario Section */
+        .scenario-section {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .scenario-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 48px;
+            flex-wrap: wrap;
+        }
+
+        .scenario-tab {
+            padding: 12px 24px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .scenario-tab:hover {
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+
+        .scenario-tab.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .scenario-content {
+            display: none;
+        }
+
+        .scenario-content.active {
+            display: block;
+        }
+
+        .scenario-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+        }
+
+        .scenario-header {
+            margin-bottom: 32px;
+        }
+
+        .scenario-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .scenario-description {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .scenario-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .scenario-result {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .scenario-result.winner {
+            border-color: var(--accent-success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .scenario-card-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .scenario-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 8px;
+        }
+
+        .scenario-result.winner .scenario-value {
+            color: var(--accent-success);
+        }
+
+        .scenario-label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .scenario-winner-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--accent-success);
+            color: white;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 12px;
+        }
+
+        /* Pros and Cons Section */
+        .pros-cons-section {
+            padding: 80px 0;
+            background: var(--bg-primary);
+        }
+
+        .pros-cons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        .pros-cons-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 40px;
+        }
+
+        .pros-cons-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 32px;
+        }
+
+        .pros-section, .cons-section {
+            margin-bottom: 32px;
+        }
+
+        .pros-section:last-child, .cons-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .pros-cons-subtitle {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pros-cons-subtitle.pros {
+            color: var(--accent-success);
+        }
+
+        .pros-cons-subtitle.cons {
+            color: var(--accent-warning);
+        }
+
+        .pros-cons-list {
+            list-style: none;
+        }
+
+        .pros-cons-list li {
+            padding: 10px 0;
+            padding-left: 28px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+
+        .pros-cons-list.pros li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-success);
+            font-weight: 700;
+        }
+
+        .pros-cons-list.cons li::before {
+            content: '×';
+            position: absolute;
+            left: 0;
+            color: var(--accent-warning);
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        /* BonusGo Insight Section */
+        .insight-section {
+            padding: 80px 0;
+            background: var(--bg-secondary);
+        }
+
+        .insight-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            border: 2px solid var(--accent-primary);
+            border-radius: 16px;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .insight-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .insight-logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .insight-badge {
+            padding: 6px 12px;
+            background: var(--accent-primary);
+            color: white;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .insight-content {
+            font-size: 18px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .insight-content strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 80px 0;
+            background: var(--bg-primary);
+        }
+
+        .cta-container {
+            text-align: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 60px 40px;
+        }
+
+        .cta-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-subtitle {
+            color: var(--text-secondary);
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 968px) {
+            .cards-compare-grid,
+            .choice-grid,
+            .pros-cons-grid,
+            .scenario-comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header,
+            .table-row {
+                grid-template-columns: 1.5fr 1fr 1fr;
+                font-size: 14px;
+            }
+
+            .hero-title {
+                font-size: 32px;
+            }
+
+            .section-title {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .hero {
+                padding: 40px 0;
+            }
+
+            .winner-summary,
+            .comparison-table-section,
+            .who-should-choose,
+            .scenario-section,
+            .pros-cons-section,
+            .insight-section,
+            .cta-section {
+                padding: 60px 0;
+            }
+
+            .card-hero,
+            .choice-card,
+            .pros-cons-card,
+            .insight-box {
+                padding: 24px;
+            }
+
+            .hero-title {
+                font-size: 28px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .table-header {
+                display: none;
+            }
+
+            .table-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 16px;
+            }
+
+            .table-cell {
+                justify-content: space-between;
+            }
+
+            .scenario-tabs {
+                flex-direction: column;
+            }
+
+            .scenario-tab {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">BonusGo</div>
+                <a href="#" class="back-link">← Back to all cards</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Card Comparison</h1>
+            <p class="hero-subtitle">Side-by-side analysis to help you choose the right card</p>
+            
+            <div class="cards-compare-grid">
+                <!-- Card 1: Amex Cobalt -->
+                <div class="card-hero">
+                    <span class="card-badge badge-premium">Premium Rewards</span>
+                    <h2 class="card-name">Amex Cobalt</h2>
+                    <p class="card-bank">American Express</p>
+
+                    <div class="card-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Annual Fee</span>
+                            <span class="stat-value">$155.88/year</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Reward Type</span>
+                            <span class="stat-value">Membership Rewards</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Welcome Bonus</span>
+                            <span class="stat-value highlight">30,000 points</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Best For</span>
+                            <span class="stat-value">Dining & Groceries</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: TD Aeroplan -->
+                <div class="card-hero">
+                    <span class="card-badge badge-travel">Travel Rewards</span>
+                    <h2 class="card-name">TD Aeroplan Visa Infinite</h2>
+                    <p class="card-bank">TD Bank</p>
+                    <div class="card-stats">
+                        <div class="stat-row">
+                            <span class="stat-label">Annual Fee</span>
+                            <span class="stat-value">$139/year</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Reward Type</span>
+                            <span class="stat-value">Aeroplan Points</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Welcome Bonus</span>
+                            <span class="stat-value highlight">50,000 points</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Best For</span>
+                            <span class="stat-value">Air Canada Travel</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Winner Summary Section -->
+    <section class="winner-summary">
+        <div class="container">
+            <h2 class="section-title">Quick Winner Summary</h2>
+            <p class="section-subtitle">At a glance: which card wins in key categories</p>
+
+            <div class="winner-grid">
+                <div class="winner-card">
+                    <div class="winner-icon">🍽️</div>
+                    <div class="winner-category">Everyday Spending</div>
+                    <div class="winner-name">Amex Cobalt</div>
+                    <div class="winner-reason">5x points on dining & groceries</div>
+                </div>
+
+                <div class="winner-card">
+                    <div class="winner-icon">✈️</div>
+                    <div class="winner-category">Travel Rewards</div>
+                    <div class="winner-name">TD Aeroplan Visa Infinite</div>
+                    <div class="winner-reason">Best for Air Canada flights</div>
+                </div>
+
+                <div class="winner-card">
+                    <div class="winner-icon">💰</div>
+                    <div class="winner-category">Welcome Bonus</div>
+                    <div class="winner-name">TD Aeroplan Visa Infinite</div>
+                    <div class="winner-reason">50,000 points vs 30,000</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table Section -->
+    <section class="comparison-table-section">
+        <div class="container">
+            <h2 class="section-title">Detailed Comparison</h2>
+            <p class="section-subtitle">Feature-by-feature breakdown</p>
+
+            <div class="comparison-table">
+                <div class="table-header">
+                    <div class="table-cell">Feature</div>
+                    <div class="table-cell">Amex Cobalt</div>
+                    <div class="table-cell">TD Aeroplan Visa Infinite</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Annual Fee</div>
+                    <div class="table-cell table-value">$155.88/year</div>
+                    <div class="table-cell table-value winner">$139/year</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Welcome Bonus</div>
+                    <div class="table-cell table-value">30,000 points</div>
+                    <div class="table-cell table-value winner">50,000 points</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Minimum Spend Requirement</div>
+                    <div class="table-cell table-value">$3,000 in 3 months</div>
+                    <div class="table-cell table-value">$1,000 in 3 months</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Grocery Multiplier</div>
+                    <div class="table-cell table-value winner">5x points</div>
+                    <div class="table-cell table-value">1.5x points</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Dining Multiplier</div>
+                    <div class="table-cell table-value winner">5x points</div>
+                    <div class="table-cell table-value">1.5x points</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Gas Multiplier</div>
+                    <div class="table-cell table-value">2x points</div>
+                    <div class="table-cell table-value">1.5x points</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Travel Multiplier</div>
+                    <div class="table-cell table-value">2x points</div>
+                    <div class="table-cell table-value winner">3x points</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Foreign Transaction Fee</div>
+                    <div class="table-cell table-value winner">0% (2.5% on conversion)</div>
+                    <div class="table-cell table-value">0%</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Insurance Highlights</div>
+                    <div class="table-cell table-value">Mobile device, travel medical</div>
+                    <div class="table-cell table-value winner">Comprehensive travel insurance</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Point Type</div>
+                    <div class="table-cell table-value">Membership Rewards</div>
+                    <div class="table-cell table-value">Aeroplan Points</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Estimated First-Year Value</div>
+                    <div class="table-cell table-value winner">$720</div>
+                    <div class="table-cell table-value">$650</div>
+                </div>
+
+                <div class="table-row">
+                    <div class="table-cell table-label">Estimated Long-Term Value (Annual)</div>
+                    <div class="table-cell table-value winner">$565</div>
+                    <div class="table-cell table-value">$480</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who Should Choose Section -->
+    <section class="who-should-choose">
+        <div class="container">
+            <h2 class="section-title">Who Should Choose Each Card?</h2>
+            <p class="section-subtitle">Find your ideal match based on spending habits</p>
+
+            <div class="choice-grid">
+                <div class="choice-card">
+                    <h3 class="choice-card-title">Choose Amex Cobalt if you:</h3>
+                    <ul class="choice-list">
+                        <li>Spend heavily on groceries and dining out</li>
+                        <li>Want maximum everyday rewards</li>
+                        <li>Value flexible points that transfer to multiple programs</li>
+                        <li>Don't mind monthly fee payments ($12.99/month)</li>
+                        <li>Prefer premium Amex benefits and service</li>
+                        <li>Want strong mobile device insurance</li>
+                    </ul>
+                </div>
+
+                <div class="choice-card">
+                    <h3 class="choice-card-title">Choose TD Aeroplan Visa Infinite if you:</h3>
+                    <ul class="choice-list">
+                        <li>Fly Air Canada frequently</li>
+                        <li>Want comprehensive travel insurance</li>
+                        <li>Prefer a lower annual fee</li>
+                        <li>Need a card accepted everywhere (Visa network)</li>
+                        <li>Value priority boarding and lounge access</li>
+                        <li>Want easier minimum spend requirements</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scenario-Based Value Section -->
+    <section class="scenario-section">
+        <div class="container">
+            <h2 class="section-title">Real-World Scenarios</h2>
+            <p class="section-subtitle">See which card wins for different spending patterns</p>
+
+            <div class="scenario-tabs">
+                <button class="scenario-tab active" data-scenario="everyday">Everyday Spender</button>
+                <button class="scenario-tab" data-scenario="travel">Travel Enthusiast</button>
+                <button class="scenario-tab" data-scenario="family">Family Spender</button>
+            </div>
+
+            <!-- Everyday Spender Scenario -->
+            <div class="scenario-content active" id="scenario-everyday">
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <h3 class="scenario-title">Everyday Spender Profile</h3>
+                        <p class="scenario-description">
+                            Monthly spending: $800 groceries, $400 dining, $200 gas, $300 other
+                        </p>
+                    </div>
+
+                    <div class="scenario-comparison">
+                        <div class="scenario-result winner">
+                            <div class="scenario-card-name">Amex Cobalt</div>
+                            <div class="scenario-value">$720</div>
+                            <div class="scenario-label">Annual rewards value</div>
+                            <span class="scenario-winner-badge">Winner</span>
+                        </div>
+
+                        <div class="scenario-result">
+                            <div class="scenario-card-name">TD Aeroplan Visa Infinite</div>
+                            <div class="scenario-value">$480</div>
+                            <div class="scenario-label">Annual rewards value</div>
+                        </div>
+                    </div>
+
+                    <p style="color: var(--text-secondary); text-align: center;">
+                        The Amex Cobalt's 5x multiplier on groceries and dining delivers $240 more value annually for everyday spenders.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Travel Enthusiast Scenario -->
+            <div class="scenario-content" id="scenario-travel">
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <h3 class="scenario-title">Travel Enthusiast Profile</h3>
+                        <p class="scenario-description">
+                            Monthly spending: $300 groceries, $200 dining, $800 travel, $400 other
+                        </p>
+                    </div>
+
+                    <div class="scenario-comparison">
+                        <div class="scenario-result">
+                            <div class="scenario-card-name">Amex Cobalt</div>
+                            <div class="scenario-value">$580</div>
+                            <div class="scenario-label">Annual rewards value</div>
+                        </div>
+
+                        <div class="scenario-result winner">
+                            <div class="scenario-card-name">TD Aeroplan Visa Infinite</div>
+                            <div class="scenario-value">$750</div>
+                            <div class="scenario-label">Annual rewards value</div>
+                            <span class="scenario-winner-badge">Winner</span>
+                        </div>
+                    </div>
+
+                    <p style="color: var(--text-secondary); text-align: center;">
+                        TD Aeroplan's 3x travel multiplier and Air Canada perks make it the clear winner for frequent travelers.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Family Spender Scenario -->
+            <div class="scenario-content" id="scenario-family">
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <h3 class="scenario-title">Family Spender Profile</h3>
+                        <p class="scenario-description">
+                            Monthly spending: $1,200 groceries, $500 dining, $300 gas, $500 other
+                        </p>
+                    </div>
+
+                    <div class="scenario-comparison">
+                        <div class="scenario-result winner">
+                            <div class="scenario-card-name">Amex Cobalt</div>
+                            <div class="scenario-value">$1,020</div>
+                            <div class="scenario-label">Annual rewards value</div>
+                            <span class="scenario-winner-badge">Winner</span>
+                        </div>
+
+                        <div class="scenario-result">
+                            <div class="scenario-card-name">TD Aeroplan Visa Infinite</div>
+                            <div class="scenario-value">$620</div>
+                            <div class="scenario-label">Annual rewards value</div>
+                        </div>
+                    </div>
+
+                    <p style="color: var(--text-secondary); text-align: center;">
+                        Families with high grocery spending benefit massively from Amex Cobalt's 5x multiplier, earning $400 more annually.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pros and Cons Section -->
+    <section class="pros-cons-section">
+        <div class="container">
+            <h2 class="section-title">Pros & Cons</h2>
+            <p class="section-subtitle">Honest assessment of each card's strengths and weaknesses</p>
+
+            <div class="pros-cons-grid">
+                <div class="pros-cons-card">
+                    <h3 class="pros-cons-title">Amex Cobalt</h3>
+
+                    <div class="pros-section">
+                        <div class="pros-cons-subtitle pros">✓ Pros</div>
+                        <ul class="pros-cons-list pros">
+                            <li>Industry-leading 5x points on groceries and dining</li>
+                            <li>Flexible Membership Rewards points</li>
+                            <li>Strong mobile device insurance coverage</li>
+                            <li>No foreign transaction fees on purchases</li>
+                            <li>Premium Amex customer service</li>
+                        </ul>
+                    </div>
+
+                    <div class="cons-section">
+                        <div class="pros-cons-subtitle cons">× Cons</div>
+                        <ul class="pros-cons-list cons">
+                            <li>Not accepted everywhere (Amex network)</li>
+                            <li>Monthly fee structure may feel inconvenient</li>
+                            <li>Higher minimum spend requirement ($3,000)</li>
+                            <li>Limited travel insurance compared to competitors</li>
+                            <li>2.5% foreign exchange conversion fee</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pros-cons-card">
+                    <h3 class="pros-cons-title">TD Aeroplan Visa Infinite</h3>
+
+                    <div class="pros-section">
+                        <div class="pros-cons-subtitle pros">✓ Pros</div>
+                        <ul class="pros-cons-list pros">
+                            <li>Generous 50,000 point welcome bonus</li>
+                            <li>Comprehensive travel insurance package</li>
+                            <li>Priority boarding and lounge access</li>
+                            <li>Accepted everywhere (Visa network)</li>
+                            <li>Lower minimum spend requirement</li>
+                            <li>No foreign transaction fees</li>
+                        </ul>
+                    </div>
+
+                    <div class="cons-section">
+                        <div class="pros-cons-subtitle cons">× Cons</div>
+                        <ul class="pros-cons-list cons">
+                            <li>Lower everyday earning rates (1.5x)</li>
+                            <li>Points locked to Aeroplan program</li>
+                            <li>Best value requires Air Canada bookings</li>
+                            <li>Annual fee paid upfront</li>
+                            <li>Limited value for non-travelers</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BonusGo Insight Section -->
+    <section class="insight-section">
+        <div class="container">
+            <div class="insight-box">
+                <div class="insight-header">
+                    <div class="insight-logo">BonusGo</div>
+                    <span class="insight-badge">Expert Insight</span>
+                </div>
+                <div class="insight-content">
+                    <p style="margin-bottom: 16px;">
+                        <strong>The verdict depends entirely on your spending habits.</strong>
+                    </p>
+
+                    <p style="margin-bottom: 16px;">
+                        If you spend <strong>$600+ monthly on groceries and dining</strong>, the Amex Cobalt will deliver significantly more value. 
+                        Its 5x multiplier is unmatched in Canada, and you'll easily offset the annual fee with everyday purchases.
+                    </p>
+                    <p style="margin-bottom: 16px;">
+                        However, if you're a <strong>frequent Air Canada traveler</strong> or value comprehensive travel insurance, 
+                        the TD Aeroplan Visa Infinite is the smarter choice. The 50,000-point welcome bonus alone is worth $500-750 in flights, 
+                        and the priority boarding and lounge access add real convenience.
+                    </p>
+                    <p>
+                        <strong>Pro tip:</strong> Many savvy cardholders use both—Amex Cobalt for everyday spending and TD Aeroplan for travel. 
+                        This strategy maximizes rewards across all categories.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-container">
+                <h2 class="cta-title">Ready to Make Your Decision?</h2>
+                <p class="cta-subtitle">Get a personalized recommendation based on your actual spending</p>
+                <div class="cta-buttons">
+                    <a href="#" class="btn btn-primary">Compare with Your Spending</a>
+                    <a href="#" class="btn btn-secondary">Get Personalized Recommendation</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>BonusGo Demo • This is a prototype for review purposes only</p>
+        </div>
+    </footer>
+
+    <script>
+        // Scenario tab switching
+        const scenarioTabs = document.querySelectorAll('.scenario-tab');
+        const scenarioContents = document.querySelectorAll('.scenario-content');
+
+        scenarioTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const scenario = tab.getAttribute('data-scenario');
+                
+                // Remove active class from all tabs and contents
+                scenarioTabs.forEach(t => t.classList.remove('active'));
+                scenarioContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding content
+                tab.classList.add('active');
+                document.getElementById(`scenario-${scenario}`).classList.add('active');
+            });
+        });
+
+        // Table row hover effect enhancement
+        const tableRows = document.querySelectorAll('.table-row');
+        tableRows.forEach(row => {
+            row.addEventListener('mouseenter', () => {
+                row.style.transform = 'translateX(4px)';
+            });
+            row.addEventListener('mouseleave', () => {
+                row.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add entrance animations on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all major sections
+        document.querySelectorAll('.winner-card, .choice-card, .pros-cons-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+
+        // CTA button interactions
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (btn.getAttribute('href') === '#') {
+                    e.preventDefault();
+                    alert('This is a demo prototype. In production, this would navigate to the actual feature.');
+                }
+            });
+        });
+
+        console.log('BonusGo Compare Page Demo loaded successfully');
+    </script>
+</body>
+</html>

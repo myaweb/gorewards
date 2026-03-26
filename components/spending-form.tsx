@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { Loader2 } from "lucide-react"
+import { Loader2, ShoppingCart, Fuel, UtensilsCrossed, Smartphone, Target } from "lucide-react"
 
 export interface SpendingFormData {
   grocery: number
@@ -57,10 +57,10 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
   }
 
   return (
-    <Card className="glass-card">
+    <Card className="glass-premium glow-teal">
       <CardHeader>
-        <CardTitle className="text-2xl">Your Monthly Spending</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-3xl font-bold">Your Monthly Spending</CardTitle>
+        <CardDescription className="text-base text-gray-400">
           Adjust your spending categories to optimize your rewards strategy
         </CardDescription>
       </CardHeader>
@@ -69,14 +69,51 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
         <div className="space-y-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label htmlFor="grocery" className="text-base">🛒 Grocery</Label>
-              <span className="text-lg font-semibold text-primary">
-                ${grocery.toLocaleString()}
-              </span>
+              <Label htmlFor="grocery" className="text-base flex items-center gap-2">
+                <ShoppingCart className="h-4 w-4 text-primary" />
+                Grocery
+              </Label>
+              <div className="flex items-center gap-1">
+                <div className="flex items-center text-primary font-semibold bg-transparent border-b border-transparent focus-within:border-primary/50 transition-colors px-1">
+                  <span className="text-lg">$</span>
+                  <input
+                    type="number"
+                    value={grocery}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value) || 0)
+                      setGrocery(val)
+                    }}
+                    className="w-20 text-lg bg-transparent outline-none text-right"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setGrocery(grocery + 50)}
+                    disabled={isLoading}
+                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGrocery(Math.max(0, grocery - 50))}
+                    disabled={isLoading}
+                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
             <Slider
               id="grocery"
-              value={[grocery]}
+              value={[Math.min(grocery, 3000)]}
               onValueChange={(value) => setGrocery(value[0])}
               max={3000}
               step={50}
@@ -87,14 +124,51 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label htmlFor="gas" className="text-base">⛽ Gas</Label>
-              <span className="text-lg font-semibold text-primary">
-                ${gas.toLocaleString()}
-              </span>
+              <Label htmlFor="gas" className="text-base flex items-center gap-2">
+                <Fuel className="h-4 w-4 text-primary" />
+                Gas
+              </Label>
+              <div className="flex items-center gap-1">
+                <div className="flex items-center text-primary font-semibold bg-transparent border-b border-transparent focus-within:border-primary/50 transition-colors px-1">
+                  <span className="text-lg">$</span>
+                  <input
+                    type="number"
+                    value={gas}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value) || 0)
+                      setGas(val)
+                    }}
+                    className="w-20 text-lg bg-transparent outline-none text-right"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setGas(gas + 25)}
+                    disabled={isLoading}
+                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGas(Math.max(0, gas - 25))}
+                    disabled={isLoading}
+                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
             <Slider
               id="gas"
-              value={[gas]}
+              value={[Math.min(gas, 1000)]}
               onValueChange={(value) => setGas(value[0])}
               max={1000}
               step={25}
@@ -105,14 +179,51 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label htmlFor="dining" className="text-base">🍽️ Dining</Label>
-              <span className="text-lg font-semibold text-primary">
-                ${dining.toLocaleString()}
-              </span>
+              <Label htmlFor="dining" className="text-base flex items-center gap-2">
+                <UtensilsCrossed className="h-4 w-4 text-primary" />
+                Dining
+              </Label>
+              <div className="flex items-center gap-1">
+                <div className="flex items-center text-primary font-semibold bg-transparent border-b border-transparent focus-within:border-primary/50 transition-colors px-1">
+                  <span className="text-lg">$</span>
+                  <input
+                    type="number"
+                    value={dining}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value) || 0)
+                      setDining(val)
+                    }}
+                    className="w-20 text-lg bg-transparent outline-none text-right"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setDining(dining + 50)}
+                    disabled={isLoading}
+                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDining(Math.max(0, dining - 50))}
+                    disabled={isLoading}
+                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
             <Slider
               id="dining"
-              value={[dining]}
+              value={[Math.min(dining, 2000)]}
               onValueChange={(value) => setDining(value[0])}
               max={2000}
               step={50}
@@ -123,14 +234,51 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label htmlFor="bills" className="text-base">📱 Recurring Bills</Label>
-              <span className="text-lg font-semibold text-primary">
-                ${bills.toLocaleString()}
-              </span>
+              <Label htmlFor="bills" className="text-base flex items-center gap-2">
+                <Smartphone className="h-4 w-4 text-primary" />
+                Recurring Bills
+              </Label>
+              <div className="flex items-center gap-1">
+                <div className="flex items-center text-primary font-semibold bg-transparent border-b border-transparent focus-within:border-primary/50 transition-colors px-1">
+                  <span className="text-lg">$</span>
+                  <input
+                    type="number"
+                    value={bills}
+                    onChange={(e) => {
+                      const val = Math.max(0, Number(e.target.value) || 0)
+                      setBills(val)
+                    }}
+                    className="w-20 text-lg bg-transparent outline-none text-right"
+                    disabled={isLoading}
+                  />
+                </div>
+                <div className="flex flex-col gap-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setBills(bills + 50)}
+                    disabled={isLoading}
+                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBills(Math.max(0, bills - 50))}
+                    disabled={isLoading}
+                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
             <Slider
               id="bills"
-              value={[bills]}
+              value={[Math.min(bills, 2000)]}
               onValueChange={(value) => setBills(value[0])}
               max={2000}
               step={50}
@@ -141,10 +289,10 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
         </div>
 
         {/* Total Spending */}
-        <div className="p-4 rounded-lg bg-primary/10 border border-primary/20">
+        <div className="p-6 rounded-xl bg-primary/5 border border-primary/20 glow-teal">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Total Monthly Spending</span>
-            <span className="text-2xl font-bold text-primary">
+            <span className="text-sm text-gray-400 font-light">Total Monthly Spending</span>
+            <span className="text-3xl font-bold text-gradient-teal">
               ${totalSpending.toLocaleString()}
             </span>
           </div>
@@ -152,7 +300,10 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
 
         {/* Goal Selection */}
         <div className="space-y-3">
-          <Label htmlFor="goal" className="text-base">🎯 Your Goal</Label>
+          <Label htmlFor="goal" className="text-base flex items-center gap-2">
+            <Target className="h-4 w-4 text-primary" />
+            Your Goal
+          </Label>
           <Select 
             value={selectedGoal} 
             onValueChange={setSelectedGoal}
@@ -179,7 +330,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
         {/* Submit Button */}
         <Button 
           onClick={handleSubmit} 
-          className="w-full h-12 text-base font-semibold"
+          className="w-full h-14 text-lg font-semibold bg-primary hover:bg-primary/90 text-background shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
           disabled={isLoading}
         >
           {isLoading ? (

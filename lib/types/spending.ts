@@ -36,6 +36,7 @@ export interface RoadmapStep {
 
 // Complete roadmap result
 export interface OptimalRoadmap {
+  status?: 'success' | 'no_cards_found' | 'insufficient_spending'
   steps: RoadmapStep[]
   totalMonths: number
   totalPointsEarned: number
@@ -45,25 +46,67 @@ export interface OptimalRoadmap {
     monthsToGoal: number
     totalSpend: number
   }
+  errorMessage?: string
+  missingPointType?: string
 }
 
-// Card with all related data for calculations
+// Enhanced card bonus interface
+export interface CardBonus {
+  id: string
+  bonusPoints: number
+  pointType: string
+  minimumSpendAmount: number
+  spendPeriodMonths: number
+  description?: string
+  validFrom?: Date | null
+  validUntil?: Date | null
+  estimatedValue?: number | null
+}
+
+// Enhanced card multiplier interface
+export interface CardMultiplier {
+  id: string
+  category: string
+  multiplierValue: number
+  description?: string
+  monthlyLimit?: number | null
+  annualLimit?: number | null
+  validFrom?: Date | null
+  validUntil?: Date | null
+}
+
+// Card offer interface for limited-time promotions
+export interface CardOffer {
+  id: string
+  offerType: string
+  title: string
+  description: string
+  bonusPoints?: number | null
+  pointType?: string | null
+  cashValue?: number | null
+  minimumSpend?: number | null
+  timeframe?: number | null
+  validFrom: Date
+  validUntil: Date
+  terms?: string | null
+}
+
+// Enhanced card with all related data for calculations
 export interface CardWithDetails {
   id: string
   name: string
   bank: string
   network: string
   annualFee: number
-  bonuses: {
-    id: string
-    bonusPoints: number
-    pointType: string
-    minimumSpendAmount: number
-    spendPeriodMonths: number
-  }[]
-  multipliers: {
-    id: string
-    category: string
-    multiplierValue: number
-  }[]
+  baseRewardRate: number
+  slug?: string
+  imageUrl?: string | null
+  affiliateLink?: string | null
+  features?: any
+  eligibility?: any
+  bonuses: CardBonus[]
+  multipliers: CardMultiplier[]
+  offers?: CardOffer[]
+  createdAt?: Date
+  updatedAt?: Date
 }

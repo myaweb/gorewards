@@ -1,11 +1,24 @@
-import type { CardData } from "@/lib/data/cards-database"
+import type { Card as PrismaCard, CardBonus } from "@prisma/client"
 
 interface StructuredDataProps {
-  card1: CardData
-  card2: CardData
+  card1: PrismaCard & { bonuses: CardBonus[] }
+  card2: PrismaCard & { bonuses: CardBonus[] }
+}
+
+// Helper to create slug from card name
+function createSlug(cardName: string): string {
+  return cardName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim()
 }
 
 export function StructuredData({ card1, card2 }: StructuredDataProps) {
+  // Use environment variable for site URL or fallback to relative path
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || ''
+  
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "ComparisonPage",
@@ -14,7 +27,7 @@ export function StructuredData({ card1, card2 }: StructuredDataProps) {
     "mainEntity": [
       {
         "@type": "FinancialProduct",
-        "@id": `#${card1.slug}`,
+        "@id": `#${card1.id}`,
         "name": card1.name,
         "provider": {
           "@type": "Organization",
@@ -22,19 +35,19 @@ export function StructuredData({ card1, card2 }: StructuredDataProps) {
         },
         "feesAndCommissionsSpecification": {
           "@type": "UnitPriceSpecification",
-          "price": card1.annualFee,
+          "price": Number(card1.annualFee),
           "priceCurrency": card1.currency,
           "name": "Annual Fee"
         },
         "offers": {
           "@type": "Offer",
-          "description": `${card1.bonuses[0]?.points} ${card1.bonuses[0]?.pointType} points welcome bonus`,
-          "url": card1.affiliateUrl
+          "description": `${card1.bonuses[0]?.bonusPoints} ${card1.bonuses[0]?.pointType.replace(/_/g, " ")} points welcome bonus`,
+          "url": card1.affiliateLink || `${siteUrl}/api/go/${createSlug(card1.name)}`
         }
       },
       {
         "@type": "FinancialProduct",
-        "@id": `#${card2.slug}`,
+        "@id": `#${card2.id}`,
         "name": card2.name,
         "provider": {
           "@type": "Organization",
@@ -42,14 +55,14 @@ export function StructuredData({ card1, card2 }: StructuredDataProps) {
         },
         "feesAndCommissionsSpecification": {
           "@type": "UnitPriceSpecification",
-          "price": card2.annualFee,
+          "price": Number(card2.annualFee),
           "priceCurrency": card2.currency,
           "name": "Annual Fee"
         },
         "offers": {
           "@type": "Offer",
-          "description": `${card2.bonuses[0]?.points} ${card2.bonuses[0]?.pointType} points welcome bonus`,
-          "url": card2.affiliateUrl
+          "description": `${card2.bonuses[0]?.bonusPoints} ${card2.bonuses[0]?.pointType.replace(/_/g, " ")} points welcome bonus`,
+          "url": card2.affiliateLink || `${siteUrl}/api/go/${createSlug(card2.name)}`
         }
       }
     ],

@@ -22,26 +22,54 @@ export class RouteEngine {
   static calculateOptimalRoadmap(
     monthlySpending: SpendingProfile,
     targetGoal: Goal,
-    availableCards: CardWithDetails[]
+    availableCards: CardWithDetails[],
+    preRanked: boolean = false
   ): OptimalRoadmap {
     // Filter cards that match the target goal's point type
     const eligibleCards = availableCards.filter(card =>
       card.bonuses.some(bonus => bonus.pointType === targetGoal.pointType)
     )
 
+    // Gracefully handle no cards found
     if (eligibleCards.length === 0) {
-      throw new Error(`No cards available for point type: ${targetGoal.pointType}`)
+      return {
+        status: 'no_cards_found',
+        steps: [],
+        totalMonths: 0,
+        totalPointsEarned: 0,
+        goalAchieved: false,
+        efficiency: {
+          pointsPerDollar: 0,
+          monthsToGoal: 0,
+          totalSpend: 0,
+        },
+        errorMessage: `No cards available for ${targetGoal.pointType.replace(/_/g, ' ')}`,
+        missingPointType: targetGoal.pointType,
+      }
     }
 
     // Calculate total monthly spending
     const totalMonthlySpend = this.calculateTotalSpending(monthlySpending)
 
+    // Gracefully handle zero spending
     if (totalMonthlySpend === 0) {
-      throw new Error('Monthly spending must be greater than zero')
+      return {
+        status: 'insufficient_spending',
+        steps: [],
+        totalMonths: 0,
+        totalPointsEarned: 0,
+        goalAchieved: false,
+        efficiency: {
+          pointsPerDollar: 0,
+          monthsToGoal: 0,
+          totalSpend: 0,
+        },
+        errorMessage: 'Monthly spending must be greater than zero',
+      }
     }
 
-    // Score and rank cards by their value proposition
-    const rankedCards = this.rankCardsByValue(eligibleCards, monthlySpending, targetGoal)
+    // Score and rank cards by their value proposition (skip if pre-ranked by enhanced engine)
+    const rankedCards = preRanked ? eligibleCards : this.rankCardsByValue(eligibleCards, monthlySpending, targetGoal)
 
     // Build the optimal roadmap
     const roadmap = this.buildRoadmap(
@@ -51,7 +79,10 @@ export class RouteEngine {
       targetGoal
     )
 
-    return roadmap
+    return {
+      ...roadmap,
+      status: 'success',
+    }
   }
 
   /**
@@ -122,9 +153,10 @@ export class RouteEngine {
       )
 
       if (multiplier) {
-        totalPoints += amount * multiplier.multiplierValue
+        // DB stores as decimal (0.05 = 5x), convert to real multiplier
+        totalPoints += amount * multiplier.multiplierValue * 100
       } else {
-        // Default 1x points if no multiplier exists
+        // Default 1x points
         totalPoints += amount * 1
       }
     }
@@ -310,17 +342,20 @@ export class RouteEngine {
     for (const [category, amount] of Object.entries(monthlySpending) as [keyof SpendingProfile, number][]) {
       if (amount === 0) continue
 
-      const multiplier = card.multipliers.find(
+      const rawMultiplier = card.multipliers.find(
         m => m.category === categoryMap[category]
-      )?.multiplierValue || 1
+      )?.multiplierValue || 0.01
 
-      const pointsEarned = amount * multiplier
+      // DB stores multipliers as decimals (0.05 = 5x points)
+      // Convert to actual point multiplier for display and calculation
+      const pointMultiplier = rawMultiplier * 100
+      const pointsEarned = amount * pointMultiplier
 
       categoryAllocations.push({
         category,
         amount,
-        multiplier,
-        pointsEarned,
+        multiplier: pointMultiplier,
+        pointsEarned: Math.round(pointsEarned),
       })
 
       monthlyPoints += pointsEarned

@@ -23,6 +23,7 @@ describe('RouteEngine', () => {
       bank: 'TD',
       network: 'VISA',
       annualFee: 139,
+      baseRewardRate: 0.01,
       bonuses: [
         {
           id: 'bonus-1',
@@ -45,6 +46,7 @@ describe('RouteEngine', () => {
       bank: 'RBC',
       network: 'MASTERCARD',
       annualFee: 0,
+      baseRewardRate: 0.01,
       bonuses: [
         {
           id: 'bonus-2',

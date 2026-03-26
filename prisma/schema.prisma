@@ -1,6 +1,3 @@
-// This is your Prisma schema file for Credit Card Rewards Optimization Engine
-// Learn more: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,7 +7,539 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Enum for card networks
+model AuditLog {
+  id            String        @id
+  userId        String?
+  action        String
+  resource      String
+  resourceId    String?
+  ipAddress     String
+  userAgent     String?
+  endpoint      String
+  method        String
+  oldData       Json?
+  newData       Json?
+  correlationId String
+  sessionId     String?
+  timestamp     DateTime      @default(now())
+  severity      AuditSeverity @default(INFO)
+  category      AuditCategory
+
+  @@index([action])
+  @@index([category])
+  @@index([correlationId])
+  @@index([severity])
+  @@index([timestamp])
+  @@index([userId])
+}
+
+model BetaFeedback {
+  id        String   @id
+  userId    String
+  feedback  String
+  source    String   @default("unknown")
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model BonusProgress {
+  id            String    @id
+  userId        String
+  userCardId    String
+  cardBonusId   String
+  requiredSpend Decimal   @db.Decimal(10, 2)
+  currentSpend  Decimal   @default(0) @db.Decimal(10, 2)
+  bonusDeadline DateTime
+  isCompleted   Boolean   @default(false)
+  completedDate DateTime?
+  bonusAwarded  Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime
+  CardBonus     CardBonus @relation(fields: [cardBonusId], references: [id], onDelete: Cascade)
+  UserCard      UserCard  @relation(fields: [userCardId], references: [id], onDelete: Cascade)
+  User          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, userCardId, cardBonusId])
+  @@index([bonusAwarded])
+  @@index([bonusDeadline])
+  @@index([isCompleted])
+  @@index([userCardId])
+  @@index([userId])
+}
+
+model Card {
+  id             String           @id
+  name           String           @unique
+  slug           String           @unique
+  bank           String
+  network        CardNetwork
+  annualFee      Decimal          @db.Decimal(10, 2)
+  currency       String           @default("CAD")
+  baseRewardRate Decimal          @default(0.01) @db.Decimal(5, 4)
+  imageUrl       String?
+  affiliateLink  String?
+  clickCount     Int              @default(0)
+  isActive       Boolean          @default(true)
+  description    String?
+  features       Json?
+  eligibility    Json?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  CardBonus      CardBonus[]
+  CardHistory    CardHistory[]
+  CardMultiplier CardMultiplier[]
+  CardOffer      CardOffer[]
+  UpdateRecord   UpdateRecord[]
+  UserCard       UserCard[]
+
+  @@index([bank])
+  @@index([isActive])
+  @@index([network])
+  @@index([slug])
+}
+
+model CardBonus {
+  id                 String          @id
+  cardId             String
+  bonusPoints        Int
+  pointType          PointType
+  minimumSpendAmount Decimal         @db.Decimal(10, 2)
+  spendPeriodMonths  Int
+  description        String?
+  validFrom          DateTime?
+  validUntil         DateTime?
+  conditions         Json?
+  estimatedValue     Decimal?        @db.Decimal(10, 2)
+  isActive           Boolean         @default(true)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime
+  BonusProgress      BonusProgress[]
+  Card               Card            @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+  @@index([isActive])
+  @@index([pointType])
+  @@index([validFrom, validUntil])
+}
+
+model CardComparison {
+  id            String   @id
+  slug          String   @unique
+  cardAId       String
+  cardBId       String
+  aiVerdictText String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime
+
+  @@index([cardAId])
+  @@index([cardBId])
+  @@index([slug])
+}
+
+model CardHistory {
+  id            String   @id
+  cardId        String
+  changeType    String
+  fieldName     String
+  oldValue      String?
+  newValue      String?
+  changeReason  String?
+  effectiveDate DateTime
+  createdAt     DateTime @default(now())
+  createdBy     String?
+  Card          Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+  @@index([changeType])
+  @@index([createdAt])
+  @@index([effectiveDate])
+}
+
+model CardMapping {
+  id              String        @id
+  userId          String
+  linkedAccountId String        @unique
+  userCardId      String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  LinkedAccount   LinkedAccount @relation(fields: [linkedAccountId], references: [id], onDelete: Cascade)
+  UserCard        UserCard      @relation(fields: [userCardId], references: [id], onDelete: Cascade)
+  User            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userCardId])
+  @@index([userId])
+}
+
+model CardMultiplier {
+  id              String           @id
+  cardId          String
+  category        SpendingCategory
+  multiplierValue Decimal          @db.Decimal(5, 2)
+  description     String?
+  monthlyLimit    Decimal?         @db.Decimal(10, 2)
+  annualLimit     Decimal?         @db.Decimal(10, 2)
+  validFrom       DateTime?
+  validUntil      DateTime?
+  isActive        Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime
+  Card            Card             @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([cardId, category, validFrom])
+  @@index([cardId])
+  @@index([category])
+  @@index([isActive])
+  @@index([validFrom, validUntil])
+}
+
+model CardOffer {
+  id           String     @id
+  cardId       String
+  offerType    String
+  title        String
+  description  String
+  bonusPoints  Int?
+  pointType    PointType?
+  cashValue    Decimal?   @db.Decimal(10, 2)
+  minimumSpend Decimal?   @db.Decimal(10, 2)
+  timeframe    Int?
+  validFrom    DateTime
+  validUntil   DateTime
+  terms        String?
+  eligibility  Json?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime
+  Card         Card       @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+  @@index([isActive])
+  @@index([offerType])
+  @@index([validFrom, validUntil])
+}
+
+model EncryptedToken {
+  id             String    @id
+  userId         String
+  tokenType      TokenType
+  encryptedValue String
+  keyVersion     Int       @default(1)
+  expiresAt      DateTime?
+  refreshToken   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime
+  lastUsed       DateTime?
+
+  @@unique([userId, tokenType])
+  @@index([expiresAt])
+  @@index([lastUsed])
+  @@index([tokenType])
+  @@index([userId])
+}
+
+model Goal {
+  id             String    @id
+  name           String    @unique
+  requiredPoints Int
+  pointType      PointType
+  description    String?
+  estimatedValue Decimal?  @db.Decimal(10, 2)
+  isActive       Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime
+
+  @@index([isActive])
+  @@index([pointType])
+}
+
+model LinkedAccount {
+  id               String        @id
+  userId           String
+  plaidItemId      String        @unique
+  plaidAccessToken String
+  institutionName  String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime
+  CardMapping      CardMapping?
+  User             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Transaction      Transaction[]
+
+  @@index([plaidItemId])
+  @@index([userId])
+}
+
+model PerformanceMetric {
+  id         String                @id
+  metricType PerformanceMetricType
+  endpoint   String?
+  value      Float
+  unit       String
+  timestamp  DateTime              @default(now())
+  timeWindow Int
+  userId     String?
+  requestId  String?
+  metadata   Json?
+
+  @@index([endpoint])
+  @@index([metricType])
+  @@index([timestamp])
+  @@index([userId])
+}
+
+model SavedStrategy {
+  id          String   @id
+  userId      String
+  goalName    String
+  roadmapData Json
+  isCompleted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  User        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([isCompleted])
+  @@index([userId])
+}
+
+model ScheduledJob {
+  id             String    @id
+  name           String    @unique
+  description    String?
+  cronExpression String
+  jobType        String
+  parameters     Json?
+  isActive       Boolean   @default(true)
+  lastRun        DateTime?
+  nextRun        DateTime?
+  status         String    @default("PENDING")
+  lastError      String?
+  runCount       Int       @default(0)
+  successCount   Int       @default(0)
+  failureCount   Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime
+  createdBy      String?
+
+  @@index([isActive])
+  @@index([jobType])
+  @@index([nextRun])
+  @@index([status])
+}
+
+model SecurityEvent {
+  id            String              @id
+  type          SecurityEventType
+  severity      SecuritySeverity
+  description   String
+  ipAddress     String
+  userAgent     String?
+  endpoint      String?
+  userId        String?
+  detectionRule String?
+  riskScore     Int                 @default(0)
+  status        SecurityEventStatus @default(OPEN)
+  assignedTo    String?
+  resolvedAt    DateTime?
+  resolution    String?
+  metadata      Json?
+  correlationId String
+  timestamp     DateTime            @default(now())
+
+  @@index([correlationId])
+  @@index([severity])
+  @@index([status])
+  @@index([timestamp])
+  @@index([type])
+  @@index([userId])
+}
+
+model Transaction {
+  id                 String           @id
+  userId             String
+  linkedAccountId    String
+  userCardId         String?
+  plaidTransactionId String           @unique
+  merchantName       String
+  normalizedMerchant String
+  amount             Decimal          @db.Decimal(10, 2)
+  date               DateTime
+  category           SpendingCategory
+  categoryConfidence Decimal          @default(0.5) @db.Decimal(3, 2)
+  plaidCategories    String[]
+  needsReview        Boolean          @default(false)
+  correctedByUser    Boolean          @default(false)
+  correctedAt        DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime
+  LinkedAccount      LinkedAccount    @relation(fields: [linkedAccountId], references: [id], onDelete: Cascade)
+  UserCard           UserCard?        @relation(fields: [userCardId], references: [id])
+  User               User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([date])
+  @@index([linkedAccountId])
+  @@index([needsReview])
+  @@index([normalizedMerchant])
+  @@index([userCardId])
+  @@index([userId])
+}
+
+model UpdateBatch {
+  id                String         @id
+  name              String
+  description       String?
+  batchType         String
+  status            String         @default("PENDING")
+  totalUpdates      Int            @default(0)
+  successfulUpdates Int            @default(0)
+  failedUpdates     Int            @default(0)
+  errors            Json?
+  createdAt         DateTime       @default(now())
+  completedAt       DateTime?
+  createdBy         String
+  UpdateRecord      UpdateRecord[]
+
+  @@index([createdAt])
+  @@index([createdBy])
+  @@index([status])
+}
+
+model UpdateRecord {
+  id            String      @id
+  batchId       String
+  cardId        String
+  updateType    String
+  oldData       Json?
+  newData       Json
+  changeReason  String?
+  effectiveDate DateTime    @default(now())
+  status        String      @default("PENDING")
+  error         String?
+  appliedAt     DateTime?
+  createdAt     DateTime    @default(now())
+  UpdateBatch   UpdateBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  Card          Card        @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([batchId])
+  @@index([cardId])
+  @@index([status])
+  @@index([updateType])
+}
+
+model User {
+  id                   String          @id
+  clerkUserId          String          @unique
+  email                String          @unique
+  stripeCustomerId     String?         @unique
+  stripeSubscriptionId String?         @unique
+  isPremium            Boolean         @default(false)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime
+  BetaFeedback         BetaFeedback[]
+  BonusProgress        BonusProgress[]
+  CardMapping          CardMapping[]
+  LinkedAccount        LinkedAccount[]
+  SavedStrategy        SavedStrategy[]
+  Transaction          Transaction[]
+  UserCard             UserCard[]
+  UserProfile          UserProfile?
+
+  @@index([clerkUserId])
+  @@index([email])
+  @@index([stripeCustomerId])
+}
+
+model UserCard {
+  id                    String          @id
+  userId                String
+  cardId                String
+  openDate              DateTime
+  annualFeeDate         DateTime
+  isActive              Boolean         @default(true)
+  downgradeEligibleDate DateTime?
+  downgradeToCardId     String?
+  notes                 String?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime
+  BonusProgress         BonusProgress[]
+  CardMapping           CardMapping[]
+  Transaction           Transaction[]
+  Card                  Card            @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  User                  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cardId])
+  @@index([annualFeeDate])
+  @@index([cardId])
+  @@index([isActive])
+  @@index([openDate])
+  @@index([userId])
+}
+
+model UserProfile {
+  id                    String              @id
+  userId                String              @unique
+  creditScoreRange      CreditScoreRange?
+  annualIncome          Decimal?            @db.Decimal(12, 2)
+  preferredRewardType   PreferredRewardType @default(NO_PREFERENCE)
+  monthlyGrocery        Decimal             @default(0) @db.Decimal(8, 2)
+  monthlyGas            Decimal             @default(0) @db.Decimal(8, 2)
+  monthlyDining         Decimal             @default(0) @db.Decimal(8, 2)
+  monthlyBills          Decimal             @default(0) @db.Decimal(8, 2)
+  monthlyTravel         Decimal             @default(0) @db.Decimal(8, 2)
+  monthlyShopping       Decimal             @default(0) @db.Decimal(8, 2)
+  monthlyOther          Decimal             @default(0) @db.Decimal(8, 2)
+  travelGoals           Json?
+  maxAnnualFee          Decimal?            @db.Decimal(8, 2)
+  prioritizeSignupBonus Boolean             @default(true)
+  timeHorizon           String              @default("LONG_TERM")
+  isComplete            Boolean             @default(false)
+  lastUpdated           DateTime            @default(now())
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime
+  User                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([creditScoreRange])
+  @@index([isComplete])
+  @@index([preferredRewardType])
+  @@index([userId])
+}
+
+model Waitlist {
+  id        String   @id
+  email     String   @unique
+  name      String?
+  source    String   @default("homepage")
+  status    String   @default("pending")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@index([createdAt])
+  @@index([email])
+  @@index([status])
+}
+
+enum AuditCategory {
+  AUTHENTICATION
+  AUTHORIZATION
+  DATA_ACCESS
+  DATA_MODIFICATION
+  SYSTEM_CONFIGURATION
+  FINANCIAL_CALCULATION
+  TOKEN_MANAGEMENT
+}
+
+enum AuditSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
 enum CardNetwork {
   VISA
   MASTERCARD
@@ -18,20 +547,23 @@ enum CardNetwork {
   DISCOVER
 }
 
-// Enum for spending categories with multipliers
-enum SpendingCategory {
-  GROCERY
-  GAS
-  DINING
-  TRAVEL
-  RECURRING
-  ENTERTAINMENT
-  SHOPPING
-  UTILITIES
-  OTHER
+enum CreditScoreRange {
+  EXCELLENT
+  GOOD
+  FAIR
+  POOR
 }
 
-// Enum for point types/programs
+enum PerformanceMetricType {
+  RESPONSE_TIME
+  DATABASE_QUERY_TIME
+  MEMORY_USAGE
+  CPU_USAGE
+  ERROR_RATE
+  THROUGHPUT
+  CACHE_HIT_RATE
+}
+
 enum PointType {
   AEROPLAN
   AVION
@@ -46,79 +578,54 @@ enum PointType {
   OTHER
 }
 
-// Main Card model
-model Card {
-  id           String   @id @default(cuid())
-  name         String
-  bank         String
-  network      CardNetwork
-  annualFee    Decimal  @db.Decimal(10, 2)
-  currency     String   @default("CAD")
-  baseImageUrl String?
-  isActive     Boolean  @default(true)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  // Relations
-  bonuses     CardBonus[]
-  multipliers CardMultiplier[]
-
-  @@index([bank])
-  @@index([network])
-  @@index([isActive])
+enum PreferredRewardType {
+  TRAVEL_POINTS
+  CASHBACK
+  HOTEL_POINTS
+  AIRLINE_MILES
+  FLEXIBLE_POINTS
+  NO_PREFERENCE
 }
 
-// Card signup/welcome bonuses
-model CardBonus {
-  id                 String    @id @default(cuid())
-  cardId             String
-  bonusPoints        Int
-  pointType          PointType
-  minimumSpendAmount Decimal   @db.Decimal(10, 2)
-  spendPeriodMonths  Int
-  description        String?
-  isActive           Boolean   @default(true)
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @updatedAt
-
-  // Relations
-  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
-
-  @@index([cardId])
-  @@index([pointType])
+enum SecurityEventStatus {
+  OPEN
+  INVESTIGATING
+  RESOLVED
+  FALSE_POSITIVE
 }
 
-// Category-based earning multipliers
-model CardMultiplier {
-  id              String           @id @default(cuid())
-  cardId          String
-  category        SpendingCategory
-  multiplierValue Decimal          @db.Decimal(5, 2)
-  description     String?
-  isActive        Boolean          @default(true)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-
-  // Relations
-  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
-
-  @@unique([cardId, category])
-  @@index([cardId])
-  @@index([category])
+enum SecurityEventType {
+  UNAUTHORIZED_ACCESS
+  RATE_LIMIT_EXCEEDED
+  INVALID_TOKEN
+  SUSPICIOUS_ACTIVITY
+  INPUT_VALIDATION_FAILURE
+  WEBHOOK_VERIFICATION_FAILURE
+  ADMIN_ACCESS_VIOLATION
 }
 
-// User goals for point redemption
-model Goal {
-  id             String    @id @default(cuid())
-  name           String
-  requiredPoints Int
-  pointType      PointType
-  description    String?
-  estimatedValue Decimal?  @db.Decimal(10, 2)
-  isActive       Boolean   @default(true)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+enum SecuritySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
 
-  @@index([pointType])
-  @@index([isActive])
+enum SpendingCategory {
+  GROCERY
+  GAS
+  DINING
+  TRAVEL
+  RECURRING
+  ENTERTAINMENT
+  SHOPPING
+  UTILITIES
+  OTHER
+}
+
+enum TokenType {
+  PLAID_ACCESS_TOKEN
+  PLAID_REFRESH_TOKEN
+  STRIPE_CONNECT_TOKEN
+  EXTERNAL_API_TOKEN
 }
