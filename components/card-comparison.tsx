@@ -140,10 +140,10 @@ export function CardComparison({ card1, card2, aiVerdict }: CardComparisonProps)
             <CreditCard className="h-3 w-3 mr-1" />
             Card Comparison
           </Badge>
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-            <span className="text-gradient">{card1.name}</span>
-            <span className="text-muted-foreground mx-4">vs</span>
-            <span className="text-gradient">{card2.name}</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            <span className="text-gradient block sm:inline">{card1.name}</span>
+            <span className="text-muted-foreground mx-2 sm:mx-4 text-xl sm:text-3xl">vs</span>
+            <span className="text-gradient block sm:inline">{card2.name}</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             Compare rewards structure, fees, bonuses, and category fit to find the right card for your spending
@@ -151,7 +151,7 @@ export function CardComparison({ card1, card2, aiVerdict }: CardComparisonProps)
         </div>
 
         {/* Quick Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-12 max-w-5xl mx-auto">
           <Card className="glass-card">
             <CardHeader className="pb-3">
               <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
@@ -259,14 +259,14 @@ export function CardComparison({ card1, card2, aiVerdict }: CardComparisonProps)
             <CardDescription>Exact earning rates by spending category</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
+            <div className="overflow-x-auto -mx-4 sm:mx-0">
+              <table className="w-full min-w-[400px]">
                 <thead>
                   <tr className="border-b border-white/10">
-                    <th className="text-left py-4 px-4 text-sm font-medium text-muted-foreground">Category</th>
-                    <th className="text-center py-4 px-4 text-sm font-medium">{card1.name.split(" ")[0]}</th>
-                    <th className="text-center py-4 px-4 text-sm font-medium">{card2.name.split(" ")[0]}</th>
-                    <th className="text-center py-4 px-4 text-sm font-medium text-muted-foreground">Winner</th>
+                    <th className="text-left py-3 px-3 sm:py-4 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground">Category</th>
+                    <th className="text-center py-3 px-3 sm:py-4 sm:px-4 text-xs sm:text-sm font-medium">{card1.name.split(" ")[0]}</th>
+                    <th className="text-center py-3 px-3 sm:py-4 sm:px-4 text-xs sm:text-sm font-medium">{card2.name.split(" ")[0]}</th>
+                    <th className="text-center py-3 px-3 sm:py-4 sm:px-4 text-xs sm:text-sm font-medium text-muted-foreground hidden sm:table-cell">Winner</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -279,18 +279,18 @@ export function CardComparison({ card1, card2, aiVerdict }: CardComparisonProps)
                     
                     return (
                       <tr key={category} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                        <td className="py-4 px-4 text-sm capitalize">{category.toLowerCase()}</td>
-                        <td className="py-4 px-4 text-center">
+                        <td className="py-3 px-3 sm:py-4 sm:px-4 text-xs sm:text-sm capitalize">{category.toLowerCase()}</td>
+                        <td className="py-3 px-3 sm:py-4 sm:px-4 text-center">
                           <span className={card1Rate > card2Rate ? "text-primary font-bold text-lg" : "text-base"}>
                             {card1Rate}x
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-center">
+                        <td className="py-3 px-3 sm:py-4 sm:px-4 text-center">
                           <span className={card2Rate > card1Rate ? "text-primary font-bold text-lg" : "text-base"}>
                             {card2Rate}x
                           </span>
                         </td>
-                        <td className="py-4 px-4 text-center">
+                        <td className="py-3 px-3 sm:py-4 sm:px-4 text-center">
                           {card1Rate > card2Rate && (
                             <Badge variant="outline" className="border-primary/50 text-primary">
                               {card1.name.split(" ")[0]}
@@ -312,13 +312,13 @@ export function CardComparison({ card1, card2, aiVerdict }: CardComparisonProps)
                   {/* Bonus requirement */}
                   <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                     <td className="py-4 px-4 text-sm">Bonus Requirement</td>
-                    <td className="py-4 px-4 text-center text-sm">
+                    <td className="py-3 px-3 sm:py-4 sm:px-4 text-center text-xs sm:text-sm hidden sm:table-cell">
                       ${Number(card1.bonuses[0]?.minimumSpendAmount || 0).toLocaleString()} in {card1.bonuses[0]?.spendPeriodMonths || 0} months
                     </td>
-                    <td className="py-4 px-4 text-center text-sm">
+                    <td className="py-3 px-3 sm:py-4 sm:px-4 text-center text-xs sm:text-sm hidden sm:table-cell">
                       ${Number(card2.bonuses[0]?.minimumSpendAmount || 0).toLocaleString()} in {card2.bonuses[0]?.spendPeriodMonths || 0} months
                     </td>
-                    <td className="py-4 px-4 text-center">
+                    <td className="py-3 px-3 sm:py-4 sm:px-4 text-center">
                       {Number(card1.bonuses[0]?.minimumSpendAmount || 0) < Number(card2.bonuses[0]?.minimumSpendAmount || 0) && (
                         <Badge variant="outline" className="border-primary/50 text-primary text-xs">
                           Easier
@@ -335,9 +335,9 @@ export function CardComparison({ card1, card2, aiVerdict }: CardComparisonProps)
                   {/* Network */}
                   <tr className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                     <td className="py-4 px-4 text-sm">Network</td>
-                    <td className="py-4 px-4 text-center text-sm">{card1.network}</td>
-                    <td className="py-4 px-4 text-center text-sm">{card2.network}</td>
-                    <td className="py-4 px-4 text-center">
+                    <td className="py-3 px-3 sm:py-4 sm:px-4 text-center text-xs sm:text-sm hidden sm:table-cell">{card1.network}</td>
+                    <td className="py-3 px-3 sm:py-4 sm:px-4 text-center text-xs sm:text-sm hidden sm:table-cell">{card2.network}</td>
+                    <td className="py-3 px-3 sm:py-4 sm:px-4 text-center">
                       {(card1.network === "VISA" || card1.network === "MASTERCARD") && card2.network === "AMEX" && (
                         <Badge variant="outline" className="border-primary/50 text-primary text-xs">
                           More Accepted
@@ -504,7 +504,7 @@ export function CardComparison({ card1, card2, aiVerdict }: CardComparisonProps)
                   data-card-id={card1.id}
                   data-card-name={card1.name}
                   data-position="verdict_primary"
-                  className="affiliate-link flex-1 h-16 text-lg font-bold bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-[#090A0F] rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)]"
+                  className="affiliate-link flex-1 h-12 sm:h-16 text-base sm:text-lg font-bold bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-[#090A0F] rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)]"
                 >
                   <Gift className="h-5 w-5" />
                   Apply for {card1.name.split(" ")[0]} Now
@@ -517,7 +517,7 @@ export function CardComparison({ card1, card2, aiVerdict }: CardComparisonProps)
                   data-card-id={card2.id}
                   data-card-name={card2.name}
                   data-position="verdict_secondary"
-                  className="affiliate-link flex-1 h-16 text-lg font-bold border-2 border-primary/50 hover:bg-primary/10 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-105"
+                  className="affiliate-link flex-1 h-12 sm:h-16 text-base sm:text-lg font-bold border-2 border-primary/50 hover:bg-primary/10 rounded-lg flex items-center justify-center gap-2 transition-all hover:scale-105"
                 >
                   <Gift className="h-5 w-5" />
                   Apply for {card2.name.split(" ")[0]} Now

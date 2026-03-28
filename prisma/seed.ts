@@ -291,7 +291,10 @@ async function seedGoals() {
         console.log(`🔄 Updated goal: ${goal.name}`)
       } else {
         await prisma.goal.create({
-          data: goal
+          data: {
+            ...goal,
+            updatedAt: new Date()
+          }
         })
         createdGoals++
         console.log(`✅ Created goal: ${goal.name}`)

@@ -1,5 +1,5 @@
 import { UserProfileService } from '../userProfileService'
-import { CreditScoreRange } from '../../types/userProfile'
+import { CreditScoreRange, TimeHorizon } from '../../types/userProfile'
 
 // Mock Prisma
 jest.mock('../../prisma', () => ({
@@ -81,7 +81,7 @@ describe('UserProfileService', () => {
       preferredPointTypes: ['AEROPLAN'],
       maxAnnualFee: 500,
       prioritizeSignupBonus: false,
-      timeHorizon: 'SHORT_TERM' as const,
+      timeHorizon: TimeHorizon.SHORT_TERM,
       spendingProfile: {
         grocery: 1000,
         gas: 300,
@@ -99,7 +99,7 @@ describe('UserProfileService', () => {
       const createdProfile = { id: 'new-profile', userId: mockUserId, ...newProfileData }
       prisma.userProfile.create.mockResolvedValue(createdProfile)
 
-      const result = await UserProfileService.createUserProfile(mockUserId, newProfileData)
+      const result = (await UserProfileService.createUserProfile(mockUserId, newProfileData)) as any
 
       expect(prisma.userProfile.create).toHaveBeenCalledWith({
         data: {
@@ -156,7 +156,7 @@ describe('UserProfileService', () => {
       const updatedProfile = { ...mockUserProfile, ...updateData }
       prisma.userProfile.update.mockResolvedValue(updatedProfile)
 
-      const result = await UserProfileService.updateUserProfile(mockUserId, updateData)
+      const result = (await UserProfileService.updateUserProfile(mockUserId, updateData)) as any
 
       expect(prisma.userProfile.update).toHaveBeenCalledWith({
         where: { userId: mockUserId },
@@ -172,7 +172,7 @@ describe('UserProfileService', () => {
       const updatedProfile = { ...mockUserProfile, ...partialUpdate }
       prisma.userProfile.update.mockResolvedValue(updatedProfile)
 
-      const result = await UserProfileService.updateUserProfile(mockUserId, partialUpdate)
+      const result = (await UserProfileService.updateUserProfile(mockUserId, partialUpdate)) as any
 
       expect(result.annualIncome).toBe(90000)
       expect(result.creditScore).toBe(mockUserProfile.creditScore) // Unchanged
@@ -194,7 +194,7 @@ describe('UserProfileService', () => {
       preferredPointTypes: ['CASHBACK'],
       maxAnnualFee: 100,
       prioritizeSignupBonus: true,
-      timeHorizon: 'MEDIUM_TERM' as const,
+      timeHorizon: TimeHorizon.MEDIUM_TERM,
       spendingProfile: {
         grocery: 600,
         gas: 150,
@@ -212,7 +212,7 @@ describe('UserProfileService', () => {
       const createdProfile = { id: 'new-profile', userId: mockUserId, ...upsertData }
       prisma.userProfile.upsert.mockResolvedValue(createdProfile)
 
-      const result = await UserProfileService.upsertUserProfile(mockUserId, upsertData)
+      const result = (await UserProfileService.upsertUserProfile(mockUserId, upsertData)) as any
 
       expect(prisma.userProfile.upsert).toHaveBeenCalledWith({
         where: { userId: mockUserId },
@@ -231,7 +231,7 @@ describe('UserProfileService', () => {
       const updatedProfile = { ...mockUserProfile, ...upsertData }
       prisma.userProfile.upsert.mockResolvedValue(updatedProfile)
 
-      const result = await UserProfileService.upsertUserProfile(mockUserId, upsertData)
+      const result = (await UserProfileService.upsertUserProfile(mockUserId, upsertData)) as any
 
       expect(result.annualIncome).toBe(60000)
       expect(result.maxAnnualFee).toBe(100)
@@ -246,7 +246,7 @@ describe('UserProfileService', () => {
         preferredPointTypes: ['CASHBACK'],
         maxAnnualFee: 0,
         prioritizeSignupBonus: false,
-        timeHorizon: 'SHORT_TERM' as const,
+        timeHorizon: TimeHorizon.SHORT_TERM,
         spendingProfile: {
           grocery: 0,
           gas: 0,
@@ -263,7 +263,7 @@ describe('UserProfileService', () => {
       const createdProfile = { id: 'zero-spend-profile', userId: mockUserId, ...zeroSpendingProfile }
       prisma.userProfile.create.mockResolvedValue(createdProfile)
 
-      const result = await UserProfileService.createUserProfile(mockUserId, zeroSpendingProfile)
+      const result = (await UserProfileService.createUserProfile(mockUserId, zeroSpendingProfile)) as any
 
       expect(result.spendingProfile.grocery).toBe(0)
       expect(result.maxAnnualFee).toBe(0)
@@ -276,7 +276,7 @@ describe('UserProfileService', () => {
         preferredPointTypes: ['AEROPLAN', 'MEMBERSHIP_REWARDS'],
         maxAnnualFee: 2000,
         prioritizeSignupBonus: true,
-        timeHorizon: 'LONG_TERM' as const,
+        timeHorizon: TimeHorizon.LONG_TERM,
         spendingProfile: {
           grocery: 10000,
           gas: 2000,
@@ -293,7 +293,7 @@ describe('UserProfileService', () => {
       const createdProfile = { id: 'high-spend-profile', userId: mockUserId, ...highSpendingProfile }
       prisma.userProfile.create.mockResolvedValue(createdProfile)
 
-      const result = await UserProfileService.createUserProfile(mockUserId, highSpendingProfile)
+      const result = (await UserProfileService.createUserProfile(mockUserId, highSpendingProfile)) as any
 
       expect(result.spendingProfile.travel).toBe(15000)
       expect(result.annualIncome).toBe(500000)
@@ -303,17 +303,17 @@ describe('UserProfileService', () => {
       const profileWithEmptyPointTypes = {
         creditScore: CreditScoreRange.GOOD,
         annualIncome: 70000,
-        preferredPointTypes: [],
+        preferredPointTypes: [] as string[],
         maxAnnualFee: 150,
         prioritizeSignupBonus: false,
-        timeHorizon: 'MEDIUM_TERM' as const,
+        timeHorizon: TimeHorizon.MEDIUM_TERM,
         spendingProfile: mockUserProfile.spendingProfile
       }
 
       const createdProfile = { id: 'empty-points-profile', userId: mockUserId, ...profileWithEmptyPointTypes }
       prisma.userProfile.create.mockResolvedValue(createdProfile)
 
-      const result = await UserProfileService.createUserProfile(mockUserId, profileWithEmptyPointTypes)
+      const result = (await UserProfileService.createUserProfile(mockUserId, profileWithEmptyPointTypes)) as any
 
       expect(result.preferredPointTypes).toEqual([])
     })
@@ -340,7 +340,7 @@ describe('UserProfileService', () => {
     it('should preserve data types correctly', async () => {
       prisma.userProfile.findUnique.mockResolvedValue(mockUserProfile)
 
-      const result = await UserProfileService.getUserProfile(mockUserId)
+      const result = (await UserProfileService.getUserProfile(mockUserId)) as any
 
       expect(typeof result?.annualIncome).toBe('number')
       expect(typeof result?.maxAnnualFee).toBe('number')
@@ -358,7 +358,7 @@ describe('UserProfileService', () => {
 
       prisma.userProfile.findUnique.mockResolvedValue(profileWithNulls)
 
-      const result = await UserProfileService.getUserProfile(mockUserId)
+      const result = (await UserProfileService.getUserProfile(mockUserId)) as any
 
       expect(result?.maxAnnualFee).toBeNull()
       expect(result?.preferredPointTypes).toBeNull()

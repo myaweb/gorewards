@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Navigation } from "@/components/navigation";
 import { Footer } from "@/components/footer";
+import { ConditionalShell } from "@/components/conditional-shell";
 import { ClerkProvider } from '@clerk/nextjs';
 import { dark } from '@clerk/themes';
 import { PostHogProvider } from './providers';
@@ -67,8 +68,8 @@ export default function RootLayout({
           colorInputText: '#ffffff',
         },
       }}
-      signUpFallbackRedirectUrl="/dashboard"
-      signInFallbackRedirectUrl="/dashboard"
+      signUpFallbackRedirectUrl="/users"
+      signInFallbackRedirectUrl="/users"
     >
       <html lang="en" className="dark">
         <head>
@@ -89,13 +90,9 @@ export default function RootLayout({
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" />
               </div>
               
-              <Navigation />
-              
-              <main className="pt-16">
+              <ConditionalShell>
                 {children}
-              </main>
-
-              <Footer />
+              </ConditionalShell>
             </div>
           </PostHogProvider>
         </body>

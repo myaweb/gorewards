@@ -131,20 +131,51 @@ export function CardOptimizationDisplay({ onRefresh }: CardOptimizationDisplayPr
   }
 
   if (error) {
+    const isNoCards = error.toLowerCase().includes('no active cards') || error.toLowerCase().includes('no cards')
+    const isNoProfile = error.toLowerCase().includes('profile') || error.toLowerCase().includes('spending')
+
     return (
-      <Card className="border-destructive/50">
+      <Card className="glass-premium border-primary/20">
         <CardContent className="flex flex-col items-center justify-center py-12 px-6 text-center space-y-4">
-          <div className="rounded-full bg-destructive/10 p-4">
-            <AlertCircle className="h-8 w-8 text-destructive" />
+          <div className="rounded-full bg-primary/10 p-4">
+            <AlertCircle className="h-8 w-8 text-primary" />
           </div>
           <div>
-            <h3 className="font-semibold text-lg mb-2">Unable to load optimization</h3>
-            <p className="text-sm text-muted-foreground max-w-sm">{error}</p>
+            <h3 className="font-semibold text-lg mb-2">
+              {isNoCards ? 'No cards in your portfolio' : isNoProfile ? 'Spending profile incomplete' : 'Unable to load optimization'}
+            </h3>
+            <p className="text-sm text-muted-foreground max-w-sm">
+              {isNoCards
+                ? 'Add your credit cards to your portfolio first, then we can show which card to use for each category.'
+                : isNoProfile
+                ? 'Complete your spending profile so we can calculate the best card for each category.'
+                : error}
+            </p>
           </div>
-          <Button onClick={handleRefresh} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Retry
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-3">
+            {isNoCards && (
+              <Button asChild size="sm" className="bg-primary/20 hover:bg-primary/30 text-primary border-0">
+                 <a href="/users/cards">
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          Add Cards
+                        </a>
+              </Button>
+            )}
+            {isNoProfile && (
+              <Button asChild size="sm" className="bg-primary/20 hover:bg-primary/30 text-primary border-0">
+                <a href="/users/profile">
+                  <Calculator className="h-4 w-4 mr-2" />
+                  Set Up Profile
+                </a>
+              </Button>
+            )}
+            {!isNoCards && !isNoProfile && (
+              <Button onClick={handleRefresh} variant="outline" size="sm">
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Retry
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     )

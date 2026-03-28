@@ -10,15 +10,16 @@ import { securityHeaders } from './lib/middleware/securityHeaders'
 
 // Define protected routes that require authentication
 const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
+  '/users(.*)',
   '/admin(.*)',
-  '/test-user-profile(.*)',
 ])
 
 export default clerkMiddleware((auth, request) => {
   // Protect specific routes
   if (isProtectedRoute(request)) {
-    auth().protect()
+    auth().protect({
+      unauthenticatedUrl: new URL('/sign-in', request.url).toString(),
+    })
   }
 
   // Create response

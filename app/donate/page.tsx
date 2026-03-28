@@ -13,7 +13,7 @@ export default async function BillingPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pt-2 pb-16">
       <div className="container max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="mb-10">
@@ -43,7 +43,7 @@ export default async function BillingPage() {
           </Card>
 
           {/* Donate Options */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <Card className="glass-premium border-white/[0.08] hover:border-primary/30 transition-all">
               <CardContent className="p-6 text-center">
                 <Coffee className="h-8 w-8 text-primary mx-auto mb-3" />

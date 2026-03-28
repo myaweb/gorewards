@@ -15,6 +15,9 @@ export interface RoadmapStep {
   month: number
   cardId: string
   cardName: string
+  cardImageUrl?: string | null
+  cardBank?: string
+  cardNetwork?: string
   action: 'APPLY' | 'USE'
   categoryAllocations: {
     category: keyof SpendingProfile

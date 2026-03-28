@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Sparkles, ArrowRight, Zap, Loader2 } from 'lucide-react'
+import { CardImage } from '@/components/card-image'
 
 interface CardData {
   id: string
@@ -87,11 +88,18 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
   const handleSelectCard1 = (cardId: string) => {
     const card = cards.find(c => c.id === cardId)
     setCard1(card || null)
+    // Scroll to Card B slot after a short delay
+    setTimeout(() => {
+      document.getElementById('card-b-slot')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 150)
   }
 
   const handleSelectCard2 = (cardId: string) => {
     const card = cards.find(c => c.id === cardId)
     setCard2(card || null)
+    setTimeout(() => {
+      document.getElementById('compare-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }, 150)
   }
 
   // Handle compare button click
@@ -104,29 +112,14 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
     const slug2 = slugify(card2.name)
     const comparisonUrl = `/compare/${slug1}-vs-${slug2}`
     
-    router.push(comparisonUrl)
+    // Use window.location for hard navigation to avoid soft-nav stalling on loading.tsx
+    window.location.href = comparisonUrl
   }
 
   const isCompareEnabled = card1 !== null && card2 !== null
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="text-center mb-12 max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-premium border border-primary/20 mb-6">
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium">Side-by-Side Comparison</span>
-        </div>
-        
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-          <span className="text-gradient">Compare Credit Cards</span>
-        </h1>
-        
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          Select two cards to compare annual fees, rewards rates, welcome bonuses, and category multipliers. See which card delivers better value for your spending.
-        </p>
-      </div>
-
       {/* 2-Slot Selector */}
       <div className="max-w-5xl mx-auto">
         <Card className="glass-premium border-primary/30 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
@@ -141,11 +134,13 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
                 {card1 ? (
                   <div className="space-y-4">
                     {/* Card Preview */}
-                    <div className="relative aspect-[1.586/1] w-full rounded-lg overflow-hidden bg-gradient-to-br from-primary/20 to-cyan-500/10 border border-primary/30">
-                      <img
-                        src={card1.imageUrl || '/images/placeholder-card.svg'}
-                        alt={card1.name}
-                        className="w-full h-full object-contain p-4"
+                    <div className="relative aspect-[1.586/1] w-full rounded-lg overflow-hidden">
+                      <CardImage
+                        name={card1.name}
+                        bank={card1.bank}
+                        network={card1.network}
+                        imageUrl={card1.imageUrl}
+                        className="w-full h-full rounded-lg"
                       />
                     </div>
                     
@@ -203,20 +198,6 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {/* Empty State */}
-                    <div className="aspect-[1.586/1] w-full rounded-lg border-2 border-dashed border-primary/20 flex items-center justify-center bg-gradient-to-br from-primary/5 to-transparent">
-                      <div className="text-center p-6">
-                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                          <Zap className="h-8 w-8 text-primary/60" />
-                        </div>
-                        <p className="text-sm font-medium mb-2">Select your first card</p>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          You'll see fees, rewards rates, and category multipliers
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Card Selection */}
                     <Select onValueChange={handleSelectCard1}>
                       <SelectTrigger className="glass-premium border-primary/20 h-12">
                         <SelectValue placeholder="Choose Card A..." />
@@ -255,7 +236,7 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
               </div>
 
               {/* Card Slot 2 */}
-              <div className="space-y-4">
+              <div id="card-b-slot" className="space-y-4">
                 <div className="text-center mb-4">
                   <h3 className="text-lg font-semibold text-primary mb-2">Card B</h3>
                 </div>
@@ -263,11 +244,13 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
                 {card2 ? (
                   <div className="space-y-4">
                     {/* Card Preview */}
-                    <div className="relative aspect-[1.586/1] w-full rounded-lg overflow-hidden bg-gradient-to-br from-primary/20 to-cyan-500/10 border border-primary/30">
-                      <img
-                        src={card2.imageUrl || '/images/placeholder-card.svg'}
-                        alt={card2.name}
-                        className="w-full h-full object-contain p-4"
+                    <div className="relative aspect-[1.586/1] w-full rounded-lg overflow-hidden">
+                      <CardImage
+                        name={card2.name}
+                        bank={card2.bank}
+                        network={card2.network}
+                        imageUrl={card2.imageUrl}
+                        className="w-full h-full rounded-lg"
                       />
                     </div>
                     
@@ -325,20 +308,6 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {/* Empty State */}
-                    <div className="aspect-[1.586/1] w-full rounded-lg border-2 border-dashed border-primary/20 flex items-center justify-center bg-gradient-to-br from-primary/5 to-transparent">
-                      <div className="text-center p-6">
-                        <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                          <Zap className="h-8 w-8 text-primary/60" />
-                        </div>
-                        <p className="text-sm font-medium mb-2">Select your second card</p>
-                        <p className="text-xs text-muted-foreground leading-relaxed">
-                          Compare side-by-side to find the better fit
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {/* Card Selection */}
                     <Select onValueChange={handleSelectCard2}>
                       <SelectTrigger className="glass-premium border-primary/20 h-12">
                         <SelectValue placeholder="Choose Card B..." />
@@ -368,7 +337,7 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
             </div>
 
             {/* Compare Button */}
-            <div className="mt-8 flex flex-col items-center gap-3">
+            <div id="compare-btn" className="mt-8 flex flex-col items-center gap-3">
               {!isCompareEnabled && (
                 <p className="text-sm text-muted-foreground">
                   Select two cards to view detailed comparison
@@ -388,7 +357,7 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
                 ) : (
                   <>
                     Compare Cards
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    <ArrowRight className="ml-2 h-5 w-5 animate-[slide-x_1s_ease-in-out_infinite]" />
                   </>
                 )}
               </Button>

@@ -28,7 +28,7 @@ export default function StepReminderEmail({
   nextStepAction = 'Apply',
   nextStepCardName = 'Premium Card',
   totalProgress = 0,
-  dashboardUrl = 'https://creditrich.net/dashboard',
+  dashboardUrl = 'https://creditrich.net/users',
 }: StepReminderEmailProps) {
   return (
     <Html>

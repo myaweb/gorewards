@@ -67,8 +67,8 @@ export default function OptimizationReportEmail({
   totalMonthlyRewards = 0,
   totalYearlyRewards = 0,
   bestOverallCard = null,
-  dashboardUrl = 'https://creditrich.net/dashboard',
-  optimizationUrl = 'https://creditrich.net/dashboard/optimization',
+  dashboardUrl = 'https://creditrich.net/users',
+  optimizationUrl = 'https://creditrich.net/users/optimization',
 }: OptimizationReportEmailProps) {
   const monthlyDollars = (totalMonthlyRewards / 100).toFixed(2)
   const yearlyDollars = (totalYearlyRewards / 100).toFixed(2)

@@ -1,0 +1,16 @@
+﻿   Ôû▓ Next.js 14.1.0
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+npx : uncaughtException [Error: EPERM: operation not permitted, open 'C:\wamp64\www\creditrich\.next\trace'] {
+At line:1 char:1
++ npx next build 2>&1 | Out-File -FilePath "build-errors.txt" -Encoding ...
++ ~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (uncaughtExcepti....next\trace'] {:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'open',
+  path: 'C:\\wamp64\\www\\creditrich\\.next\\trace'
+}

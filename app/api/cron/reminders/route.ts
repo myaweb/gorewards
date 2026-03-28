@@ -98,7 +98,7 @@ async function sendReminderEmail(
     }
 
     const progress = calculateProgress(roadmapData)
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://creditrich.net'}/dashboard`
+    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://creditrich.net'}/users`
 
     const emailHtml = await render(
       StepReminderEmail({

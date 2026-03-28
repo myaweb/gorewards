@@ -18,7 +18,7 @@ export default function BillingError({
   }, [error])
 
   return (
-    <div className="min-h-screen pt-24 pb-12">
+    <div className="min-h-screen pt-2 pb-12">
       <div className="container max-w-4xl mx-auto px-4">
         <Card className="glass-premium border-red-500/20">
           <CardHeader>
@@ -57,7 +57,7 @@ export default function BillingError({
                 className="flex-1 border-white/10"
                 asChild
               >
-                <Link href="/dashboard">
+                <Link href="/users">
                   <Home className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Link>

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { PlaidSection } from '@/components/plaid-section'
 import { BetaFeedbackWidget } from '@/components/beta-feedback-widget'
-import { Sparkles, Building2, CheckCircle2, Target, TrendingUp, CreditCard, Zap, ArrowRight, ChevronRight } from 'lucide-react'
+import { Sparkles, Building2, CheckCircle2, Target, TrendingUp, CreditCard, ArrowRight, ChevronRight } from 'lucide-react'
 import { StrategyKanban } from '@/components/strategy-kanban'
 import Link from 'next/link'
 
@@ -64,7 +64,7 @@ function renderDashboard(
   const isNewUser = totalStrategies === 0
 
   return (
-    <div className="min-h-screen pt-24 pb-12">
+    <div className="min-h-screen pt-2 pb-12">
       <div className="container max-w-7xl mx-auto px-4">
         {/* Header - Simplified */}
         <div className="flex items-center justify-between mb-6">
@@ -138,7 +138,7 @@ function renderDashboard(
             {/* Progressive Onboarding Steps */}
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-3 text-white">Setup Progress</h2>
-              <div className="grid gap-4 lg:grid-cols-3">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {/* Step 1: Active - Financial Profile */}
                 <Card className="glass-premium border-primary/30 relative">
                   <div className="absolute -top-2 -left-2 w-7 h-7 rounded-full bg-gradient-to-br from-primary to-cyan-400 flex items-center justify-center text-xs font-bold text-[#090A0F] shadow-lg">
@@ -159,7 +159,7 @@ function renderDashboard(
                         <span className="text-sm font-medium">Start here</span>
                       </div>
                       <Button size="sm" className="bg-primary/20 hover:bg-primary/30 text-primary border-0" asChild>
-                        <Link href="/test-user-profile">
+                        <Link href="/users/profile">
                           Set Up
                           <ArrowRight className="ml-1 h-3 w-3" />
                         </Link>
@@ -216,25 +216,13 @@ function renderDashboard(
               </div>
             </div>
 
-            {/* Account Status - Compact */}
-            <Card className="glass-premium border-primary/20 mb-6">
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Badge variant="outline" className="border-primary/30 text-primary">Free for Everyone</Badge>
-                    <span className="text-sm text-muted-foreground">All features included</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </>
-        )}
+          </>        )}
 
         {/* Active User Experience: Strategies First */}
         {!isNewUser && (
           <>
             {/* Stats Overview - Compact */}
-            <div className="grid gap-4 md:grid-cols-4 mb-6">
+            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 mb-6">
               <Card className="glass-premium border-primary/20">
                 <CardContent className="py-4">
                   <div className="flex items-center justify-between">
@@ -285,8 +273,8 @@ function renderDashboard(
             {/* Quick Actions - Secondary */}
             <div className="mb-6">
               <h2 className="text-lg font-semibold mb-3 text-white">Quick Actions</h2>
-              <div className="grid gap-3 md:grid-cols-3">
-                <Link href="/test-user-profile">
+              <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                <Link href="/users/profile">
                   <Card className="glass-premium border-primary/20 hover:border-primary/40 transition-all cursor-pointer h-full">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3">
@@ -302,7 +290,7 @@ function renderDashboard(
                   </Card>
                 </Link>
 
-                <Link href="/dashboard/cards">
+                <Link href="/users/cards">
                   <Card className="glass-premium border-primary/20 hover:border-primary/40 transition-all cursor-pointer h-full">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3">
@@ -318,7 +306,7 @@ function renderDashboard(
                   </Card>
                 </Link>
 
-                <Link href="/dashboard/optimization">
+                <Link href="/users/optimization">
                   <Card className="glass-premium border-primary/20 hover:border-primary/40 transition-all cursor-pointer h-full">
                     <CardContent className="p-4">
                       <div className="flex items-center gap-3">
@@ -327,7 +315,7 @@ function renderDashboard(
                         </div>
                         <div>
                           <h3 className="font-semibold text-sm">Optimize Usage</h3>
-                          <p className="text-xs text-muted-foreground">Category matching</p>
+                          <p className="text-xs text-muted-foreground">Category matching + email report</p>
                         </div>
                       </div>
                     </CardContent>
@@ -338,35 +326,22 @@ function renderDashboard(
           </>
         )}
 
-        {/* Bank Connections */}
-        <Card className="glass-premium border-white/10 mb-6">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CardTitle className="text-sm">Bank Connections</CardTitle>
-                <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30 text-xs">
-                  Beta
-                </Badge>
+        {/* Bank Connections - Minimal */}
+        <Card className="glass-premium border-white/5 mb-6">
+          <CardContent className="py-3 px-4">
+            <div className="flex items-center gap-3">
+              <Building2 className="h-4 w-4 text-gray-500 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 font-medium">Bank Connection</span>
+                  <Badge variant="outline" className="bg-cyan-500/10 text-cyan-400 border-cyan-500/30 text-[10px] px-1.5 py-0">Beta</Badge>
+                </div>
+                <p className="text-[10px] text-gray-600 mt-0.5">Transaction insights coming soon</p>
               </div>
-            </div>
-            <CardDescription className="text-xs">
-              Connect your bank — transaction insights coming soon
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              <div className="p-2.5 rounded-lg bg-cyan-500/10 border border-cyan-500/30">
-                <p className="text-xs text-gray-300">
-                  <span className="font-semibold text-cyan-400">Beta:</span> You can connect your bank now. 
-                  Automatic transaction tracking is in development.
-                </p>
-              </div>
-              
               <PlaidSection linkedAccounts={dbUser.linkedAccounts} />
             </div>
           </CardContent>
         </Card>
-
         {/* Beta Feedback - Bottom of Page */}
         <div>
           <BetaFeedbackWidget />

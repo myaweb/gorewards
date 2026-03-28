@@ -83,7 +83,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                       const val = Math.max(0, Number(e.target.value) || 0)
                       setGrocery(val)
                     }}
-                    className="w-20 text-lg bg-transparent outline-none text-right"
+                    className="w-16 sm:w-20 text-base sm:text-lg bg-transparent outline-none text-right"
                     disabled={isLoading}
                   />
                 </div>
@@ -92,7 +92,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                     type="button"
                     onClick={() => setGrocery(grocery + 50)}
                     disabled={isLoading}
-                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-5 w-7 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
@@ -102,7 +102,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                     type="button"
                     onClick={() => setGrocery(Math.max(0, grocery - 50))}
                     disabled={isLoading}
-                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-5 w-7 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
@@ -138,7 +138,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                       const val = Math.max(0, Number(e.target.value) || 0)
                       setGas(val)
                     }}
-                    className="w-20 text-lg bg-transparent outline-none text-right"
+                    className="w-16 sm:w-20 text-base sm:text-lg bg-transparent outline-none text-right"
                     disabled={isLoading}
                   />
                 </div>
@@ -147,7 +147,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                     type="button"
                     onClick={() => setGas(gas + 25)}
                     disabled={isLoading}
-                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-5 w-7 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
@@ -157,7 +157,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                     type="button"
                     onClick={() => setGas(Math.max(0, gas - 25))}
                     disabled={isLoading}
-                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-5 w-7 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
@@ -193,7 +193,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                       const val = Math.max(0, Number(e.target.value) || 0)
                       setDining(val)
                     }}
-                    className="w-20 text-lg bg-transparent outline-none text-right"
+                    className="w-16 sm:w-20 text-base sm:text-lg bg-transparent outline-none text-right"
                     disabled={isLoading}
                   />
                 </div>
@@ -202,7 +202,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                     type="button"
                     onClick={() => setDining(dining + 50)}
                     disabled={isLoading}
-                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-5 w-7 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
@@ -212,7 +212,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                     type="button"
                     onClick={() => setDining(Math.max(0, dining - 50))}
                     disabled={isLoading}
-                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-5 w-7 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
@@ -248,7 +248,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                       const val = Math.max(0, Number(e.target.value) || 0)
                       setBills(val)
                     }}
-                    className="w-20 text-lg bg-transparent outline-none text-right"
+                    className="w-16 sm:w-20 text-base sm:text-lg bg-transparent outline-none text-right"
                     disabled={isLoading}
                   />
                 </div>
@@ -257,7 +257,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                     type="button"
                     onClick={() => setBills(bills + 50)}
                     disabled={isLoading}
-                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-5 w-7 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 15l7-7 7 7" />
@@ -267,7 +267,7 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
                     type="button"
                     onClick={() => setBills(Math.max(0, bills - 50))}
                     disabled={isLoading}
-                    className="h-3 w-5 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="h-5 w-7 flex items-center justify-center rounded-sm bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-3 h-3 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />

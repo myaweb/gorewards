@@ -55,9 +55,10 @@ export async function updateCardAffiliateLink(cardId: string, affiliateLink: str
 
     // Validate image URL format if provided
     if (imageUrl && imageUrl.trim() !== '') {
-      try {
-        new URL(imageUrl)
-      } catch {
+      const trimmed = imageUrl.trim()
+      const isRelative = trimmed.startsWith('/')
+      const isAbsolute = (() => { try { new URL(trimmed); return true } catch { return false } })()
+      if (!isRelative && !isAbsolute) {
         return {
           success: false,
           error: 'Invalid image URL format',

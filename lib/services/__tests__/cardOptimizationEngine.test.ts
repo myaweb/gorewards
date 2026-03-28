@@ -23,8 +23,6 @@ describe('CardOptimizationEngine', () => {
     bills: 150,
     travel: 100,
     shopping: 200,
-    entertainment: 50,
-    utilities: 100,
     other: 50
   }
 
@@ -329,7 +327,7 @@ describe('CardOptimizationEngine', () => {
       })
 
       const maxCount = Math.max(...cardCounts.values())
-      expect(result.summary.bestOverallCard.categoriesCount).toBe(maxCount)
+      expect(result.summary.bestOverallCard?.categoriesCount).toBe(maxCount)
     })
   })
 })

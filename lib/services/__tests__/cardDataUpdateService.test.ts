@@ -116,7 +116,7 @@ describe('CardDataUpdateService', () => {
       const result = await CardDataUpdateService.createUpdate(updateData)
 
       expect(result.updateType).toBe(UpdateType.BONUS_UPDATE)
-      expect(result.updateData.bonusPoints).toBe(50000)
+      expect((result as any).updateData.bonusPoints).toBe(50000)
     })
 
     it('should create multiplier update record', async () => {
@@ -146,7 +146,7 @@ describe('CardDataUpdateService', () => {
       const result = await CardDataUpdateService.createUpdate(updateData)
 
       expect(result.updateType).toBe(UpdateType.MULTIPLIER_UPDATE)
-      expect(result.updateData.category).toBe('GROCERY')
+      expect((result as any).updateData.category).toBe('GROCERY')
     })
 
     it('should handle validation errors', async () => {
@@ -444,7 +444,7 @@ describe('CardDataUpdateService', () => {
       const result = await CardDataUpdateService.processUpdate('update-1')
 
       expect(result.status).toBe(UpdateStatus.FAILED)
-      expect(result.errorMessage).toContain('Invalid update data')
+      expect((result as any).errorMessage).toContain('Invalid update data')
     })
 
     it('should handle concurrent processing attempts', async () => {
@@ -484,7 +484,7 @@ describe('CardDataUpdateService', () => {
       const result = await CardDataUpdateService.processUpdate('update-1')
 
       expect(result.status).toBe(UpdateStatus.FAILED)
-      expect(result.errorMessage).toContain('Invalid data type')
+      expect((result as any).errorMessage).toContain('Invalid data type')
     })
   })
 

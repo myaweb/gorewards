@@ -20,7 +20,7 @@ export default async function CardsPage() {
       userCards: {
         where: { isActive: true },
         include: {
-          bonusProgress: {
+          bonusProgresses: {
             where: { isCompleted: false },
           },
         },
@@ -30,17 +30,17 @@ export default async function CardsPage() {
 
   const totalCards = dbUser?.userCards?.length || 0
   const activeBonuses = dbUser?.userCards?.reduce(
-    (sum: number, card: any) => sum + (card.bonusProgress?.length || 0),
+    (sum: number, card: any) => sum + (card.bonusProgresses?.length || 0),
     0
   ) || 0
 
   return (
-    <div className="min-h-screen pt-24 pb-12">
+    <div className="min-h-screen pt-2 pb-12">
       <div className="container max-w-7xl mx-auto px-4">
         {/* Breadcrumb Navigation */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
           <Link 
-            href="/dashboard" 
+            href="/users" 
             className="hover:text-primary transition-colors"
           >
             Dashboard
@@ -59,39 +59,6 @@ export default async function CardsPage() {
             Keep your portfolio organized for optimal reward optimization.
           </p>
         </div>
-
-        {/* Portfolio Summary */}
-        {totalCards > 0 && (
-          <div className="grid gap-4 md:grid-cols-2 mb-8">
-            <Card className="glass-premium border-primary/20">
-              <CardContent className="py-5">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    <CreditCard className="h-6 w-6 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Total Cards</p>
-                    <p className="text-3xl font-bold">{totalCards}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="glass-premium border-primary/20">
-              <CardContent className="py-5">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                    <TrendingUp className="h-6 w-6 text-cyan-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Active Bonuses</p>
-                    <p className="text-3xl font-bold">{activeBonuses}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
 
         {/* Main Portfolio Component */}
         <UserCardPortfolio />

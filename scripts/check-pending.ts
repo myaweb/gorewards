@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 async function main() {
   const updates = await prisma.updateRecord.findMany({
     where: { status: 'PENDING' },
-    include: { card: { select: { name: true } }, batch: { select: { name: true } } },
+    include: { card: { select: { name: true } }, updateBatch: { select: { name: true } } },
     orderBy: { createdAt: 'desc' },
   })
 
@@ -26,7 +26,7 @@ async function main() {
   // Show batch breakdown
   const batches: Record<string, number> = {}
   updates.forEach(u => {
-    batches[u.batch.name] = (batches[u.batch.name] || 0) + 1
+    batches[u.updateBatch.name] = (batches[u.updateBatch.name] || 0) + 1
   })
   console.log('\nBatches:')
   Object.entries(batches).forEach(([name, count]) => console.log(`  ${count} updates in "${name}"`))

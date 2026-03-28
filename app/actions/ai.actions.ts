@@ -110,10 +110,12 @@ Focus on practical advice that helps readers make informed decisions.`
     // Save to database
     const savedComparison = await prisma.cardComparison.create({
       data: {
+        id: require('crypto').randomUUID(),
         slug,
         cardAId: cardA.id,
         cardBId: cardB.id,
         aiVerdictText,
+        updatedAt: new Date(),
       },
     })
 

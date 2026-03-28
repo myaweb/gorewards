@@ -14,7 +14,13 @@ import {
   CheckCircle2,
   ArrowRight
 } from "lucide-react"
+import { CardImage } from "@/components/card-image"
 import Link from "next/link"
+
+// Determine if card earns cashback or points based on bonus point type
+function isCashbackCard(bonuses: any[]): boolean {
+  return bonuses.some((b) => b.pointType === 'CASHBACK')
+}
 
 interface CardPageProps {
   params: {
@@ -176,6 +182,7 @@ export default async function CardPage({ params }: CardPageProps) {
   }
 
   const bonus = card.bonuses[0]
+  const cashback = isCashbackCard(card.bonuses)
   const topMultipliers = card.multipliers
     .sort((a: any, b: any) => Number(b.multiplierValue) - Number(a.multiplierValue))
     .slice(0, 5)
@@ -189,12 +196,14 @@ export default async function CardPage({ params }: CardPageProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
               {/* Card Image */}
               <div className="flex justify-center">
-                <div className="relative w-full max-w-[400px]">
+                <div className="relative w-full max-w-[400px] flex items-center justify-center">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-cyan-400/20 rounded-2xl blur-3xl" />
-                  <img
-                    src={card.imageUrl || '/images/placeholder-card.svg'}
-                    alt={card.name}
-                    className="relative w-full h-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300"
+                  <CardImage
+                    name={card.name}
+                    bank={card.bank}
+                    network={card.network}
+                    imageUrl={card.imageUrl}
+                    className="relative w-full max-w-[320px] h-48 hover:scale-105 transition-transform duration-300 drop-shadow-2xl"
                   />
                 </div>
               </div>
@@ -227,14 +236,14 @@ export default async function CardPage({ params }: CardPageProps) {
                         <Gift className="h-4 w-4 text-primary" />
                         <span className="text-xs text-muted-foreground">Welcome Bonus</span>
                       </div>
-                      <div className="text-2xl font-bold">{(bonus.bonusPoints / 1000).toFixed(0)}K</div>
+                      <div className="text-2xl font-bold">${Number(bonus.estimatedValue || 0).toLocaleString()}</div>
                     </div>
                   )}
                 </div>
 
                 {/* CTA Button */}
                 <a
-                  href={`/api/go/${createSlug(card.name)}`}
+                  href={`/go/${createSlug(card.name)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 w-full h-14 text-lg font-bold bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-[#090A0F] rounded-lg transition-all hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)]"
@@ -261,11 +270,11 @@ export default async function CardPage({ params }: CardPageProps) {
               </CardHeader>
               <CardContent>
                 <div className="glass-premium p-6 rounded-xl">
-                  <div className="text-5xl font-bold text-gradient-teal mb-3">
-                    {bonus.bonusPoints.toLocaleString()}
+                  <div className="text-5xl font-bold text-gradient-teal mb-1">
+                    ${Number(bonus.estimatedValue || 0).toLocaleString()}
                   </div>
                   <div className="text-lg text-muted-foreground mb-4">
-                    {bonus.pointType.replace(/_/g, " ")} points
+                    Welcome bonus value
                   </div>
                   <div className="flex items-start gap-3 p-4 glass rounded-lg">
                     <CheckCircle2 className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -303,8 +312,17 @@ export default async function CardPage({ params }: CardPageProps) {
                       <span className="font-medium capitalize">{mult.category.toLowerCase().replace(/_/g, ' ')}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-primary">{Number(mult.multiplierValue)}x</span>
-                      <span className="text-sm text-muted-foreground">points</span>
+                      {cashback ? (
+                        <>
+                          <span className="text-2xl font-bold text-primary">{(Number(mult.multiplierValue) * 100).toFixed(0)}%</span>
+                          <span className="text-sm text-muted-foreground">back</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="text-2xl font-bold text-primary">{(Number(mult.multiplierValue) * 100).toFixed(0)}x</span>
+                          <span className="text-sm text-muted-foreground">pts</span>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -372,7 +390,7 @@ export default async function CardPage({ params }: CardPageProps) {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                   <a
-                    href={`/api/go/${createSlug(card.name)}`}
+                    href={`/go/${createSlug(card.name)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-2 h-14 px-8 text-lg font-bold bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-[#090A0F] rounded-lg transition-all hover:scale-105 shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)]"

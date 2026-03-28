@@ -26,18 +26,58 @@ interface UserCardPortfolioProps {
   onAddCard?: () => void
 }
 
+// Map DB spending categories to profile monthly fields
+const CATEGORY_TO_PROFILE_FIELD: Record<string, string> = {
+  GROCERY: 'monthlyGrocery',
+  GAS: 'monthlyGas',
+  DINING: 'monthlyDining',
+  RECURRING: 'monthlyBills',
+  TRAVEL: 'monthlyTravel',
+  SHOPPING: 'monthlyShopping',
+  OTHER: 'monthlyOther',
+}
+
+function calcMonthlyValue(
+  multipliers: { category: string; value: number }[] | undefined,
+  profile: Record<string, number> | null
+): number | null {
+  if (!multipliers?.length || !profile) return null
+  let total = 0
+  for (const m of multipliers) {
+    const field = CATEGORY_TO_PROFILE_FIELD[m.category]
+    const spend = field ? (profile[field] ?? 0) : 0
+    // Assume 1 point = $0.01 (1 cent), multiplier = points per dollar
+    total += spend * m.value * 0.01
+  }
+  return total > 0 ? total : null
+}
+
 export function UserCardPortfolio({ onAddCard }: UserCardPortfolioProps) {
   const { user } = useUser()
   const [loading, setLoading] = useState(false)
   const [cards, setCards] = useState<CardOwnershipStatus[]>([])
   const [showAddModal, setShowAddModal] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [spendingProfile, setSpendingProfile] = useState<Record<string, number> | null>(null)
 
   useEffect(() => {
     if (user) {
       loadCards()
+      loadProfile()
     }
   }, [user])
+
+  const loadProfile = async () => {
+    try {
+      const res = await fetch('/api/profile')
+      const data = await res.json()
+      if (data.success && data.data?.profile) {
+        setSpendingProfile(data.data.profile)
+      }
+    } catch {
+      // non-critical, silently fail
+    }
+  }
 
   const loadCards = async () => {
     setLoading(true)
@@ -122,19 +162,7 @@ export function UserCardPortfolio({ onAddCard }: UserCardPortfolioProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Card Portfolio</h2>
-          <p className="text-sm text-muted-foreground mt-1">
-            Manage your credit cards and track welcome bonuses
-          </p>
-        </div>
-        <Button onClick={handleAddCard} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          Add Card
-        </Button>
-      </div>
+      {/* Header — removed, page already has title */}
 
       {/* Error State */}
       {error && (
@@ -206,65 +234,67 @@ export function UserCardPortfolio({ onAddCard }: UserCardPortfolioProps) {
         </Card>
       ) : (
         <>
-          {/* Portfolio Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <CreditCard className="h-4 w-4 text-primary" />
+          {/* Portfolio Summary + Add Card */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-1 mr-3">
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-primary/10">
+                      <CreditCard className="h-3.5 w-3.5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold">{portfolioStats.totalCards}</p>
+                      <p className="text-[10px] text-muted-foreground">Cards</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold">{portfolioStats.totalCards}</p>
-                    <p className="text-xs text-muted-foreground">Active Cards</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-amber-500/10">
+                      <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold">{portfolioStats.activeBonuses}</p>
+                      <p className="text-[10px] text-muted-foreground">Bonuses</p>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-amber-500/10">
-                    <Sparkles className="h-4 w-4 text-amber-500" />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-green-500/10">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold">{portfolioStats.completedBonuses}</p>
+                      <p className="text-[10px] text-muted-foreground">Completed</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-2xl font-bold">{portfolioStats.activeBonuses}</p>
-                    <p className="text-xs text-muted-foreground">Active Bonuses</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-3">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-orange-500/10">
+                      <Clock className="h-3.5 w-3.5 text-orange-500" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold">{portfolioStats.upcomingFees}</p>
+                      <p className="text-[10px] text-muted-foreground">Fees Due</p>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-green-500/10">
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{portfolioStats.completedBonuses}</p>
-                    <p className="text-xs text-muted-foreground">Completed</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-orange-500/10">
-                    <Clock className="h-4 w-4 text-orange-500" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">{portfolioStats.upcomingFees}</p>
-                    <p className="text-xs text-muted-foreground">Fees Due Soon</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
+            <Button onClick={handleAddCard} size="sm" className="flex-shrink-0">
+              <Plus className="h-4 w-4 mr-1" />
+              Add Card
+            </Button>
           </div>
-
           {/* Card List */}
           <div className="grid gap-4">
             {cards.map((cardStatus) => {
@@ -283,7 +313,7 @@ export function UserCardPortfolio({ onAddCard }: UserCardPortfolioProps) {
                         <CardTitle className="text-xl mb-2 flex items-center gap-2">
                           <span className="text-2xl">{getNetworkIcon(cardStatus.network)}</span>
                           <span className="truncate">
-                            {cardStatus.cardName || `Card ending in ${cardStatus.cardId.slice(-4)}`}
+                            {cardStatus.cardName || 'Credit Card'}
                           </span>
                         </CardTitle>
                         
@@ -298,8 +328,6 @@ export function UserCardPortfolio({ onAddCard }: UserCardPortfolioProps) {
                               <span>{cardStatus.network}</span>
                             </>
                           )}
-                          <span>•</span>
-                          <span className="font-mono">••{cardStatus.cardId.slice(-4)}</span>
                         </div>
                       </div>
 
@@ -346,7 +374,9 @@ export function UserCardPortfolio({ onAddCard }: UserCardPortfolioProps) {
                             </p>
                             <p className="font-semibold text-sm">{formatDate(cardStatus.annualFeeDate)}</p>
                             {cardStatus.annualFee !== undefined && (
-                              <p className="text-xs text-muted-foreground">${cardStatus.annualFee}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {cardStatus.annualFee === 0 ? 'No annual fee' : `$${cardStatus.annualFee}/yr`}
+                              </p>
                             )}
                           </div>
                         </div>
@@ -363,6 +393,36 @@ export function UserCardPortfolio({ onAddCard }: UserCardPortfolioProps) {
                           </div>
                         </div>
                       )}
+                    </div>
+
+                    {/* Optimization hint */}
+                    <div className="pt-2 border-t border-white/5">
+                      {(() => {
+                        const monthlyValue = calcMonthlyValue(cardStatus.multipliers, spendingProfile)
+                        if (monthlyValue !== null) {
+                          return (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                              <Sparkles className="h-3 w-3 text-amber-500 flex-shrink-0" />
+                              Estimated monthly value with your spending:{' '}
+                              <span className="font-semibold text-foreground">${monthlyValue.toFixed(2)}</span>
+                            </p>
+                          )
+                        }
+                        if (cardStatus.topMultiplier) {
+                          return (
+                            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                              <Sparkles className="h-3 w-3 text-amber-500 flex-shrink-0" />
+                              Best earning rate: <span className="font-semibold text-foreground">{cardStatus.topMultiplier.value}x</span> on <span className="capitalize font-medium">{cardStatus.topMultiplier.category.toLowerCase()}</span>
+                            </p>
+                          )
+                        }
+                        return (
+                          <a href="/users/optimization" className="text-xs text-primary hover:underline flex items-center gap-1">
+                            <TrendingUp className="h-3 w-3" />
+                            See which categories this card is best for
+                          </a>
+                        )
+                      })()}
                     </div>
 
                     {/* Active Bonuses */}

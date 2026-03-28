@@ -57,7 +57,7 @@ export async function saveUserStrategy(roadmapData: any, goalName: string) {
     })
 
     // Revalidate dashboard page
-    revalidatePath('/dashboard')
+    revalidatePath('/users')
 
     return {
       success: true,
@@ -161,7 +161,7 @@ export async function updateStrategyCompletion(strategyId: string, isCompleted: 
       data: { isCompleted },
     })
 
-    revalidatePath('/dashboard')
+    revalidatePath('/users')
 
     return {
       success: true,
@@ -218,7 +218,7 @@ export async function deleteStrategy(strategyId: string) {
       where: { id: strategyId },
     })
 
-    revalidatePath('/dashboard')
+    revalidatePath('/users')
 
     return {
       success: true,

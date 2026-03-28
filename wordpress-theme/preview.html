@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CreditRich Blog — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080D;
+  --bg2:#0B0C12;
+  --surface:rgba(255,255,255,0.03);
+  --surface2:rgba(255,255,255,0.05);
+  --cyan:#06B6D4;
+  --cyan-glow:rgba(6,182,212,0.15);
+  --cyan-dim:rgba(6,182,212,0.08);
+  --text:#F1F5F9;
+  --muted:rgba(255,255,255,0.45);
+  --border:rgba(255,255,255,0.07);
+  --border-hover:rgba(6,182,212,0.3);
+  --radius:14px;
+  --font:'Inter',system-ui,sans-serif;
+  --serif:'Playfair Display',Georgia,serif;
+}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit;transition:color .2s}
+img{display:block;max-width:100%}
+</style>
+<style>
+/* ── AMBIENT BACKGROUND ── */
+.ambient{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.ambient-orb{position:absolute;border-radius:50%;filter:blur(120px);opacity:.5}
+.orb1{width:700px;height:700px;top:-200px;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(6,182,212,0.12),transparent 70%)}
+.orb2{width:400px;height:400px;bottom:10%;right:-100px;background:radial-gradient(circle,rgba(99,102,241,0.08),transparent 70%)}
+.orb3{width:300px;height:300px;bottom:30%;left:-80px;background:radial-gradient(circle,rgba(6,182,212,0.06),transparent 70%)}
+
+/* ── NOISE TEXTURE ── */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.4}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1180px;margin:0 auto;padding:0 1.5rem;position:relative;z-index:1}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:100;padding:0}
+.nav-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  height:68px;
+  background:rgba(7,8,13,0.75);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;
+  position:relative;
+}
+.nav-bar::after{
+  content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(6,182,212,0.4) 50%,transparent);
+}
+.logo{display:flex;align-items:center;gap:.6rem;font-size:1.15rem;font-weight:800;letter-spacing:-.03em}
+.logo-icon{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,#06B6D4,#0891B2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.9rem;box-shadow:0 0 16px rgba(6,182,212,0.4);
+}
+.logo-text{background:linear-gradient(90deg,#fff,rgba(255,255,255,0.7));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-links{display:flex;align-items:center;gap:.25rem}
+.nav-links a{font-size:.85rem;font-weight:500;color:var(--muted);padding:.45rem .9rem;border-radius:8px;transition:all .2s}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,0.06)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.btn-ghost{font-size:.85rem;font-weight:500;color:var(--muted);padding:.45rem .9rem;border-radius:8px;border:1px solid var(--border);transition:all .2s}
+.btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,0.15)}
+.btn-cta{
+  font-size:.85rem;font-weight:600;color:#07080D;
+  padding:.5rem 1.1rem;border-radius:8px;
+  background:var(--cyan);
+  box-shadow:0 0 20px rgba(6,182,212,0.35);
+  transition:all .2s;
+}
+.btn-cta:hover{background:#0891B2;box-shadow:0 0 28px rgba(6,182,212,0.55);transform:translateY(-1px)}
+</style>
+<style>
+/* ── HERO SECTION ── */
+.hero{padding:2.5rem 0 2rem;text-align:center;position:relative}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(6,182,212,0.1);color:var(--cyan);
+  border:1px solid rgba(6,182,212,0.2);border-radius:999px;
+  padding:.3rem 1rem;font-size:.72rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;
+}
+.hero-eyebrow::before{content:'✦';font-size:.55rem}
+.hero-title{
+  font-family:var(--serif);
+  font-size:clamp(2rem,5vw,3.25rem);
+  font-weight:800;line-height:1.08;letter-spacing:-.03em;
+  margin-bottom:.875rem;
+}
+.hero-title em{
+  font-style:normal;
+  background:linear-gradient(135deg,#06B6D4,#67E8F9,#06B6D4);
+  background-size:200% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmer 4s linear infinite;
+}
+@keyframes shimmer{to{background-position:200% center}}
+.hero-sub{font-size:.95rem;color:var(--muted);max-width:440px;margin:0 auto 1.5rem;line-height:1.7}
+.hero-search{
+  display:flex;align-items:center;gap:.5rem;
+  max-width:480px;margin:0 auto;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);border-radius:12px;
+  padding:.5rem .5rem .5rem 1.1rem;
+  transition:border-color .2s,box-shadow .2s;
+}
+.hero-search:focus-within{border-color:rgba(6,182,212,0.4);box-shadow:0 0 0 3px rgba(6,182,212,0.08)}
+.hero-search input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:.9rem;font-family:var(--font)}
+.hero-search input::placeholder{color:var(--muted)}
+.hero-search button{
+  background:var(--cyan);color:#07080D;border:none;
+  border-radius:8px;padding:.55rem 1.1rem;font-size:.85rem;font-weight:600;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+}
+.hero-search button:hover{background:#0891B2;transform:translateY(-1px)}
+
+/* ── CATEGORY PILLS ── */
+.cat-pills{display:flex;align-items:center;justify-content:center;gap:.5rem;flex-wrap:wrap;margin:2.5rem 0 3.5rem}
+.cat-pill{
+  font-size:.78rem;font-weight:600;padding:.4rem 1rem;border-radius:999px;
+  border:1px solid var(--border);color:var(--muted);cursor:pointer;transition:all .2s;
+}
+.cat-pill:hover,.cat-pill.active{border-color:rgba(6,182,212,0.4);color:var(--cyan);background:rgba(6,182,212,0.07)}
+.cat-pill.active{box-shadow:0 0 12px rgba(6,182,212,0.15)}
+
+/* ── SECTION LABEL ── */
+.section-label{
+  display:flex;align-items:center;gap:1rem;
+  font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;
+  color:rgba(255,255,255,0.25);margin-bottom:1.75rem;
+}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── POSTS GRID ── */
+.posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:4rem}
+
+.post-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  position:relative;cursor:pointer;
+}
+.post-card::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;
+  background:linear-gradient(135deg,rgba(6,182,212,0.05),transparent 60%);
+  opacity:0;transition:opacity .3s;pointer-events:none;z-index:0;
+}
+.post-card:hover{
+  border-color:var(--border-hover);
+  box-shadow:0 8px 40px rgba(6,182,212,0.1),0 0 0 1px rgba(6,182,212,0.1);
+  transform:translateY(-4px);
+}
+.post-card:hover::before{opacity:1}
+
+.card-thumb{
+  aspect-ratio:16/9;overflow:hidden;position:relative;
+  background:linear-gradient(135deg,rgba(6,182,212,0.08),rgba(99,102,241,0.05));
+}
+.card-thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.post-card:hover .card-thumb img{transform:scale(1.06)}
+.card-thumb-placeholder{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;opacity:.4;
+}
+
+/* Reading time badge on thumb */
+.card-read-time{
+  position:absolute;bottom:.75rem;right:.75rem;
+  background:rgba(7,8,13,0.8);backdrop-filter:blur(8px);
+  border:1px solid var(--border);border-radius:999px;
+  padding:.2rem .65rem;font-size:.68rem;font-weight:600;color:rgba(255,255,255,0.6);
+  z-index:1;
+}
+
+.card-body{padding:1.25rem;flex:1;display:flex;flex-direction:column;gap:.55rem;position:relative;z-index:1}
+
+.card-meta-top{display:flex;align-items:center;justify-content:space-between}
+.card-cat{
+  font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--cyan);
+}
+.card-date{font-size:.72rem;color:rgba(255,255,255,0.3)}
+
+.card-title{
+  font-size:.975rem;font-weight:650;color:#fff;line-height:1.45;
+  letter-spacing:-.01em;flex:1;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.card-title:hover{color:var(--cyan)}
+
+.card-excerpt{
+  font-size:.82rem;color:rgba(255,255,255,0.45);line-height:1.65;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+
+.card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:.85rem;border-top:1px solid rgba(255,255,255,0.05);margin-top:auto;
+}
+.card-author{display:flex;align-items:center;gap:.5rem}
+.card-avatar{
+  width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan),#0891B2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.65rem;font-weight:700;color:#07080D;flex-shrink:0;
+}
+.card-author-name{font-size:.75rem;color:rgba(255,255,255,0.4)}
+.card-arrow{
+  width:28px;height:28px;border-radius:8px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;color:rgba(255,255,255,0.3);
+  transition:all .2s;
+}
+.post-card:hover .card-arrow{border-color:rgba(6,182,212,0.4);color:var(--cyan);background:rgba(6,182,212,0.08)}
+</style>
+<style>
+/* ── NEWSLETTER BANNER ── */
+.newsletter{
+  margin:1rem 0 4rem;
+  background:linear-gradient(135deg,rgba(6,182,212,0.1) 0%,rgba(6,182,212,0.03) 50%,rgba(99,102,241,0.05) 100%);
+  border:1px solid rgba(6,182,212,0.18);
+  border-radius:20px;padding:2.5rem 3rem;
+  display:flex;align-items:center;justify-content:space-between;gap:2rem;
+  position:relative;overflow:hidden;
+}
+.newsletter::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(6,182,212,0.15),transparent 70%);
+  pointer-events:none;
+}
+.newsletter-text h3{font-size:1.2rem;font-weight:700;margin-bottom:.35rem}
+.newsletter-text p{font-size:.875rem;color:var(--muted)}
+.newsletter-form{display:flex;gap:.5rem;flex-shrink:0}
+.newsletter-form input{
+  background:rgba(255,255,255,0.06);border:1px solid var(--border);
+  border-radius:9px;padding:.65rem 1.1rem;color:var(--text);
+  font-size:.875rem;font-family:var(--font);width:240px;outline:none;
+  transition:border-color .2s;
+}
+.newsletter-form input:focus{border-color:rgba(6,182,212,0.4)}
+.newsletter-form button{
+  background:var(--cyan);color:#07080D;border:none;border-radius:9px;
+  padding:.65rem 1.25rem;font-size:.875rem;font-weight:600;cursor:pointer;
+  white-space:nowrap;transition:all .2s;
+}
+.newsletter-form button:hover{background:#0891B2;transform:translateY(-1px)}
+
+/* ── PAGINATION ── */
+.pagination{display:flex;justify-content:center;align-items:center;gap:.4rem;margin:2rem 0 5rem}
+.page-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:9px;
+  border:1px solid var(--border);color:rgba(255,255,255,0.5);
+  font-size:.85rem;font-weight:500;transition:all .2s;cursor:pointer;
+}
+.page-btn:hover{border-color:rgba(6,182,212,0.35);color:var(--cyan);background:rgba(6,182,212,0.06)}
+.page-btn.active{background:var(--cyan);color:#07080D;border-color:var(--cyan);font-weight:700;box-shadow:0 0 16px rgba(6,182,212,0.3)}
+.page-btn.wide{width:auto;padding:0 .9rem;gap:.4rem}
+.page-dots{color:rgba(255,255,255,0.2);font-size:.85rem;padding:0 .25rem}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);background:rgba(7,8,13,0.95);padding:4rem 0 2rem;position:relative}
+footer::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:500px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(6,182,212,0.5),transparent);
+}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand-logo{display:flex;align-items:center;gap:.6rem;font-size:1.1rem;font-weight:800;letter-spacing:-.02em;margin-bottom:.875rem}
+.footer-brand p{font-size:.85rem;color:var(--muted);line-height:1.75;max-width:260px}
+.footer-col h5{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:rgba(255,255,255,0.3);margin-bottom:1.1rem}
+.footer-col ul{list-style:none}
+.footer-col li{margin-bottom:.6rem}
+.footer-col a{font-size:.85rem;color:rgba(255,255,255,0.5);transition:color .2s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{
+  padding-top:1.75rem;border-top:1px solid rgba(255,255,255,0.05);
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.78rem;color:rgba(255,255,255,0.25);flex-wrap:wrap;gap:1rem;
+}
+.footer-bottom-links{display:flex;gap:1.25rem}
+.footer-bottom-links a{color:rgba(255,255,255,0.3);transition:color .2s}
+.footer-bottom-links a:hover{color:rgba(255,255,255,0.6)}
+.footer-disclaimer{
+  margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.04);
+  font-size:.72rem;color:rgba(255,255,255,0.2);text-align:center;line-height:1.8;
+  max-width:700px;margin-left:auto;margin-right:auto;
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .posts-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2rem}
+  .newsletter{flex-direction:column;text-align:center}
+  .newsletter-form{width:100%;justify-content:center}
+  .newsletter-form input{width:100%;max-width:280px}
+}
+@media(max-width:600px){
+  .posts-grid{grid-template-columns:1fr}
+  .nav-links,.nav-right{display:none}
+  .footer-grid{grid-template-columns:1fr}
+  .hero-title{font-size:2.2rem}
+  .cat-pills{gap:.35rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Ambient background -->
+<div class="ambient">
+  <div class="ambient-orb orb1"></div>
+  <div class="ambient-orb orb2"></div>
+  <div class="ambient-orb orb3"></div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-bar">
+    <a href="#" class="logo">
+      <div class="logo-icon">💳</div>
+      <span class="logo-text">CreditRich</span>
+    </a>
+    <div class="nav-links">
+      <a href="#">Credit Cards</a>
+      <a href="#">Rewards</a>
+      <a href="#">Guides</a>
+      <a href="#">Compare</a>
+    </div>
+    <div class="nav-right">
+      <a href="#" class="btn-ghost">Log in</a>
+      <a href="#" class="btn-cta">Try Free →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">Canadian Credit Card Blog</div>
+    <h1 class="hero-title">
+      Maximize Your<br><em>Rewards</em>
+    </h1>
+    <p class="hero-sub">Expert guides, card comparisons and strategies to help Canadians earn more points on every dollar.</p>
+    <div class="hero-search">
+      <input type="text" placeholder="Search articles, cards, tips…">
+      <button>Search</button>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORY PILLS -->
+<div class="wrap">
+  <div class="cat-pills">
+    <span class="cat-pill active">All</span>
+    <span class="cat-pill">Credit Cards</span>
+    <span class="cat-pill">Aeroplan</span>
+    <span class="cat-pill">Cashback</span>
+    <span class="cat-pill">Travel</span>
+    <span class="cat-pill">Beginners</span>
+    <span class="cat-pill">News</span>
+  </div>
+
+  <!-- SECTION LABEL -->
+  <div class="section-label">Latest Articles</div>
+
+  <!-- POSTS GRID -->
+  <div class="posts-grid">
+
+    <!-- Card 1 -->
+    <article class="post-card">
+      <div class="card-thumb">
+        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80" alt="Credit card">
+        <span class="card-read-time">5 min read</span>
+      </div>
+      <div class="card-body">
+        <div class="card-meta-top">
+          <span class="card-cat">Credit Cards</span>
+          <span class="card-date">Mar 21, 2026</span>
+        </div>
+        <h2 class="card-title">How to Save Money on Interest with a Balance Transfer Card</h2>
+        <p class="card-excerpt">Finding the right balance transfer card can save you hundreds in interest charges. Here's everything you need to know.</p>
+        <div class="card-footer">
+          <div class="card-author">
+            <div class="card-avatar">JD</div>
+            <span class="card-author-name">James D.</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 2 -->
+    <article class="post-card">
+      <div class="card-thumb">
+        <img src="https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=600&q=80" alt="Mortgage">
+        <span class="card-read-time">4 min read</span>
+      </div>
+      <div class="card-body">
+        <div class="card-meta-top">
+          <span class="card-cat">Aeroplan</span>
+          <span class="card-date">Mar 19, 2026</span>
+        </div>
+        <h2 class="card-title">Best Aeroplan Credit Cards in Canada for 2026</h2>
+        <p class="card-excerpt">We ranked every Aeroplan card by first-year value, earning rates and approval odds so you don't have to.</p>
+        <div class="card-footer">
+          <div class="card-author">
+            <div class="card-avatar">SR</div>
+            <span class="card-author-name">Sarah R.</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 3 -->
+    <article class="post-card">
+      <div class="card-thumb">
+        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80" alt="Finance">
+        <span class="card-read-time">6 min read</span>
+      </div>
+      <div class="card-body">
+        <div class="card-meta-top">
+          <span class="card-cat">Cashback</span>
+          <span class="card-date">Mar 17, 2026</span>
+        </div>
+        <h2 class="card-title">Top 5 No-Fee Cashback Cards That Actually Pay Off</h2>
+        <p class="card-excerpt">You don't need to pay an annual fee to earn serious cashback. These five cards prove it.</p>
+        <div class="card-footer">
+          <div class="card-author">
+            <div class="card-avatar">MK</div>
+            <span class="card-author-name">Mike K.</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 4 -->
+    <article class="post-card">
+      <div class="card-thumb">
+        <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80" alt="Travel">
+        <span class="card-read-time">7 min read</span>
+      </div>
+      <div class="card-body">
+        <div class="card-meta-top">
+          <span class="card-cat">Travel</span>
+          <span class="card-date">Mar 15, 2026</span>
+        </div>
+        <h2 class="card-title">How to Book a Business Class Flight to Tokyo for 75,000 Points</h2>
+        <p class="card-excerpt">A step-by-step guide to redeeming Aeroplan points for maximum value on long-haul flights.</p>
+        <div class="card-footer">
+          <div class="card-author">
+            <div class="card-avatar">AL</div>
+            <span class="card-author-name">Amy L.</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 5 -->
+    <article class="post-card">
+      <div class="card-thumb">
+        <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?w=600&q=80" alt="Credit score">
+        <span class="card-read-time">3 min read</span>
+      </div>
+      <div class="card-body">
+        <div class="card-meta-top">
+          <span class="card-cat">Beginners</span>
+          <span class="card-date">Mar 12, 2026</span>
+        </div>
+        <h2 class="card-title">Credit Score 101: What Every Canadian Needs to Know</h2>
+        <p class="card-excerpt">Your credit score affects which cards you qualify for. Here's how to build and protect it.</p>
+        <div class="card-footer">
+          <div class="card-author">
+            <div class="card-avatar">TN</div>
+            <span class="card-author-name">Tom N.</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Card 6 -->
+    <article class="post-card">
+      <div class="card-thumb">
+        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&q=80" alt="Shopping">
+        <span class="card-read-time">5 min read</span>
+      </div>
+      <div class="card-body">
+        <div class="card-meta-top">
+          <span class="card-cat">Guides</span>
+          <span class="card-date">Mar 10, 2026</span>
+        </div>
+        <h2 class="card-title">The Ultimate Guide to Stacking Credit Card Rewards in Canada</h2>
+        <p class="card-excerpt">Combine portal bonuses, category multipliers and welcome offers to earn 10x on everyday purchases.</p>
+        <div class="card-footer">
+          <div class="card-author">
+            <div class="card-avatar">JD</div>
+            <span class="card-author-name">James D.</span>
+          </div>
+          <div class="card-arrow">→</div>
+        </div>
+      </div>
+    </article>
+
+  </div><!-- .posts-grid -->
+
+  <!-- NEWSLETTER -->
+  <div class="newsletter">
+    <div class="newsletter-text">
+      <h3>Get the best card deals in your inbox</h3>
+      <p>Weekly roundups of welcome bonuses, limited-time offers and expert tips. No spam.</p>
+    </div>
+    <div class="newsletter-form">
+      <input type="email" placeholder="your@email.com">
+      <button>Subscribe →</button>
+    </div>
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <span class="page-btn wide">← Prev</span>
+    <span class="page-btn active">1</span>
+    <span class="page-btn">2</span>
+    <span class="page-btn">3</span>
+    <span class="page-dots">…</span>
+    <span class="page-btn">8</span>
+    <span class="page-btn wide">Next →</span>
+  </div>
+
+</div><!-- .wrap -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-logo">
+          <div class="logo-icon" style="width:28px;height:28px;font-size:.8rem">💳</div>
+          <span class="logo-text">CreditRich</span>
+        </div>
+        <p>Helping Canadians make smarter credit card decisions through data-driven insights and personalized tools.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#">Card Optimizer</a></li>
+          <li><a href="#">Compare Cards</a></li>
+          <li><a href="#">All Cards</a></li>
+          <li><a href="#">Calculator</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Blog</h5>
+        <ul>
+          <li><a href="#">Credit Cards</a></li>
+          <li><a href="#">Travel Rewards</a></li>
+          <li><a href="#">Cashback</a></li>
+          <li><a href="#">Beginners</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">support@creditrich.net</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 CreditRich. All rights reserved.</span>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Sitemap</a>
+      </div>
+    </div>
+    <div class="footer-disclaimer">
+      We are an independent publisher. We may earn a commission when you apply for products through our links.
+      Information is for general purposes only and does not constitute financial advice.
+      Please verify current offers on the issuer's website before applying.
+    </div>
+  </div>
+</footer>
+
+<script>
+// Category pill filter (visual only for preview)
+document.querySelectorAll('.cat-pill').forEach(pill => {
+  pill.addEventListener('click', () => {
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'))
+    pill.classList.add('active')
+  })
+})
+</script>
+</body>
+</html>

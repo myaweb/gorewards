@@ -403,7 +403,7 @@ export class CardDataUpdateService {
       orderBy: { createdAt: 'desc' },
       include: {
         card: { select: { name: true, bank: true } },
-        batch: { select: { name: true, description: true, createdBy: true } },
+        updateBatch: { select: { name: true, description: true, createdBy: true } },
       },
     })
   }

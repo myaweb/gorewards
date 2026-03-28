@@ -103,8 +103,8 @@ export async function POST(req: NextRequest) {
         totalMonthlyRewards: result.totalMonthlyRewards,
         totalYearlyRewards: result.totalYearlyRewards,
         bestOverallCard: result.summary.bestOverallCard?.name ?? null,
-        dashboardUrl: `${BASE_URL}/dashboard`,
-        optimizationUrl: `${BASE_URL}/dashboard/optimization`,
+        dashboardUrl: `${BASE_URL}/users`,
+        optimizationUrl: `${BASE_URL}/users/optimization`,
       })
     )
 

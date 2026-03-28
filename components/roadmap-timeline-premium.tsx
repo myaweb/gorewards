@@ -3,8 +3,38 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Circle, CreditCard, TrendingUp, Sparkles } from "lucide-react"
+import { CheckCircle2, Circle, TrendingUp, Sparkles } from "lucide-react"
+import { CardImage } from "@/components/card-image"
 import type { OptimalRoadmap } from "@/lib/types/spending"
+
+// Extract bank name from card name
+function bankFromCardName(name: string): string {
+  const n = name.toLowerCase()
+  if (n.includes("td ") || n.startsWith("td ")) return "TD"
+  if (n.includes("cibc")) return "CIBC"
+  if (n.includes("rbc") || n.includes("royal bank")) return "RBC"
+  if (n.includes("scotiabank") || n.includes("scotia")) return "Scotiabank"
+  if (n.includes("bmo")) return "BMO"
+  if (n.includes("american express") || n.includes("amex") || n.includes("simplycash") || n.includes("marriott bonvoy")) return "American Express"
+  if (n.includes("national bank")) return "National Bank"
+  if (n.includes("tangerine")) return "Tangerine"
+  if (n.includes("desjardins")) return "Desjardins"
+  if (n.includes("pc ") || n.includes("pc mastercard") || n.includes("pc world")) return "PC Financial"
+  if (n.includes("simplii")) return "Simplii Financial"
+  if (n.includes("rogers")) return "Rogers"
+  if (n.includes("mbna")) return "MBNA"
+  if (n.includes("home trust")) return "Home Trust"
+  if (n.includes("canadian tire") || n.includes("triangle")) return "Canadian Tire"
+  if (n.includes("costco")) return "Costco"
+  return "Unknown"
+}
+
+function networkFromCardName(name: string): string {
+  const n = name.toLowerCase()
+  if (n.includes("mastercard")) return "MASTERCARD"
+  if (n.includes("amex") || n.includes("american express") || n.includes("simplycash") || n.includes("marriott bonvoy")) return "AMEX"
+  return "VISA"
+}
 
 interface RoadmapTimelineProps {
   roadmap: OptimalRoadmap
@@ -42,14 +72,14 @@ export function RoadmapTimeline({ roadmap, goalName }: RoadmapTimelineProps) {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div className="space-y-2">
               <p className="text-xs text-gray-500 uppercase tracking-wider">Total Points</p>
-              <p className="text-3xl font-bold text-gradient-teal">{Math.round(totalPointsEarned).toLocaleString()}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-gradient-teal">{Math.round(totalPointsEarned).toLocaleString()}</p>
             </div>
             <div className="space-y-2">
               <p className="text-xs text-gray-500 uppercase tracking-wider">Time to Goal</p>
-              <p className="text-3xl font-bold">{efficiency.monthsToGoal} <span className="text-lg text-gray-500">mo</span></p>
+              <p className="text-2xl sm:text-3xl font-bold">{efficiency.monthsToGoal} <span className="text-lg text-gray-500">mo</span></p>
             </div>
             <div className="space-y-2">
               <p className="text-xs text-gray-500 uppercase tracking-wider">Efficiency</p>
@@ -57,7 +87,7 @@ export function RoadmapTimeline({ roadmap, goalName }: RoadmapTimelineProps) {
             </div>
             <div className="space-y-2">
               <p className="text-xs text-gray-500 uppercase tracking-wider">Total Spend</p>
-              <p className="text-3xl font-bold">${efficiency.totalSpend.toLocaleString()}</p>
+              <p className="text-2xl sm:text-3xl font-bold">${efficiency.totalSpend.toLocaleString()}</p>
             </div>
           </div>
         </CardContent>
@@ -76,7 +106,7 @@ export function RoadmapTimeline({ roadmap, goalName }: RoadmapTimelineProps) {
             const isApplication = step.action === 'APPLY'
             
             return (
-              <div key={index} className="relative pl-20 animate-in fade-in slide-in-from-left duration-500" 
+              <div key={index} className="relative pl-14 sm:pl-20 animate-in fade-in slide-in-from-left duration-500" 
                    style={{ animationDelay: `${index * 100}ms` }}>
                 {/* Glowing dot */}
                 <div className="absolute left-0 top-0">
@@ -110,9 +140,13 @@ export function RoadmapTimeline({ roadmap, goalName }: RoadmapTimelineProps) {
                     </div>
 
                     <div className="flex items-start gap-4">
-                      <div className="w-20 h-12 rounded-lg bg-gradient-to-br from-primary/20 to-cyan-500/20 border border-primary/30 flex items-center justify-center flex-shrink-0 glow-teal">
-                        <CreditCard className="h-6 w-6 text-primary" />
-                      </div>
+                      <CardImage
+                        name={step.cardName}
+                        bank={step.cardBank || bankFromCardName(step.cardName)}
+                        network={step.cardNetwork || networkFromCardName(step.cardName)}
+                        imageUrl={step.cardImageUrl}
+                        className="w-20 h-12 rounded-lg flex-shrink-0"
+                      />
                       
                       <div className="flex-1">
                         <h4 className="font-bold text-xl mb-1">{step.cardName}</h4>

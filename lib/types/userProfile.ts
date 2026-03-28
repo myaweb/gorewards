@@ -132,6 +132,9 @@ export interface CardOwnershipStatus {
   annualFeeDate?: Date
   downgradeEligibleDate?: Date | null
   canDowngrade: boolean
+  topMultiplier?: { category: string; value: number }
+  estimatedMonthlyValue?: number
+  multipliers?: { category: string; value: number }[]
   activeBonuses: {
     bonusId: string
     requiredSpend: number

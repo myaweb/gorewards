@@ -10,9 +10,10 @@ import { trackEvent } from '@/lib/services/analytics.client'
 interface PlaidConnectButtonProps {
   onSuccess?: () => void
   hasExistingAccounts?: boolean
+  compact?: boolean
 }
 
-export function PlaidConnectButton({ onSuccess, hasExistingAccounts = false }: PlaidConnectButtonProps) {
+export function PlaidConnectButton({ onSuccess, hasExistingAccounts = false, compact = false }: PlaidConnectButtonProps) {
   const [linkToken, setLinkToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const posthog = usePostHog()
@@ -83,23 +84,22 @@ export function PlaidConnectButton({ onSuccess, hasExistingAccounts = false }: P
     <Button
       onClick={() => open()}
       disabled={!ready || isLoading}
-      size="lg"
-      variant={hasExistingAccounts ? "outline" : "default"}
+      size={compact ? "sm" : "lg"}
+      variant="outline"
       className={
-        hasExistingAccounts
+        compact
+          ? "h-7 px-2 text-xs border-primary/30 text-primary hover:bg-primary/10"
+          : hasExistingAccounts
           ? "h-14 px-8 text-lg font-semibold border-2 border-dashed border-primary/50 bg-transparent text-cyan-400 hover:text-cyan-400 hover:bg-primary/10 hover:border-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           : "h-14 px-8 text-lg font-semibold bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-background shadow-xl shadow-primary/30 transition-all hover:shadow-2xl hover:shadow-primary/40 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
       }
     >
       {isLoading ? (
-        <>
-          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-          Connecting...
-        </>
+        <Loader2 className={compact ? "h-3 w-3 animate-spin" : "mr-2 h-5 w-5 animate-spin"} />
       ) : (
         <>
-          <Building2 className="mr-2 h-5 w-5" />
-          {hasExistingAccounts ? "Add Another Bank" : "Connect Your Bank"}
+          <Building2 className={compact ? "h-3 w-3 mr-1" : "mr-2 h-5 w-5"} />
+          {compact ? (hasExistingAccounts ? "+ Add" : "Connect") : hasExistingAccounts ? "Add Another Bank" : "Connect Your Bank"}
         </>
       )}
     </Button>

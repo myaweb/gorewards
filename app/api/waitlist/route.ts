@@ -67,7 +67,8 @@ export async function POST(req: NextRequest) {
         email: email.toLowerCase(),
         name: name || null,
         source: source || 'homepage',
-        status: 'pending'
+        status: 'pending',
+        updatedAt: new Date()
       }
     })
 

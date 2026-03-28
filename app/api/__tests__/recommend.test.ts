@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { POST } from '../recommend/route'
+import { POST } from '../recommend/enhanced/route'
 
 // Mock the recommendation engine
 jest.mock('../../../lib/services/enhancedRecommendationEngine', () => ({

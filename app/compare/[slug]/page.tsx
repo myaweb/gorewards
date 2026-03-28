@@ -143,7 +143,7 @@ function transformCardForComparison(card: any) {
     const multiplier = card.multipliers?.find(
       (m: any) => m.category === category && m.isActive
     )
-    return multiplier ? Number(multiplier.multiplierValue) / 100 : 0
+    return multiplier ? Number(multiplier.multiplierValue) : 0
   }
 
   // Extract welcome bonus value
@@ -191,7 +191,7 @@ export default async function ComparePage({ params }: ComparePageProps) {
   const card2 = transformCardForComparison(card2Raw)
 
   return (
-    <div className="min-h-screen pt-24 pb-12">
+    <div className="min-h-screen pt-2 pb-12">
       <CardComparison card1={card1} card2={card2} />
     </div>
   )

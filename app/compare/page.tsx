@@ -1,4 +1,5 @@
 import { CompareSelector } from '@/components/compare-selector'
+import { ScrollToCompare } from '@/components/scroll-to-compare'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ChevronRight, Home } from 'lucide-react'
@@ -44,7 +45,7 @@ export default async function ComparePage() {
   }))
 
   return (
-    <div className="min-h-screen pt-24 pb-16">
+    <div className="min-h-screen pt-2 pb-16">
       <div className="container mx-auto px-4">
         {/* Breadcrumb Navigation */}
         <nav className="flex items-center gap-2 text-sm mb-8 text-muted-foreground">
@@ -72,24 +73,25 @@ export default async function ComparePage() {
 
         {/* Trust Indicators */}
         <div className="max-w-3xl mx-auto mb-12">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
-            <div className="glass-premium border border-primary/10 rounded-lg p-4">
-              <div className="text-2xl font-bold text-primary mb-1">{cards.length}+</div>
-              <div className="text-xs text-muted-foreground">Canadian Cards</div>
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="glass-premium border border-primary/10 rounded-lg p-2 md:p-4">
+              <div className="text-lg md:text-2xl font-bold text-primary mb-0.5">{cards.length}+</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">Canadian Cards</div>
             </div>
-            <div className="glass-premium border border-primary/10 rounded-lg p-4">
-              <div className="text-2xl font-bold text-primary mb-1">Side-by-Side</div>
-              <div className="text-xs text-muted-foreground">Detailed Analysis</div>
+            <div className="glass-premium border border-primary/10 rounded-lg p-2 md:p-4">
+              <div className="text-lg md:text-2xl font-bold text-primary mb-0.5">Side-by-Side</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">Detailed Analysis</div>
             </div>
-            <div className="glass-premium border border-primary/10 rounded-lg p-4">
-              <div className="text-2xl font-bold text-primary mb-1">Real-Time</div>
-              <div className="text-xs text-muted-foreground">Updated Data</div>
+            <div className="glass-premium border border-primary/10 rounded-lg p-2 md:p-4">
+              <div className="text-lg md:text-2xl font-bold text-primary mb-0.5">Real-Time</div>
+              <div className="text-[10px] md:text-xs text-muted-foreground">Updated Data</div>
             </div>
           </div>
         </div>
 
         {/* Compare Tool Integration */}
-        <div className="max-w-6xl mx-auto">
+        <ScrollToCompare />
+        <div id="compare-tool" className="max-w-6xl mx-auto">
           <CompareSelector cards={cards} />
         </div>
       </div>

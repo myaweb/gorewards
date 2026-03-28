@@ -2,7 +2,7 @@ import { Sparkles, Zap, TrendingUp } from 'lucide-react'
 
 export default function CompareLoading() {
   return (
-    <div className="min-h-screen pt-24 pb-12 flex items-center justify-center">
+    <div className="min-h-screen pt-2 pb-12 flex items-center justify-center">
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto text-center">
           {/* Animated Logo/Icon */}

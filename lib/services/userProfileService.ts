@@ -101,10 +101,17 @@ export class UserProfileService {
             name: true,
             bank: true,
             network: true,
-            annualFee: true
-          }
+            annualFee: true,
+            multipliers: {
+              select: {
+                category: true,
+                multiplierValue: true
+              },
+              where: { isActive: true },
+              orderBy: { multiplierValue: 'desc' }
+            }          }
         },
-        bonusProgress: {
+        bonusProgresses: {
           include: {
             cardBonus: true
           }
@@ -122,7 +129,14 @@ export class UserProfileService {
       annualFeeDate: userCard.annualFeeDate,
       downgradeEligibleDate: userCard.downgradeEligibleDate,
       canDowngrade: userCard.downgradeEligibleDate ? new Date() >= userCard.downgradeEligibleDate : false,
-      activeBonuses: userCard.bonusProgress.map(progress => ({
+      topMultiplier: userCard.card.multipliers[0]
+        ? { category: userCard.card.multipliers[0].category, value: Number(userCard.card.multipliers[0].multiplierValue) }
+        : undefined,
+      multipliers: userCard.card.multipliers.map(m => ({
+        category: m.category,
+        value: Number(m.multiplierValue)
+      })),
+      activeBonuses: userCard.bonusProgresses.map(progress => ({
         bonusId: progress.cardBonusId,
         requiredSpend: Number(progress.requiredSpend),
         currentSpend: Number(progress.currentSpend),
@@ -251,7 +265,7 @@ export class UserProfileService {
       },
       include: {
         card: true,
-        bonusProgress: {
+        bonusProgresses: {
           include: {
             cardBonus: true
           }
@@ -262,7 +276,7 @@ export class UserProfileService {
     return {
       profile,
       userCards,
-      bonusProgress: userCards.flatMap(uc => uc.bonusProgress)
+      bonusProgress: userCards.flatMap(uc => uc.bonusProgresses)
     }
   }
 

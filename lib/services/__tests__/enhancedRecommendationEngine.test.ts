@@ -16,7 +16,8 @@ describe('EnhancedRecommendationEngine', () => {
       dining: 400,
       bills: 150,
       travel: 100,
-      shopping: 200
+      shopping: 200,
+      other: 0
     },
     creditScore: CreditScoreRange.GOOD,
     annualIncome: 75000,

@@ -6,7 +6,10 @@
 import { EnhancedRecommendationEngine } from '../services/enhancedRecommendationEngine'
 import { CardOptimizationEngine } from '../services/cardOptimizationEngine'
 import { CardService } from '../services/cardService'
-import { CreditScoreRange } from '../types/userProfile'
+import { CreditScoreRange } from '../types/recommendation'
+
+// Declare global testUtils to avoid TypeScript errors
+declare const global: typeof globalThis & { testUtils: any }
 
 // Mock Prisma
 jest.mock('../prisma', () => ({
@@ -40,7 +43,7 @@ describe('Edge Cases and Boundary Conditions', () => {
         preferredPointTypes: ['CASHBACK'],
         maxAnnualFee: 100,
         prioritizeSignupBonus: true,
-        timeHorizon: 'MEDIUM_TERM' as const
+        timeHorizon: 'LONG_TERM' as const
       }
 
       const mockCards = [global.testUtils.createMockCard()]
@@ -49,7 +52,7 @@ describe('Edge Cases and Boundary Conditions', () => {
       const result = await EnhancedRecommendationEngine.getRecommendations(zeroSpendingProfile)
 
       expect(result.recommendations).toHaveLength(1)
-      expect(result.recommendations[0].scores.categoryScore).toBe(0)
+      expect((result.recommendations[0].scores as any).categoryScore).toBe(0)
       expect(result.recommendations[0].explanation).toContain('signup bonus')
     })
 
@@ -88,8 +91,8 @@ describe('Edge Cases and Boundary Conditions', () => {
       const result = await EnhancedRecommendationEngine.getRecommendations(extremeSpendingProfile)
 
       expect(result.recommendations).toHaveLength(1)
-      expect(result.recommendations[0].scores.approvalProbability).toBeGreaterThan(90)
-      expect(result.recommendations[0].scores.categoryScore).toBeGreaterThan(80)
+      expect((result.recommendations[0].scores as any).approvalProbability).toBeGreaterThan(90)
+      expect((result.recommendations[0].scores as any).categoryScore).toBeGreaterThan(80)
     })
 
     it('should handle single-category extreme spending', async () => {
@@ -189,7 +192,7 @@ describe('Edge Cases and Boundary Conditions', () => {
       const result = await EnhancedRecommendationEngine.getRecommendations(ultraHighIncomeProfile)
 
       expect(result.recommendations).toHaveLength(1)
-      expect(result.recommendations[0].scores.approvalProbability).toBeGreaterThan(95)
+      expect((result.recommendations[0].scores as any).approvalProbability).toBeGreaterThan(95)
     })
   })
 
@@ -202,7 +205,7 @@ describe('Edge Cases and Boundary Conditions', () => {
         preferredPointTypes: ['CASHBACK'],
         maxAnnualFee: 100,
         prioritizeSignupBonus: true,
-        timeHorizon: 'MEDIUM_TERM' as const
+        timeHorizon: 'LONG_TERM' as const
       }
 
       const bareBonesCard = global.testUtils.createMockCard({
@@ -215,9 +218,9 @@ describe('Edge Cases and Boundary Conditions', () => {
       const result = await EnhancedRecommendationEngine.getRecommendations(basicProfile)
 
       expect(result.recommendations).toHaveLength(1)
-      expect(result.recommendations[0].scores.bonusScore).toBe(0)
-      expect(result.recommendations[0].scores.categoryScore).toBe(0)
-      expect(result.recommendations[0].scores.totalScore).toBeGreaterThan(0) // Should still have some score
+      expect((result.recommendations[0].scores as any).bonusScore).toBe(0)
+      expect((result.recommendations[0].scores as any).categoryScore).toBe(0)
+      expect((result.recommendations[0].scores as any).totalScore).toBeGreaterThan(0) // Should still have some score
     })
 
     it('should handle cards with expired bonuses', async () => {
@@ -244,12 +247,12 @@ describe('Edge Cases and Boundary Conditions', () => {
         preferredPointTypes: ['AEROPLAN'],
         maxAnnualFee: 200,
         prioritizeSignupBonus: true,
-        timeHorizon: 'MEDIUM_TERM' as const
+        timeHorizon: 'LONG_TERM' as const
       })
 
       expect(result.recommendations).toHaveLength(1)
       // Should not count expired bonus
-      expect(result.recommendations[0].scores.bonusScore).toBe(0)
+      expect((result.recommendations[0].scores as any).bonusScore).toBe(0)
     })
 
     it('should handle cards with complex spending limits', async () => {
@@ -281,8 +284,6 @@ describe('Edge Cases and Boundary Conditions', () => {
         bills: 150,
         travel: 100,
         shopping: 200,
-        entertainment: 50,
-        utilities: 100,
         other: 50
       }
 
@@ -506,7 +507,7 @@ describe('Edge Cases and Boundary Conditions', () => {
         preferredPointTypes: [],
         maxAnnualFee: 100,
         prioritizeSignupBonus: true,
-        timeHorizon: 'MEDIUM_TERM' as const
+        timeHorizon: 'LONG_TERM' as const
       }
 
       prisma.card.findMany.mockResolvedValue([])
@@ -527,7 +528,7 @@ describe('Edge Cases and Boundary Conditions', () => {
         preferredPointTypes: ['CASHBACK'],
         maxAnnualFee: 100,
         prioritizeSignupBonus: true,
-        timeHorizon: 'MEDIUM_TERM' as const
+        timeHorizon: 'LONG_TERM' as const
       }
 
       const mockCard = global.testUtils.createMockCard()
@@ -563,7 +564,7 @@ describe('Edge Cases and Boundary Conditions', () => {
           preferredPointTypes: ['CASHBACK'],
           maxAnnualFee: 100,
           prioritizeSignupBonus: true,
-          timeHorizon: 'MEDIUM_TERM' as const
+          timeHorizon: 'LONG_TERM' as const
         })
       ).rejects.toThrow('Connection timeout')
     })
