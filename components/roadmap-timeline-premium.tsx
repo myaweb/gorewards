@@ -231,3 +231,4 @@ export function RoadmapTimeline({ roadmap, goalName }: RoadmapTimelineProps) {
     </div>
   )
 }
+

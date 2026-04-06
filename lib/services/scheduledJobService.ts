@@ -20,9 +20,7 @@ export interface ScheduledJob {
 }
 
 // import cron from 'node-cron'
-
-// TODO: Install node-cron dependency when implementing scheduled jobs
-// npm install node-cron @types/node-cron
+// To enable scheduling: npm install node-cron @types/node-cron
 
 /**
  * Scheduled Job Service
@@ -45,7 +43,7 @@ export class ScheduledJobService {
     createdBy?: string
   ): Promise<ScheduledJob> {
     
-    // TODO: Implement cron validation when node-cron is installed
+    // Cron validation requires node-cron — install before enabling
     // if (!cron.validate(cronExpression)) {
     //   throw new Error('Invalid cron expression')
     // }
@@ -85,7 +83,7 @@ export class ScheduledJobService {
     }>
   ): Promise<ScheduledJob> {
     
-    // TODO: Implement cron validation when node-cron is installed
+    // Cron validation requires node-cron — install before enabling
     // if (updates.cronExpression && !cron.validate(updates.cronExpression)) {
     //   throw new Error('Invalid cron expression')
     // }
@@ -159,18 +157,12 @@ export class ScheduledJobService {
       this.activeJobs.get(jobId).destroy()
     }
     
-    // TODO: Implement cron scheduling when node-cron is installed
-    // Create new cron job
+    // node-cron not installed — scheduling is a no-op until implemented
+    // To enable: npm install node-cron @types/node-cron, then uncomment below:
     // const cronJob = cron.schedule(job.cronExpression, async () => {
     //   await this.executeJob(jobId)
-    // }, {
-    //   scheduled: true,
-    //   timezone: 'America/Toronto' // Adjust timezone as needed
-    // })
-    
+    // }, { scheduled: true, timezone: 'America/Toronto' })
     // this.activeJobs.set(jobId, cronJob)
-    
-    console.log(`Started scheduled job: ${job.name} (${job.cronExpression})`)
   }
   
   /**
@@ -180,7 +172,6 @@ export class ScheduledJobService {
     if (this.activeJobs.has(jobId)) {
       this.activeJobs.get(jobId).destroy()
       this.activeJobs.delete(jobId)
-      console.log(`Stopped scheduled job: ${jobId}`)
     }
   }
   
@@ -195,8 +186,6 @@ export class ScheduledJobService {
     if (!job || !job.isActive) {
       return
     }
-    
-    console.log(`Executing scheduled job: ${job.name}`)
     
     // Update job status to running
     await prisma.scheduledJob.update({
@@ -223,8 +212,6 @@ export class ScheduledJobService {
         }
       })
       
-      console.log(`Completed scheduled job: ${job.name}`)
-      
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
       
@@ -238,8 +225,6 @@ export class ScheduledJobService {
           lastError: errorMessage
         }
       })
-      
-      console.error(`Failed scheduled job: ${job.name}`, error)
     }
   }
   
@@ -281,8 +266,6 @@ export class ScheduledJobService {
    * Job implementations
    */
   private static async syncCardOffers(parameters: Record<string, any>): Promise<void> {
-    console.log('Syncing card offers...', parameters)
-    
     // Deactivate expired offers
     await prisma.cardOffer.updateMany({
       where: {
@@ -291,18 +274,10 @@ export class ScheduledJobService {
       },
       data: { isActive: false }
     })
-    
-    // Here you would implement external API calls to fetch new offers
-    // For now, we'll just log the operation
-    console.log('Card offers sync completed')
   }
   
   private static async updatePointValues(parameters: Record<string, any>): Promise<void> {
-    console.log('Updating point values...', parameters)
-    
-    // Here you would implement logic to update point valuations
-    // This could involve API calls to get current redemption rates
-    console.log('Point values update completed')
+    // Implement logic to update point valuations via external API
   }
   
   private static async expireOldOffers(parameters: Record<string, any>): Promise<void> {
@@ -310,15 +285,13 @@ export class ScheduledJobService {
     const cutoffDate = new Date()
     cutoffDate.setDate(cutoffDate.getDate() - daysOld)
     
-    const result = await prisma.cardOffer.updateMany({
+    await prisma.cardOffer.updateMany({
       where: {
         validUntil: { lt: cutoffDate },
         isActive: true
       },
       data: { isActive: false }
     })
-    
-    console.log(`Expired ${result.count} old offers`)
   }
   
   private static async cleanupHistory(parameters: Record<string, any>): Promise<void> {
@@ -326,18 +299,14 @@ export class ScheduledJobService {
     const cutoffDate = new Date()
     cutoffDate.setDate(cutoffDate.getDate() - daysOld)
     
-    const result = await prisma.cardHistory.deleteMany({
+    await prisma.cardHistory.deleteMany({
       where: {
         createdAt: { lt: cutoffDate }
       }
     })
-    
-    console.log(`Cleaned up ${result.count} old history records`)
   }
   
   private static async performHealthCheck(parameters: Record<string, any>): Promise<void> {
-    console.log('Performing system health check...', parameters)
-    
     // Check database connectivity
     await prisma.$queryRaw`SELECT 1`
     
@@ -350,10 +319,8 @@ export class ScheduledJobService {
     })
     
     if (staleOffers > 0) {
-      console.warn(`Found ${staleOffers} stale offers that should be expired`)
+      // Stale offers found — consider running EXPIRE_OLD_OFFERS job
     }
-    
-    console.log('Health check completed')
   }
   
   /**
@@ -367,19 +334,12 @@ export class ScheduledJobService {
     for (const job of activeJobs) {
       await this.startJob(job.id)
     }
-    
-    console.log(`Initialized ${activeJobs.length} scheduled jobs`)
   }
   
-  /**
-   * Shutdown all scheduled jobs
-   */
   static async shutdownJobs(): Promise<void> {
     for (const [jobId] of this.activeJobs) {
       await this.stopJob(jobId)
     }
-    
-    console.log('All scheduled jobs stopped')
   }
   
   /**

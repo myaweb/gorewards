@@ -23,7 +23,7 @@ export class AdminAuthenticatorService implements AdminAuthenticator {
   constructor() {
     const adminId = process.env.ADMIN_CLERK_ID
     if (!adminId) {
-      console.warn('ADMIN_CLERK_ID environment variable not set - admin access disabled')
+      securityLogger.logWarn('ADMIN_CLERK_ID environment variable not set - admin access disabled', {})
       this.adminClerkId = ''
     } else {
       this.adminClerkId = adminId
@@ -156,8 +156,12 @@ export class AdminAuthenticatorService implements AdminAuthenticator {
       const now = new Date()
       const expiresAt = new Date(now.getTime() + this.sessionDurationMs)
 
-      // Store session in database (we'll add this to the schema later)
-      // For now, return the session object
+      // Persist session to database
+      // Note: Requires AdminSession model in prisma schema + migration
+      // await prisma.adminSession.create({
+      //   data: { id: sessionId, userId, ipAddress, expiresAt }
+      // })
+
       const session: AdminSession = {
         id: sessionId,
         userId,
@@ -189,33 +193,31 @@ export class AdminAuthenticatorService implements AdminAuthenticator {
 
   /**
    * Validate admin session
+   * Note: Full DB-backed validation requires AdminSession model in schema.
+   * To enable: add AdminSession model to prisma/schema.prisma and run prisma migrate.
    */
   async validateAdminSession(sessionId: string): Promise<boolean> {
     try {
-      // For now, we'll implement a simple validation
-      // In production, this would check against stored sessions
       if (!sessionId || sessionId.length !== 64) {
         return false
       }
-
-      // TODO: Check against stored sessions in database
+      // Placeholder until AdminSession migration is applied
       return true
-
     } catch (error) {
-      console.error('Session validation error:', error)
+      securityLogger.logError('Session validation error', error as Error)
       return false
     }
   }
 
   /**
    * Revoke admin session
+   * Note: Full DB-backed revocation requires AdminSession model in schema.
    */
   async revokeAdminSession(sessionId: string): Promise<void> {
     try {
-      // TODO: Remove session from database
-      console.log(`Revoking admin session: ${sessionId}`)
+      securityLogger.logInfo(`Admin session revoke requested: ${sessionId.substring(0, 8)}...`)
     } catch (error) {
-      console.error('Session revocation error:', error)
+      securityLogger.logError('Session revocation error', error as Error)
       throw new Error('Failed to revoke admin session')
     }
   }
@@ -252,7 +254,7 @@ export class AdminAuthenticatorService implements AdminAuthenticator {
       return this.validateAdminAccess(userId)
 
     } catch (error) {
-      console.error('Request admin validation error:', error)
+      securityLogger.logError('Request admin validation error', error as Error)
       return {
         isValid: false,
         isAdmin: false,
@@ -283,7 +285,7 @@ export class AdminAuthenticatorService implements AdminAuthenticator {
       }
 
     } catch (error) {
-      console.error('Get admin user details error:', error)
+      securityLogger.logError('Get admin user details error', error as Error)
       return null
     }
   }

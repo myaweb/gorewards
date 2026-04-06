@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
 import { Navigation } from "@/components/navigation";
@@ -9,6 +9,7 @@ import { dark } from '@clerk/themes';
 import { PostHogProvider } from './providers';
 import { Suspense } from 'react';
 import { PostHogPageView } from './posthog-pageview';
+import { ProgressBarProvider } from '@/components/progress-bar-provider';
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -19,26 +20,29 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://creditrich.net"),
-  title: "CreditRich - Credit Card Rewards Optimizer",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://gorewards.ca"),
+  title: "GoRewards - Credit Card Rewards Optimizer",
   description: "Optimize your credit card rewards and maximize points with AI-powered intelligent financial planning. Compare 50+ Canadian credit cards.",
   manifest: "/manifest.json",
+  verification: {
+    google: "h--aPAyB26eoCA-jZzEl_NOySrr8xShZ8LhBNtPNTNo",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "CreditRich",
+    title: "GoRewards",
   },
   openGraph: {
-    title: "CreditRich - Maximize Your Credit Card Rewards",
+    title: "GoRewards - Maximize Your Credit Card Rewards",
     description: "AI-powered credit card optimization. Get personalized strategies to reach your goals faster.",
-    url: "https://creditrich.net",
-    siteName: "CreditRich",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://gorewards.ca",
+    siteName: "GoRewards",
     images: [
       {
         url: "/api/og?title=Maximize Your Credit Card Rewards&subtitle=AI-Powered Optimization",
         width: 1200,
         height: 630,
-        alt: "CreditRich - Credit Card Rewards Optimizer",
+        alt: "GoRewards - Credit Card Rewards Optimizer",
       },
     ],
     locale: "en_CA",
@@ -46,7 +50,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "CreditRich - Maximize Your Credit Card Rewards",
+    title: "GoRewards - Maximize Your Credit Card Rewards",
     description: "AI-powered credit card optimization. Get personalized strategies to reach your goals faster.",
     images: ["/api/og?title=Maximize Your Credit Card Rewards&subtitle=AI-Powered Optimization"],
   },
@@ -79,6 +83,7 @@ export default function RootLayout({
           <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         </head>
         <body className={GeistSans.className}>
+          <ProgressBarProvider />
           <PostHogProvider>
             <Suspense fallback={null}>
               <PostHogPageView />
@@ -100,4 +105,5 @@ export default function RootLayout({
     </ClerkProvider>
   );
 }
+
 

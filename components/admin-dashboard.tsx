@@ -30,6 +30,7 @@ import {
   Database,
   RefreshCw,
   Mail,
+  AlertTriangle,
 } from 'lucide-react'
 import { getAdminMetrics, getAllCards, updateCardAffiliateLink, getAllUsers, updateUserPlan, getAffiliateAnalytics, getAllCardsWithDetails } from '@/app/actions/admin.actions'
 import { CardDataUpdatePanel } from '@/components/admin/card-data-update-panel'
@@ -838,6 +839,14 @@ export function AdminDashboard() {
                         <span>{metrics?.totalCards || 0} cards • {metrics?.totalBonuses || 0} bonuses • {metrics?.totalMultipliers || 0} multipliers</span>
                       </div>
                     </div>
+                    {(metrics?.totalCards || 0) > 32 && (
+                      <div className="mt-3 flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30">
+                        <AlertTriangle className="h-4 w-4 text-red-400 flex-shrink-0 mt-0.5" />
+                        <p className="text-xs text-red-400">
+                          <strong>Warning:</strong> Database has {metrics?.totalCards} cards but master list only has 32. Syncing will overwrite {(metrics?.totalCards || 0) - 32} cards that exist in DB but not in the master list. Only use sync for initial setup.
+                        </p>
+                      </div>
+                    )}
                   </div>
                   
                   <Button
@@ -1375,3 +1384,4 @@ export function AdminDashboard() {
     </div>
   )
 }
+

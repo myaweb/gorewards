@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { canadianCardsMasterList, getCardImage, type CardData } from '@/app/lib/cardData'
 import { CardNetwork, SpendingCategory, PointType } from '@prisma/client'
@@ -323,3 +323,4 @@ async function getSyncStatusHandler(request: NextRequest, context: { userId: str
 // Export protected routes
 export const POST = createAdminRoute(syncCardsHandler)
 export const GET = createAdminRoute(getSyncStatusHandler)
+

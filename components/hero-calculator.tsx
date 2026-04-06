@@ -145,3 +145,4 @@ export function HeroCalculator({ onSubmit, isLoading }: Props) {
     </div>
   )
 }
+

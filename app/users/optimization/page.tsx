@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs/server'
+﻿import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { CardOptimizationDisplay } from '@/components/card-optimization-display'
 import { Card, CardContent } from '@/components/ui/card'
@@ -54,3 +54,4 @@ export default async function OptimizationPage() {
     </div>
   )
 }
+

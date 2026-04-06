@@ -132,7 +132,7 @@ export function getSecurityStatus(): SecurityStatus {
  * Initialize security services
  */
 export async function initializeSecurity() {
-  console.log('🔒 Initializing CreditRich Security Services...')
+  console.log('🔒 Initializing GoRewards Security Services...')
   
   // Validate environment
   const envValidation = validateSecurityEnvironment()

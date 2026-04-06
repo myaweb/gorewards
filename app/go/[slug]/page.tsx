@@ -66,7 +66,7 @@ export default async function GoPage({ params }: GoPageProps) {
         <RedirectCountdown url={card.affiliateLink} seconds={5} />
 
         <p className="text-xs text-muted-foreground mt-6">
-          CreditRich may earn a commission if you apply through this link. This does not affect our recommendations.
+          GoRewards may earn a commission if you apply through this link. This does not affect our recommendations.
         </p>
       </div>
     </div>

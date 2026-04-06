@@ -1,11 +1,11 @@
-import { CompareSelector } from '@/components/compare-selector'
+﻿import { CompareSelector } from '@/components/compare-selector'
 import { ScrollToCompare } from '@/components/scroll-to-compare'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ChevronRight, Home } from 'lucide-react'
 
 export const metadata = {
-  title: 'Compare Credit Cards | CreditRich',
+  title: 'Compare Credit Cards | GoRewards',
   description: 'Compare 2 Canadian credit cards side-by-side. See annual fees, rewards rates, welcome bonuses, and find the best card for your spending.',
 }
 
@@ -98,3 +98,4 @@ export default async function ComparePage() {
     </div>
   )
 }
+

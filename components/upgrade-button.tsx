@@ -14,8 +14,9 @@ export function UpgradeButton() {
     >
       <Link href="/donate">
         <Heart className="mr-2 h-5 w-5" />
-        Support CreditRich
+        Support GoRewards
       </Link>
     </Button>
   )
 }
+

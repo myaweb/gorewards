@@ -15,10 +15,15 @@ const ParsedCardSchema = z.object({
   annualFee: z.number().min(0),
   welcomeBonusValue: z.number().min(0).default(0),
   baseRewardRate: z.number().min(0).max(1).default(0.01),
+  // Core 4 categories from bank data
   groceryMultiplier: z.number().min(0).max(1).default(0.01),
   gasMultiplier: z.number().min(0).max(1).default(0.01),
   diningMultiplier: z.number().min(0).max(1).default(0.01),
   billsMultiplier: z.number().min(0).max(1).default(0.01),
+  // Additional 3 categories now extracted from bank data
+  travelMultiplier: z.number().min(0).max(1).default(0.01),
+  entertainmentMultiplier: z.number().min(0).max(1).default(0.01),
+  shoppingMultiplier: z.number().min(0).max(1).default(0.01),
 })
 
 export type ParsedCard = z.infer<typeof ParsedCardSchema>
@@ -34,12 +39,16 @@ For EACH credit card found, return:
 - annualFee: Annual fee in CAD as number. For monthly-billed cards, calculate annual total.
 - welcomeBonusValue: Estimated dollar value of welcome bonus in CAD
 - baseRewardRate: Base earn rate as decimal (1% = 0.01)
-- groceryMultiplier: Grocery earn rate as decimal (5x or 5% = 0.05)
+- groceryMultiplier: Grocery/supermarket earn rate as decimal (5x or 5% = 0.05)
 - gasMultiplier: Gas/fuel earn rate as decimal
-- diningMultiplier: Dining earn rate as decimal
-- billsMultiplier: Recurring bills earn rate as decimal (use base rate if not mentioned)
+- diningMultiplier: Dining/restaurants earn rate as decimal
+- billsMultiplier: Recurring bills/utilities earn rate as decimal
+- travelMultiplier: Travel purchases earn rate as decimal (flights, hotels, etc.)
+- entertainmentMultiplier: Entertainment purchases earn rate as decimal (streaming, concerts, etc.)
+- shoppingMultiplier: General shopping/retail earn rate as decimal
 
-RULES:
+IMPORTANT RULES:
+- Extract ALL 7 categories: grocery, gas, dining, bills, travel, entertainment, shopping
 - Points multipliers as decimals: 5x = 0.05, 2x = 0.02, 1x = 0.01
 - Cashback percentages as decimals: 4% = 0.04, 2% = 0.02
 - If category rate not mentioned, use base rate

@@ -96,7 +96,7 @@ export function BetaFeedbackWidget({ compact = false }: BetaFeedbackWidgetProps)
               Beta Feedback
             </CardTitle>
             <CardDescription>
-              Help us improve CreditRich with your feedback
+              Help us improve GoRewards with your feedback
             </CardDescription>
           </div>
           <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
@@ -180,3 +180,4 @@ export function BetaFeedbackWidget({ compact = false }: BetaFeedbackWidgetProps)
     </Card>
   )
 }
+

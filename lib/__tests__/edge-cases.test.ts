@@ -1,5 +1,5 @@
 /**
- * Edge case testing for CreditRich critical business logic
+ * Edge case testing for GoRewards critical business logic
  * Tests boundary conditions, error scenarios, and unusual data patterns
  */
 

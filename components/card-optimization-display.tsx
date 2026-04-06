@@ -37,6 +37,9 @@ const CATEGORY_ICONS: Record<SpendingCategory, any> = {
   SHOPPING: Package,
   ENTERTAINMENT: MoreHorizontal,
   UTILITIES: Receipt,
+  STUDENT: CreditCard,
+  BUSINESS: CreditCard,
+  SIGNUP_BONUS: Sparkles,
   OTHER: MoreHorizontal
 }
 
@@ -49,6 +52,9 @@ const CATEGORY_NAMES: Record<SpendingCategory, string> = {
   SHOPPING: 'Shopping',
   ENTERTAINMENT: 'Entertainment',
   UTILITIES: 'Utilities',
+  STUDENT: 'Student',
+  BUSINESS: 'Business',
+  SIGNUP_BONUS: 'Sign-up Bonus',
   OTHER: 'Other'
 }
 

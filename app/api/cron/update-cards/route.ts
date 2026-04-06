@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Cron Job: Update Card Data
  * 
  * Triggered daily by Vercel Cron (02:00 UTC).
@@ -59,3 +59,4 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+

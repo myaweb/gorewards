@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
 import { render } from '@react-email/render'
@@ -98,7 +98,7 @@ async function sendReminderEmail(
     }
 
     const progress = calculateProgress(roadmapData)
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://creditrich.net'}/users`
+    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.net'}/users`
 
     const emailHtml = await render(
       StepReminderEmail({
@@ -236,3 +236,4 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   return GET(request)
 }
+

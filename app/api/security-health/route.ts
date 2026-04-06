@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Security Health Check Endpoint
  * 
  * Provides comprehensive security status and health information
@@ -80,3 +80,4 @@ async function handleGET(req: NextRequest, context: { userId: string }) {
 
 // Protected by admin authentication
 export const GET = createAdminRoute(handleGET)
+

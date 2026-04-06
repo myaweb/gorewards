@@ -110,5 +110,8 @@ export const CATEGORY_KEYWORDS: Record<SpendingCategory, string[]> = {
   SHOPPING: ['shop', 'store', 'retail', 'mall'],
   ENTERTAINMENT: ['movie', 'theater', 'cinema', 'streaming', 'music'],
   UTILITIES: ['electric', 'water', 'power', 'utility'],
+  STUDENT: ['student', 'university', 'college', 'education'],
+  BUSINESS: ['business', 'corporate', 'company', 'office'],
+  SIGNUP_BONUS: ['signup', 'bonus', 'welcome', 'offer'],
   OTHER: []
 }

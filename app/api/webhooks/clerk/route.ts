@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
@@ -32,7 +32,7 @@ async function sendWelcomeEmail(
   clerkUserId: string
 ): Promise<boolean> {
   try {
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://creditrich.net'}/users`
+    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.net'}/users`
 
     const emailHtml = await render(
       WelcomeEmail({
@@ -50,14 +50,11 @@ async function sendWelcomeEmail(
     })
 
     if (result.error) {
-      console.error('Resend error:', result.error)
       return false
     }
 
-    console.log(`Welcome email sent to ${userEmail}`)
     return true
   } catch (error) {
-    console.error('Error sending welcome email:', error)
     return false
   }
 }
@@ -70,7 +67,6 @@ export async function POST(request: NextRequest) {
   const webhookSecret = process.env.CLERK_WEBHOOK_SECRET
 
   if (!webhookSecret) {
-    console.error('CLERK_WEBHOOK_SECRET not configured')
     return NextResponse.json(
       { error: 'Webhook secret not configured' },
       { status: 500 }
@@ -108,7 +104,6 @@ export async function POST(request: NextRequest) {
       'svix-signature': svixSignature,
     }) as ClerkWebhookEvent
   } catch (err) {
-    console.error('Error verifying webhook:', err)
     return NextResponse.json(
       { error: 'Invalid signature' },
       { status: 400 }
@@ -126,7 +121,6 @@ export async function POST(request: NextRequest) {
       const primaryEmail = email_addresses[0]?.email_address
 
       if (!primaryEmail) {
-        console.error('No email found for user:', clerkUserId)
         return NextResponse.json(
           { error: 'No email found' },
           { status: 400 }
@@ -145,15 +139,10 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      console.log('User created in database:', user.id)
-
       // Send welcome email if Resend is configured
       if (process.env.RESEND_API_KEY) {
         const userName = first_name || username || primaryEmail.split('@')[0] || 'Valued Member'
-        
         await sendWelcomeEmail(primaryEmail, userName, clerkUserId)
-      } else {
-        console.warn('RESEND_API_KEY not configured, skipping welcome email')
       }
 
       return NextResponse.json({
@@ -162,7 +151,6 @@ export async function POST(request: NextRequest) {
         userId: user.id,
       })
     } catch (error) {
-      console.error('Error handling user.created webhook:', error)
       return NextResponse.json(
         {
           success: false,
@@ -174,10 +162,9 @@ export async function POST(request: NextRequest) {
   }
 
   // Handle other event types if needed
-  console.log('Unhandled webhook event type:', eventType)
-
   return NextResponse.json({
     success: true,
     message: 'Webhook received',
   })
 }
+

@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+﻿import { NextRequest } from 'next/server'
 import { POST } from '../optimize/cards/route'
 
 // Mock the optimization engine

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -25,3 +25,4 @@ export function PostHogPageView() {
 
   return null
 }
+

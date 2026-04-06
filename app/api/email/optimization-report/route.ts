@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
 import { CardOptimizationEngine } from '@/lib/services/cardOptimizationEngine'
@@ -8,7 +8,7 @@ import OptimizationReportEmail from '@/emails/OptimizationReportEmail'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://creditrich.net'
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.net'
 
 export async function POST(req: NextRequest) {
   try {
@@ -77,10 +77,17 @@ export async function POST(req: NextRequest) {
     }
 
     // Run optimization engine
-    const result = await CardOptimizationEngine.calculateBestCardPerCategory(
-      user.id,
-      spendingProfile
-    )
+    let result
+    try {
+      result = await CardOptimizationEngine.calculateBestCardPerCategory(
+        user.id,
+        spendingProfile
+      )
+    } catch (engineError) {
+      const msg = engineError instanceof Error ? engineError.message : 'Optimization failed'
+      console.error('Optimization engine error:', msg)
+      return NextResponse.json({ error: msg }, { status: 400 })
+    }
 
     // Map to email format
     const optimizations = result.optimizations.map((opt) => ({
@@ -95,30 +102,38 @@ export async function POST(req: NextRequest) {
     }))
 
     // Render email
-    const emailHtml = await render(
-      OptimizationReportEmail({
-        userName: firstName,
-        userEmail: email,
-        optimizations,
-        totalMonthlyRewards: result.totalMonthlyRewards,
-        totalYearlyRewards: result.totalYearlyRewards,
-        bestOverallCard: result.summary.bestOverallCard?.name ?? null,
-        dashboardUrl: `${BASE_URL}/users`,
-        optimizationUrl: `${BASE_URL}/users/optimization`,
-      })
-    )
+    let emailHtml: string
+    try {
+      emailHtml = await render(
+        OptimizationReportEmail({
+          userName: firstName,
+          userEmail: email,
+          optimizations,
+          totalMonthlyRewards: result.totalMonthlyRewards,
+          totalYearlyRewards: result.totalYearlyRewards,
+          bestOverallCard: result.summary.bestOverallCard?.name ?? null,
+          dashboardUrl: `${BASE_URL}/users`,
+          optimizationUrl: `${BASE_URL}/users/optimization`,
+        })
+      )
+    } catch (renderError) {
+      console.error('Email render error:', renderError)
+      return NextResponse.json({ error: 'Failed to render email template' }, { status: 500 })
+    }
 
     // Send email
+    const fromAddress = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'
+    const toAddress = process.env.RESEND_FROM_EMAIL ? email : 'antepweb@gmail.com'
     const { error: sendError } = await resend.emails.send({
-      from: 'CreditRich <onboarding@resend.dev>',
-      to: email,
+      from: `GoRewards <${fromAddress}>`,
+      to: toAddress,
       subject: `Your Card Optimization Report — $${(result.totalMonthlyRewards / 100).toFixed(2)}/month in rewards`,
       html: emailHtml,
     })
 
     if (sendError) {
-      console.error('Resend error:', sendError)
-      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
+      console.error('Resend error:', JSON.stringify(sendError))
+      return NextResponse.json({ error: 'Failed to send email', details: sendError }, { status: 500 })
     }
 
     return NextResponse.json({
@@ -131,10 +146,13 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Optimization report error:', error)
+    const message = error instanceof Error ? error.message : String(error)
+    const stack = error instanceof Error ? error.stack : undefined
+    console.error('Optimization report error:', message, stack)
     return NextResponse.json(
-      { error: 'Failed to generate optimization report' },
+      { error: message || 'Failed to generate optimization report' },
       { status: 500 }
     )
   }
 }
+

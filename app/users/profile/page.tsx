@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useUser } from '@clerk/nextjs'
 import { UserProfileForm } from '@/components/user-profile-form'

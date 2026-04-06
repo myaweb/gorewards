@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Transaction Category Correction API
  * 
  * STEP 8 FIX: Allows users to correct transaction categories
@@ -98,3 +98,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

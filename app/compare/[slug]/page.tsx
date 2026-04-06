@@ -2,6 +2,7 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { CardComparison } from "@/components/card-comparison-flat"
 import { prisma } from "@/lib/prisma"
+import { getComparisonVerdict } from "@/app/actions/ai.actions"
 
 interface ComparePageProps {
   params: {
@@ -30,8 +31,8 @@ async function findCardBySlug(targetSlug: string): Promise<any | null> {
     where: { isActive: true },
     include: {
       bonuses: { where: { isActive: true } },
-      multipliers: { where: { isActive: true } }
-    }
+      multipliers: { where: { isActive: true } },
+    },
   })
   
   // Find the card whose slugified name matches the target slug
@@ -44,26 +45,10 @@ async function findCardBySlug(targetSlug: string): Promise<any | null> {
   return null
 }
 
-// Generate static params for all possible comparisons (for static generation)
-export async function generateStaticParams() {
-  const cards = await prisma.card.findMany({
-    where: { isActive: true },
-    select: { name: true, slug: true }
-  })
-  
-  const slugs: string[] = []
-  
-  // Generate all possible card combinations
-  for (let i = 0; i < cards.length; i++) {
-    for (let j = i + 1; j < cards.length; j++) {
-      const slug1 = slugify(cards[i].name)
-      const slug2 = slugify(cards[j].name)
-      slugs.push(`${slug1}-vs-${slug2}`)
-    }
-  }
-  
-  return slugs.map((slug) => ({ slug }))
-}
+// Pages are generated on-demand and cached (ISR)
+// No need to pre-build all N*(N-1)/2 combinations at build time
+export const dynamic = 'force-static'
+export const revalidate = 86400 // revalidate daily
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata({ params }: ComparePageProps): Promise<Metadata> {
@@ -89,9 +74,13 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
     }
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gorewards.ca'
+
   // SEO title and description
-  const title = `${card1.name} vs ${card2.name}: Side-by-Side Comparison | CreditRich`
+  const title = `${card1.name} vs ${card2.name}: Side-by-Side Comparison | GoRewards`
   const description = `Compare ${card1.name} and ${card2.name} side-by-side. See annual fees, rewards rates, welcome bonuses, category multipliers, and first-year value calculations based on your spending. Updated for 2026.`
+
+  const latestUpdate = card1.updatedAt > card2.updatedAt ? card1.updatedAt : card2.updatedAt
 
   return {
     title,
@@ -114,7 +103,8 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
       title,
       description,
       type: "article",
-      url: `https://CreditRich.ca/compare/${params.slug}`,
+      url: `${siteUrl}/compare/${params.slug}`,
+      modifiedTime: latestUpdate.toISOString(),
       images: [
         {
           url: `/api/og?title=${encodeURIComponent(card1.name + ' vs ' + card2.name)}&subtitle=Side-by-Side Card Comparison&type=comparison`,
@@ -131,7 +121,7 @@ export async function generateMetadata({ params }: ComparePageProps): Promise<Me
       images: [`/api/og?title=${encodeURIComponent(card1.name + ' vs ' + card2.name)}&subtitle=Side-by-Side Card Comparison&type=comparison`],
     },
     alternates: {
-      canonical: `https://CreditRich.ca/compare/${params.slug}`,
+      canonical: `${siteUrl}/compare/${params.slug}`,
     },
   }
 }
@@ -190,9 +180,31 @@ export default async function ComparePage({ params }: ComparePageProps) {
   const card1 = transformCardForComparison(card1Raw)
   const card2 = transformCardForComparison(card2Raw)
 
+  // Fetch AI verdict server-side for SEO
+  // Note: Server-side fetch bypasses rate limiting (intentional for SEO)
+  // Rate limiting only applies to client-side API calls
+  const verdictResult = await getComparisonVerdict(params.slug)
+  const initialVerdict = verdictResult.success ? verdictResult.verdict : null
+
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gorewards.ca'
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": siteUrl },
+      { "@type": "ListItem", "position": 2, "name": "Compare", "item": `${siteUrl}/compare` },
+      { "@type": "ListItem", "position": 3, "name": `${card1Raw.name} vs ${card2Raw.name}`, "item": `${siteUrl}/compare/${params.slug}` },
+    ],
+  }
+
   return (
     <div className="min-h-screen pt-2 pb-12">
-      <CardComparison card1={card1} card2={card2} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <CardComparison card1={card1} card2={card2} initialVerdict={initialVerdict} />
     </div>
   )
 }

@@ -1,10 +1,13 @@
-'use server'
+﻿'use server'
 
 import { prisma } from '@/lib/prisma'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import OpenAI from 'openai'
+import { logAIUsage } from '@/lib/utils/aiMonitoring'
 
-// Initialize Gemini client
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
+// Initialize OpenAI client
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY || '',
+})
 
 interface CardData {
   id: string
@@ -24,7 +27,7 @@ interface CardData {
 }
 
 /**
- * Generate AI-powered comparison verdict using Google Gemini (FREE)
+ * Generate AI-powered comparison verdict using OpenAI ChatGPT
  */
 export async function generateComparisonVerdict(
   cardA: CardData,
@@ -38,6 +41,11 @@ export async function generateComparisonVerdict(
     })
 
     if (existing) {
+      logAIUsage({
+        slug,
+        cached: true,
+        success: true,
+      })
       return {
         success: true,
         verdict: existing.aiVerdictText,
@@ -46,11 +54,17 @@ export async function generateComparisonVerdict(
     }
 
     // Check if API key is configured
-    if (!process.env.GEMINI_API_KEY) {
-      console.warn('GEMINI_API_KEY not configured')
+    if (!process.env.OPENAI_API_KEY) {
+      console.warn('OPENAI_API_KEY not configured')
+      logAIUsage({
+        slug,
+        cached: false,
+        success: false,
+        error: 'OPENAI_API_KEY not configured',
+      })
       return {
         success: false,
-        error: 'GEMINI_API_KEY not configured',
+        error: 'OPENAI_API_KEY not configured',
         verdict: null,
       }
     }
@@ -71,45 +85,94 @@ export async function generateComparisonVerdict(
       .map(m => `${m.category}: ${m.multiplierValue}x`)
       .join(', ')
 
-    // Create prompt for Gemini
+    // Create prompt for ChatGPT
     const prompt = `You are a Canadian financial expert specializing in credit card rewards optimization. 
-Write an engaging, professional, and SEO-optimized comparison verdict (300 words) comparing these two Canadian credit cards.
+Write a SHORT, concise comparison summary (40-50 words MAX) comparing these two Canadian credit cards.
 
 **Card A: ${cardA.name}**
 - Bank: ${cardA.bank}
 - Annual Fee: $${cardA.annualFee}
-- Welcome Bonus: ${cardABonus?.bonusPoints.toLocaleString() || 0} ${cardABonus?.pointType || 'points'} (spend $${cardABonus?.minimumSpendAmount || 0} in ${cardABonus?.spendPeriodMonths || 0} months)
+- Welcome Bonus: ${cardABonus?.bonusPoints.toLocaleString() || 0} ${cardABonus?.pointType || 'points'}
 - Top Earning Rates: ${cardAMultipliers}
 
 **Card B: ${cardB.name}**
 - Bank: ${cardB.bank}
 - Annual Fee: $${cardB.annualFee}
-- Welcome Bonus: ${cardBBonus?.bonusPoints.toLocaleString() || 0} ${cardBBonus?.pointType || 'points'} (spend $${cardBBonus?.minimumSpendAmount || 0} in ${cardBBonus?.spendPeriodMonths || 0} months)
+- Welcome Bonus: ${cardBBonus?.bonusPoints.toLocaleString() || 0} ${cardBBonus?.pointType || 'points'}
 - Top Earning Rates: ${cardBMultipliers}
 
-Structure your response with HTML formatting:
-1. Opening paragraph with <p> tag highlighting the key difference
-2. <h3>Who Should Choose ${cardA.name.split(' ')[0]}</h3> section with specific spending profiles in <p> and <ul><li> tags
-3. <h3>Who Should Choose ${cardB.name.split(' ')[0]}</h3> section with specific spending profiles in <p> and <ul><li> tags
-4. <h3>Final Recommendation</h3> with clear, actionable advice in <p> tag
+CRITICAL REQUIREMENTS:
+1. Keep it to 40-50 words maximum
+2. Focus on KEY differences with specific numbers (multipliers, fees)
+3. Be direct and actionable
+4. END with "Winner: [Full Card Name]" on a new line
+5. Return ONLY plain text, no HTML tags, no formatting, no bold markers
 
-Use HTML tags: <h3> for section headers, <p> for paragraphs, <strong> for emphasis, <ul> and <li> for lists.
-Make it engaging, conversational yet authoritative, and actionable for Canadian consumers.
-Focus on practical advice that helps readers make informed decisions.`
+Format: 
+"[Card A short name] excels at X (specific rate/number). [Card B short name] better for Y (specific rate/number). Choose A if [condition], B if [condition].
 
-    // Call Gemini API
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
-    const result = await model.generateContent(prompt)
-    const response = await result.response
-    const aiVerdictText = response.text()
+Winner: [Full winning card name]"
+
+Example good response:
+"TD Aeroplan excels for Air Canada travelers (25,000 welcome points). Scotiabank Gold better for groceries (5x points) and dining (3x points). Choose TD if you fly Air Canada frequently, Scotiabank if you prioritize everyday spending.
+
+Winner: Scotiabank Gold American Express"
+
+Return ONLY the plain text summary with "Winner: [card name]" at the end.`
+
+    // Call OpenAI API
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a Canadian financial expert. Provide SHORT, concise comparisons with specific numbers. Maximum 50 words.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 150,
+    })
+
+    let aiVerdictText = completion.choices[0]?.message?.content
 
     if (!aiVerdictText) {
-      throw new Error('No content generated from Gemini')
+      throw new Error('No content generated from OpenAI')
     }
 
-    // Save to database
-    const savedComparison = await prisma.cardComparison.create({
-      data: {
+    // Clean up any markdown or extra formatting
+    aiVerdictText = aiVerdictText
+      .replace(/```html\n?/g, '')
+      .replace(/```\n?/g, '')
+      .replace(/\*\*/g, '')
+      .trim()
+
+    // Validate: Check if AI mentioned both card names
+    const mentionsCardA = aiVerdictText.toLowerCase().includes(cardA.name.split(' ')[0].toLowerCase())
+    const mentionsCardB = aiVerdictText.toLowerCase().includes(cardB.name.split(' ')[0].toLowerCase())
+    
+    if (!mentionsCardA || !mentionsCardB) {
+      console.warn('AI verdict missing card names, regenerating...')
+      throw new Error('AI verdict validation failed: missing card names')
+    }
+
+    // Validate: Check if "Winner:" line exists
+    if (!aiVerdictText.includes('Winner:')) {
+      console.warn('AI verdict missing winner declaration')
+      aiVerdictText += `\n\nWinner: ${cardA.name}` // Fallback to first card
+    }
+
+    // Save to database (use upsert to handle race conditions)
+    const savedComparison = await prisma.cardComparison.upsert({
+      where: { slug },
+      update: {
+        aiVerdictText,
+        updatedAt: new Date(),
+      },
+      create: {
         id: require('crypto').randomUUID(),
         slug,
         cardAId: cardA.id,
@@ -119,6 +182,13 @@ Focus on practical advice that helps readers make informed decisions.`
       },
     })
 
+    logAIUsage({
+      slug,
+      cached: false,
+      success: true,
+      tokensUsed: completion.usage?.total_tokens,
+    })
+
     return {
       success: true,
       verdict: savedComparison.aiVerdictText,
@@ -126,6 +196,12 @@ Focus on practical advice that helps readers make informed decisions.`
     }
   } catch (error) {
     console.error('Error generating AI verdict:', error)
+    logAIUsage({
+      slug,
+      cached: false,
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
     return {
       success: false,
       error: error instanceof Error ? error.message : 'Failed to generate verdict',

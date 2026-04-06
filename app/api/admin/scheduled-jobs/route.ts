@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 // import { ScheduledJobService } from '@/lib/services/scheduledJobService'
 import { ScheduledJobSchema } from '@/lib/types/cardDataUpdate'

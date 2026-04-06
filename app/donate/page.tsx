@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs/server'
+﻿import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -17,8 +17,8 @@ export default async function BillingPage() {
       <div className="container max-w-4xl mx-auto px-4">
         {/* Header */}
         <div className="mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-gradient mb-3">Support CreditRich</h1>
-          <p className="text-base text-gray-400">All features are free. If CreditRich helps you, consider supporting us.</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-gradient mb-3">Support GoRewards</h1>
+          <p className="text-base text-gray-400">All features are free. If GoRewards helps you, consider supporting us.</p>
         </div>
 
         <div className="space-y-8">
@@ -31,7 +31,7 @@ export default async function BillingPage() {
                 </div>
                 <div className="flex-1">
                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                    CreditRich is free for everyone
+                    GoRewards is free for everyone
                   </h2>
                   <p className="text-base text-gray-400 leading-relaxed">
                     We believe every Canadian should have access to smart credit card tools without paywalls. 
@@ -109,3 +109,4 @@ export default async function BillingPage() {
     </div>
   )
 }
+

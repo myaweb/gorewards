@@ -1,10 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+﻿import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Shield, Home, Mail } from 'lucide-react'
 import Link from 'next/link'
 
 export const metadata = {
-  title: 'Access Denied - CreditRich',
+  title: 'Access Denied - GoRewards',
   description: 'Admin access required',
   robots: 'noindex, nofollow',
 }
@@ -54,7 +54,7 @@ export default function UnauthorizedPage() {
               className="flex-1 h-12 border-primary/30"
               asChild
             >
-              <a href="mailto:support@CreditRich.ca">
+              <a href="mailto:support@GoRewards.ca">
                 <Mail className="mr-2 h-4 w-4" />
                 Contact Support
               </a>
@@ -65,3 +65,4 @@ export default function UnauthorizedPage() {
     </div>
   )
 }
+

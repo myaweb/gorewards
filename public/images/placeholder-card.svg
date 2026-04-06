@@ -17,8 +17,8 @@
     <rect x="150" y="120" width="35" height="8" rx="2" fill="rgba(255,255,255,0.3)"/>
   </g>
   
-  <!-- CreditRich Logo -->
-  <text x="30" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="url(#logoGradient)">CreditRich</text>
+  <!-- GoRewards Logo -->
+  <text x="30" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="url(#logoGradient)">GoRewards</text>
   
   <!-- Network Logo Placeholder (top right) -->
   <circle cx="260" cy="35" r="20" fill="rgba(255,255,255,0.1)"/>

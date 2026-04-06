@@ -39,7 +39,6 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
   const router = useRouter()
   const [card1, setCard1] = useState<CardData | null>(null)
   const [card2, setCard2] = useState<CardData | null>(null)
-  const [isNavigating, setIsNavigating] = useState(false)
 
   // Helper function to get multiplier value for a category
   const getMultiplierValue = (card: CardData, category: string): number => {
@@ -106,14 +105,13 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
   const handleCompare = () => {
     if (!card1 || !card2) return
     
-    setIsNavigating(true)
-    
     const slug1 = slugify(card1.name)
     const slug2 = slugify(card2.name)
     const comparisonUrl = `/compare/${slug1}-vs-${slug2}`
     
-    // Use window.location for hard navigation to avoid soft-nav stalling on loading.tsx
-    window.location.href = comparisonUrl
+    // Navigate to loading page with target URL
+    const loadingUrl = `/compare/loading-comparison?url=${encodeURIComponent(comparisonUrl)}`
+    window.location.href = loadingUrl
   }
 
   const isCompareEnabled = card1 !== null && card2 !== null
@@ -346,20 +344,11 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
               <Button
                 size="lg"
                 onClick={handleCompare}
-                disabled={!isCompareEnabled || isNavigating}
+                disabled={!isCompareEnabled}
                 className="bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-[#090A0F] shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)] transition-all hover:scale-105 min-w-[280px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none"
               >
-                {isNavigating ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Loading Comparison...
-                  </>
-                ) : (
-                  <>
-                    Compare Cards
-                    <ArrowRight className="ml-2 h-5 w-5 animate-[slide-x_1s_ease-in-out_infinite]" />
-                  </>
-                )}
+                Compare Cards
+                <ArrowRight className="ml-2 h-5 w-5 animate-[slide-x_1s_ease-in-out_infinite]" />
               </Button>
             </div>
           </CardContent>
@@ -407,3 +396,4 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
     </div>
   )
 }
+

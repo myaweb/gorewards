@@ -213,7 +213,7 @@ export function CardDataUpdatePanel({ onUpdateComplete }: CardDataUpdatePanelPro
               <div className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4 text-primary" />
                 <div>
-                  <div className="text-2xl font-bold">{statistics.totalUpdates || 0}</div>
+                  <div className="text-2xl font-bold">{(statistics as any).total ?? statistics.totalUpdates ?? 0}</div>
                   <div className="text-sm text-muted-foreground">Total Updates</div>
                 </div>
               </div>
@@ -225,7 +225,7 @@ export function CardDataUpdatePanel({ onUpdateComplete }: CardDataUpdatePanelPro
               <div className="flex items-center gap-2">
                 <RefreshCw className="h-4 w-4 text-green-600" />
                 <div>
-                  <div className="text-2xl font-bold">{statistics.completedUpdates || 0}</div>
+                  <div className="text-2xl font-bold">{(statistics as any).completed ?? statistics.completedUpdates ?? 0}</div>
                   <div className="text-sm text-muted-foreground">Completed</div>
                 </div>
               </div>
@@ -237,7 +237,7 @@ export function CardDataUpdatePanel({ onUpdateComplete }: CardDataUpdatePanelPro
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-red-600" />
                 <div>
-                  <div className="text-2xl font-bold">{statistics.failedUpdates || 0}</div>
+                  <div className="text-2xl font-bold">{(statistics as any).failed ?? statistics.failedUpdates ?? 0}</div>
                   <div className="text-sm text-muted-foreground">Failed</div>
                 </div>
               </div>
@@ -249,7 +249,7 @@ export function CardDataUpdatePanel({ onUpdateComplete }: CardDataUpdatePanelPro
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-blue-600" />
                 <div>
-                  <div className="text-2xl font-bold">{statistics.pendingUpdates || 0}</div>
+                  <div className="text-2xl font-bold">{(statistics as any).pending ?? statistics.pendingUpdates ?? 0}</div>
                   <div className="text-sm text-muted-foreground">Pending</div>
                 </div>
               </div>
@@ -628,7 +628,7 @@ export function CardDataUpdatePanel({ onUpdateComplete }: CardDataUpdatePanelPro
               {statistics.recentUpdates.slice(0, 5).map((update) => (
                 <div key={update.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div>
-                    <div className="font-medium">Card ID: {update.cardId}</div>
+                    <div className="font-medium">{(update as any).cardName || update.cardId}</div>
                     <div className="text-sm text-muted-foreground">
                       {update.errorMessage || `${update.updateType} updated`}
                     </div>

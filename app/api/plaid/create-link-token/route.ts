@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { currentUser } from '@clerk/nextjs/server'
 import { plaidClient } from '@/lib/plaid'
 import { CountryCode, Products } from 'plaid'
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
       user: {
         client_user_id: user.id,
       },
-      client_name: 'CreditRich',
+      client_name: 'GoRewards',
       products: [Products.Transactions],
       country_codes: [CountryCode.Ca, CountryCode.Us],
       language: 'en',
@@ -32,3 +32,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

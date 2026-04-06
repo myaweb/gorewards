@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
@@ -122,10 +122,8 @@ export async function POST(req: NextRequest) {
           })
         } catch (analyticsError) {
           // Silent failure - don't break webhook
-          console.warn('Failed to track premium conversion:', analyticsError)
         }
 
-        console.log(`✅ User ${clerkUserId} upgraded to premium`)
         break
       }
 
@@ -177,11 +175,10 @@ export async function POST(req: NextRequest) {
               distinctId: user.clerkUserId
             })
           } catch (analyticsError) {
-            console.warn('Failed to track subscription cancellation:', analyticsError)
+            // Silent failure - don't break webhook
           }
         }
 
-        console.log(`❌ Subscription ${subscription.id} canceled`)
         break
       }
 
@@ -214,7 +211,6 @@ export async function POST(req: NextRequest) {
           }
         })
 
-        console.log(`🔄 Subscription ${subscription.id} updated: ${subscription.status}`)
         break
       }
 
@@ -245,7 +241,6 @@ export async function POST(req: NextRequest) {
           }
         })
 
-        console.log(`⏰ Trial ending soon for subscription ${subscription.id}`)
         break
       }
     }
@@ -264,3 +259,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

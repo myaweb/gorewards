@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+﻿import { NextResponse } from 'next/server'
 import { CardService } from '@/lib/services/cardService'
 import type { PointType } from '@prisma/client'
 
@@ -36,3 +36,4 @@ export async function GET(request: Request) {
     }, { status: 500 })
   }
 }
+

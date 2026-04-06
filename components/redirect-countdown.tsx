@@ -67,3 +67,4 @@ export function RedirectCountdown({ url, seconds }: RedirectCountdownProps) {
     </div>
   )
 }
+

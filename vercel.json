@@ -8,5 +8,13 @@
       "path": "/api/cron/update-cards",
       "schedule": "0 2 * * *"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.gorewards.ca" }],
+      "destination": "https://gorewards.ca/$1",
+      "permanent": true
+    }
   ]
 }

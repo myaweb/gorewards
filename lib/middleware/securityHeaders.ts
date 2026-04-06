@@ -146,7 +146,7 @@ export class SecurityHeadersService {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com data:",
       "img-src 'self' data: https: blob:",
-      "connect-src 'self' https://api.stripe.com https://api.clerk.com https://clerk.CreditRich.app https://*.clerk.accounts.dev https://production.plaid.com https://sandbox.plaid.com https://cdn.plaid.com https://generativelanguage.googleapis.com https://us.i.posthog.com https://us-assets.i.posthog.com",
+      "connect-src 'self' https://api.stripe.com https://api.clerk.com https://clerk.GoRewards.app https://*.clerk.accounts.dev https://production.plaid.com https://sandbox.plaid.com https://cdn.plaid.com https://generativelanguage.googleapis.com https://us.i.posthog.com https://us-assets.i.posthog.com",
       "frame-src 'self' https://js.stripe.com https://challenges.cloudflare.com https://accounts.google.com https://*.clerk.accounts.dev https://cdn.plaid.com",
       "worker-src 'self' blob:",
       "object-src 'none'",

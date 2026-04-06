@@ -39,3 +39,4 @@ export function PlaidSection({ linkedAccounts }: PlaidSectionProps) {
     </div>
   )
 }
+

@@ -20,7 +20,7 @@ interface WelcomeEmailProps {
 export default function WelcomeEmail({
   userName = 'Valued Member',
   userEmail = '',
-  dashboardUrl = 'https://creditrich.net/users',
+  dashboardUrl = 'https://gorewards.ca/users',
 }: WelcomeEmailProps) {
   return (
     <Html>

@@ -5,12 +5,12 @@
  */
 
 export function StructuredDataHomepage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://creditrich.net'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.net'
 
   const organizationSchema = {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "CreditRich",
+    "name": "GoRewards",
     "description": "AI-powered credit card rewards optimizer for Canadians",
     "url": siteUrl,
     "logo": `${siteUrl}/logo.png`,
@@ -20,14 +20,14 @@ export function StructuredDataHomepage() {
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "Customer Support",
-      "email": "support@CreditRich.ca"
+      "email": "support@gorewards.ca"
     }
   }
 
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "CreditRich",
+    "name": "GoRewards",
     "url": siteUrl,
     "description": "Optimize your credit card rewards and maximize points with AI-powered intelligent financial planning",
     "potentialAction": {
@@ -46,7 +46,7 @@ export function StructuredDataHomepage() {
     "mainEntity": [
       {
         "@type": "Question",
-        "name": "How does CreditRich make money?",
+        "name": "How does GoRewards make money?",
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "We earn a small commission when you apply for a card through our affiliate links. However, our recommendations are 100% objective and based solely on maximizing your rewards. We never prioritize cards that pay us more."
@@ -98,7 +98,7 @@ export function StructuredDataHomepage() {
   const softwareApplicationSchema = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    "name": "CreditRich",
+    "name": "GoRewards",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Web",
     "offers": [
@@ -151,3 +151,4 @@ export function StructuredDataHomepage() {
     </>
   )
 }
+

@@ -1,4 +1,4 @@
-import { ImageResponse } from 'next/og'
+﻿import { ImageResponse } from 'next/og'
 import { NextRequest } from 'next/server'
 
 export const runtime = 'edge'
@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     
     // Get parameters from query params
-    const title = searchParams.get('title') || 'CreditRich - Maximize Your Credit Card Rewards'
+    const title = searchParams.get('title') || 'GoRewards - Maximize Your Credit Card Rewards'
     const subtitle = searchParams.get('subtitle') || 'AI-Powered Credit Card Optimization'
     const type = searchParams.get('type') || 'default' // 'card', 'comparison', 'default'
 
@@ -87,7 +87,7 @@ export async function GET(request: NextRequest) {
                 letterSpacing: '-0.02em',
               }}
             >
-              CreditRich
+              GoRewards
             </span>
           </div>
 
@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
                     fontWeight: '600',
                   }}
                 >
-                  CreditRich Card Review
+                  GoRewards Card Review
                 </span>
               </>
             ) : type === 'comparison' ? (
@@ -225,3 +225,4 @@ export async function GET(request: NextRequest) {
     return new Response('Failed to generate image', { status: 500 })
   }
 }
+

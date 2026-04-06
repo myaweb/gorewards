@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
@@ -14,7 +14,9 @@ export default function BillingError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error('Billing page error:', error)
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Billing page error:', error)
+    }
   }, [error])
 
   return (
@@ -76,3 +78,4 @@ export default function BillingError({
     </div>
   )
 }
+

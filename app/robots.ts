@@ -1,7 +1,7 @@
-import { MetadataRoute } from 'next'
+﻿import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://creditrich.net'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://GoRewards.net'
   
   return {
     rules: [
@@ -19,3 +19,4 @@ export default function robots(): MetadataRoute.Robots {
     sitemap: `${baseUrl}/sitemap.xml`,
   }
 }
+

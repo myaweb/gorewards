@@ -190,3 +190,4 @@ export function WaitlistForm({ compact = false, source = "homepage" }: WaitlistF
     </Card>
   )
 }
+

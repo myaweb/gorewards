@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs/server'
+﻿import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { UserCardPortfolio } from '@/components/user-card-portfolio'
 import { Card, CardContent } from '@/components/ui/card'
@@ -66,3 +66,4 @@ export default async function CardsPage() {
     </div>
   )
 }
+

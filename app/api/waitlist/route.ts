@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Waitlist API
  * 
  * Handles closed beta waitlist signups
@@ -141,3 +141,4 @@ export async function GET(req: NextRequest) {
     )
   }
 }
+

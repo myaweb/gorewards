@@ -346,3 +346,4 @@ export function SpendingForm({ onSubmit, isLoading }: SpendingFormProps) {
     </Card>
   )
 }
+

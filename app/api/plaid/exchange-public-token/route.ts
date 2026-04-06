@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { currentUser } from '@clerk/nextjs/server'
 import { plaidClient } from '@/lib/plaid'
 import { prisma } from '@/lib/prisma'
@@ -98,3 +98,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

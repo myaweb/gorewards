@@ -1,7 +1,7 @@
 /**
  * Security Services Type Definitions
  * 
- * Core types for the CreditRich security infrastructure including
+ * Core types for the GoRewards security infrastructure including
  * audit logging, token encryption, admin authentication, and monitoring.
  */
 

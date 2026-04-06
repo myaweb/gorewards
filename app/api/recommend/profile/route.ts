@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { EnhancedRecommendationEngine } from '@/lib/services/enhancedRecommendationEngine'
 import { UserProfileService } from '@/lib/services/userProfileService'

@@ -77,3 +77,4 @@ export function StructuredData({ card1, card2 }: StructuredDataProps) {
     />
   )
 }
+

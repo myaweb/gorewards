@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { UserProfileService } from '@/lib/services/userProfileService'
 import { UserProfileUpdateSchema } from '@/lib/types/userProfile'
@@ -66,11 +66,9 @@ export async function PUT(request: NextRequest) {
     }
     
     const body = await request.json()
-    console.log('Received profile data:', body)
     
     // Validate input with proper schema
     const validatedData = UserProfileUpdateSchema.parse(body)
-    console.log('Validated data:', validatedData)
     
     // Update profile with validated data
     const updatedProfile = await UserProfileService.updateProfile(userId, validatedData)
@@ -85,7 +83,6 @@ export async function PUT(request: NextRequest) {
     console.error('Error updating user profile:', error)
     
     if (error instanceof z.ZodError) {
-      console.error('Zod validation errors:', error.errors)
       return NextResponse.json({
         success: false,
         error: 'Invalid profile data',

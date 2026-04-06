@@ -26,6 +26,11 @@ yarn-error.log*
 .env*.local
 .env
 
+# temp/build output files
+build-errors.txt
+build_output.txt
+ts_errors.txt
+
 # vercel
 .vercel
 

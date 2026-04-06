@@ -67,8 +67,8 @@ export default function OptimizationReportEmail({
   totalMonthlyRewards = 0,
   totalYearlyRewards = 0,
   bestOverallCard = null,
-  dashboardUrl = 'https://creditrich.net/users',
-  optimizationUrl = 'https://creditrich.net/users/optimization',
+  dashboardUrl = 'https://gorewards.ca/users',
+  optimizationUrl = 'https://gorewards.ca/users/optimization',
 }: OptimizationReportEmailProps) {
   const monthlyDollars = (totalMonthlyRewards / 100).toFixed(2)
   const yearlyDollars = (totalYearlyRewards / 100).toFixed(2)
@@ -187,14 +187,14 @@ export default function OptimizationReportEmail({
             </Text>
 
             <Text style={signature}>
-              The CreditRich Team
+              The GoRewards Team
             </Text>
           </Section>
 
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              CreditRich — Free credit card optimization for Canadians
+              GoRewards — Free credit card optimization for Canadians
             </Text>
             {userEmail && (
               <Text style={footerText}>Sent to {userEmail}</Text>

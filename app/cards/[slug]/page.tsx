@@ -28,39 +28,7 @@ interface CardPageProps {
   }
 }
 
-// Helper to convert slug to card name pattern
-function slugToNamePattern(slug: string): string[] {
-  const bankAliases: Record<string, string[]> = {
-    'amex': ['American Express', 'Amex'],
-    'american': ['American Express', 'Amex'],
-    'express': ['American Express', 'Amex'],
-    'td': ['TD', 'TD Bank'],
-    'cibc': ['CIBC'],
-    'scotiabank': ['Scotiabank', 'Scotia'],
-    'rbc': ['RBC', 'Royal Bank'],
-    'bmo': ['BMO', 'Bank of Montreal'],
-  }
-  
-  const words = slug.split("-")
-  const patterns: string[] = []
-  
-  for (const word of words) {
-    const lowerWord = word.toLowerCase()
-    if (bankAliases[lowerWord]) {
-      return bankAliases[lowerWord]
-    }
-  }
-  
-  patterns.push(
-    words
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ")
-  )
-  
-  return patterns
-}
-
-// Helper to create slug from card name
+// Helper to create slug from card name (used for affiliate links only)
 function createSlug(cardName: string): string {
   return cardName
     .toLowerCase()
@@ -70,29 +38,22 @@ function createSlug(cardName: string): string {
     .trim()
 }
 
-// Generate static params for all cards
+// Generate static params using DB slug field (single source of truth)
 export async function generateStaticParams() {
   const cards = await prisma.card.findMany({
     where: { isActive: true },
-    select: { name: true }
+    select: { slug: true }
   })
   
-  return cards.map((card: { name: string }) => ({
-    slug: createSlug(card.name)
+  return cards.map((card: { slug: string }) => ({
+    slug: card.slug
   }))
 }
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata({ params }: CardPageProps): Promise<Metadata> {
-  const namePatterns = slugToNamePattern(params.slug)
-
   const card = await prisma.card.findFirst({
-    where: { 
-      OR: namePatterns.map(pattern => ({
-        name: { contains: pattern, mode: 'insensitive' }
-      })),
-      isActive: true 
-    },
+    where: { slug: params.slug, isActive: true },
     include: {
       bonuses: { where: { isActive: true }, take: 1 },
       multipliers: { where: { isActive: true } }
@@ -112,11 +73,10 @@ export async function generateMetadata({ params }: CardPageProps): Promise<Metad
     : 'rewards'
 
   // SEO-optimized title and description
-  const title = `${card.name} Review 2026: Maximize Rewards with ${bonusText} | CreditRich`
+  const title = `${card.name} Review 2026: Maximize Rewards with ${bonusText} | GoRewards`
   const description = `Complete ${card.name} review: ${bonusText} welcome bonus, $${Number(card.annualFee)} annual fee, and top earning rates. See if this ${card.bank} card is right for you. Updated for 2026.`
 
-  // Get site URL from environment or use relative path
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gorewards.ca'
   const ogImageUrl = `${siteUrl}/api/og?title=${encodeURIComponent(card.name)}&subtitle=${encodeURIComponent(`${bonusText} Welcome Bonus`)}&type=card`
 
   return {
@@ -140,6 +100,8 @@ export async function generateMetadata({ params }: CardPageProps): Promise<Metad
       description,
       type: "article",
       url: `${siteUrl}/cards/${params.slug}`,
+      modifiedTime: card.updatedAt.toISOString(),
+      publishedTime: card.createdAt.toISOString(),
       images: [
         {
           url: ogImageUrl,
@@ -162,15 +124,8 @@ export async function generateMetadata({ params }: CardPageProps): Promise<Metad
 }
 
 export default async function CardPage({ params }: CardPageProps) {
-  const namePatterns = slugToNamePattern(params.slug)
-
   const card = await prisma.card.findFirst({
-    where: { 
-      OR: namePatterns.map(pattern => ({
-        name: { contains: pattern, mode: 'insensitive' }
-      })),
-      isActive: true 
-    },
+    where: { slug: params.slug, isActive: true },
     include: {
       bonuses: { where: { isActive: true } },
       multipliers: { where: { isActive: true } }
@@ -183,12 +138,56 @@ export default async function CardPage({ params }: CardPageProps) {
 
   const bonus = card.bonuses[0]
   const cashback = isCashbackCard(card.bonuses)
+  const EXCLUDED_CATEGORIES = ['STUDENT', 'BUSINESS', 'SIGNUP_BONUS']
   const topMultipliers = card.multipliers
+    .filter((m: any) => !EXCLUDED_CATEGORIES.includes(m.category))
     .sort((a: any, b: any) => Number(b.multiplierValue) - Number(a.multiplierValue))
     .slice(0, 5)
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gorewards.ca'
+
+  const financialProductSchema = {
+    "@context": "https://schema.org",
+    "@type": "FinancialProduct",
+    "name": card.name,
+    "description": `${card.name} by ${card.bank}. Annual fee: $${Number(card.annualFee)}. ${bonus ? `Welcome bonus: ${bonus.bonusPoints.toLocaleString()} ${bonus.pointType.replace(/_/g, ' ')} points.` : ''}`,
+    "url": `${siteUrl}/cards/${params.slug}`,
+    "provider": {
+      "@type": "BankOrCreditUnion",
+      "name": card.bank,
+    },
+    "feesAndCommissionsSpecification": `Annual fee: $${Number(card.annualFee)} CAD`,
+    ...(bonus && {
+      "offers": {
+        "@type": "Offer",
+        "name": "Welcome Bonus",
+        "description": `Earn ${bonus.bonusPoints.toLocaleString()} ${bonus.pointType.replace(/_/g, ' ')} points when you spend $${Number(bonus.minimumSpendAmount).toLocaleString()} in the first ${bonus.spendPeriodMonths} months`,
+        "price": Number(bonus.estimatedValue || 0),
+        "priceCurrency": "CAD",
+      }
+    }),
+  }
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": siteUrl },
+      { "@type": "ListItem", "position": 2, "name": "Cards", "item": `${siteUrl}/cards` },
+      { "@type": "ListItem", "position": 3, "name": card.name, "item": `${siteUrl}/cards/${params.slug}` },
+    ],
+  }
+
   return (
     <div className="min-h-screen pb-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(financialProductSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <div className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <div className="max-w-5xl mx-auto mb-12">
@@ -299,33 +298,92 @@ export default async function CardPage({ params }: CardPageProps) {
                 <TrendingUp className="h-6 w-6 text-primary" />
                 Earning Rates
               </CardTitle>
-              <CardDescription>Maximize your rewards in these categories</CardDescription>
+              <CardDescription>Based on $2,000 total monthly spending distributed across categories</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {topMultipliers.map((mult: any, index: number) => (
-                  <div key={mult.id} className="flex items-center justify-between p-4 glass rounded-lg hover:bg-white/[0.02] transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-cyan-400/30 flex items-center justify-center">
-                        <span className="text-xs font-bold text-primary">{index + 1}</span>
+                {topMultipliers.map((mult: any, index: number) => {
+                  const val = Number(mult.multiplierValue)
+                  const pct = val < 1 ? val * 100 : val
+                  
+                  // Distribute $2000 across categories based on typical spending patterns
+                  const categorySpending: Record<string, number> = {
+                    'GROCERY': 500,
+                    'DINING': 400,
+                    'GAS': 300,
+                    'TRAVEL': 300,
+                    'RECURRING': 250,
+                    'ENTERTAINMENT': 150,
+                    'SHOPPING': 100,
+                    'UTILITIES': 200,
+                    'OTHER': 100
+                  }
+                  
+                  const monthlySpending = categorySpending[mult.category] || 200
+                  const annualEarnings = monthlySpending * 12 * val
+                  
+                  return (
+                    <div key={mult.id} className="flex items-center justify-between p-4 glass rounded-lg hover:bg-white/[0.02] transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-cyan-400/30 flex items-center justify-center">
+                          <span className="text-xs font-bold text-primary">{index + 1}</span>
+                        </div>
+                        <div>
+                          <span className="font-medium capitalize block">{mult.category.toLowerCase().replace(/_/g, ' ')}</span>
+                          <span className="text-xs text-muted-foreground">
+                            ${annualEarnings.toFixed(0)}/year on ${monthlySpending.toLocaleString()}/month
+                          </span>
+                        </div>
                       </div>
-                      <span className="font-medium capitalize">{mult.category.toLowerCase().replace(/_/g, ' ')}</span>
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-primary">
+                          ${annualEarnings.toFixed(0)}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {pct % 1 === 0 ? pct.toFixed(0) : pct.toFixed(1)}% back
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {cashback ? (
-                        <>
-                          <span className="text-2xl font-bold text-primary">{(Number(mult.multiplierValue) * 100).toFixed(0)}%</span>
-                          <span className="text-sm text-muted-foreground">back</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="text-2xl font-bold text-primary">{(Number(mult.multiplierValue) * 100).toFixed(0)}x</span>
-                          <span className="text-sm text-muted-foreground">pts</span>
-                        </>
-                      )}
+                  )
+                })}
+                
+                {/* Total Earnings */}
+                <div className="flex items-center justify-between p-4 glass-premium rounded-lg border border-primary/30 mt-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-cyan-400 flex items-center justify-center">
+                      <DollarSign className="h-4 w-4 text-[#090A0F]" />
+                    </div>
+                    <div>
+                      <span className="font-bold block">Total Annual Earnings</span>
+                      <span className="text-xs text-muted-foreground">
+                        On $2,000/month spending
+                      </span>
                     </div>
                   </div>
-                ))}
+                  <div className="text-right">
+                    <div className="text-3xl font-bold text-gradient-teal">
+                      ${topMultipliers.reduce((sum: number, mult: any) => {
+                        const val = Number(mult.multiplierValue)
+                        const categorySpending: Record<string, number> = {
+                          'GROCERY': 500,
+                          'DINING': 400,
+                          'GAS': 300,
+                          'TRAVEL': 300,
+                          'RECURRING': 250,
+                          'ENTERTAINMENT': 150,
+                          'SHOPPING': 100,
+                          'UTILITIES': 200,
+                          'OTHER': 100
+                        }
+                        const monthlySpending = categorySpending[mult.category] || 200
+                        return sum + (monthlySpending * 12 * val)
+                      }, 0).toFixed(0)}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      per year
+                    </div>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -413,6 +471,39 @@ export default async function CardPage({ params }: CardPageProps) {
 
         {/* Disclaimer */}
         <div className="max-w-5xl mx-auto mt-8 pt-6 border-t border-white/5">
+          {/* Internal links to related category pages */}
+          <div className="mb-6">
+            <p className="text-sm text-muted-foreground mb-3">Explore related cards:</p>
+            <div className="flex flex-wrap gap-2">
+              {bonus && (
+                <Link
+                  href={`/cards/by-program/${bonus.pointType.toLowerCase().replace(/_/g, '-')}`}
+                  className="text-xs border border-white/10 rounded-lg px-3 py-1.5 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
+                >
+                  Best {bonus.pointType.replace(/_/g, ' ')} Cards
+                </Link>
+              )}
+              <Link href={`/cards/by-bank/${card.bank.toLowerCase().replace(/\s+/g, '-').replace(/american express/i, 'amex')}`} className="text-xs border border-white/10 rounded-lg px-3 py-1.5 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all">
+                All {card.bank} Cards
+              </Link>
+              {Number(card.annualFee) === 0 && (
+                <Link href="/cards/no-annual-fee" className="text-xs border border-white/10 rounded-lg px-3 py-1.5 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all">
+                  No Annual Fee Cards
+                </Link>
+              )}
+              {topMultipliers[0] && (
+                <Link
+                  href={`/cards/best-for/${topMultipliers[0].category.toLowerCase().replace('grocery', 'groceries').replace('recurring', 'bills')}`}
+                  className="text-xs border border-white/10 rounded-lg px-3 py-1.5 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all"
+                >
+                  Best for {topMultipliers[0].category.replace(/_/g, ' ').toLowerCase().replace('grocery', 'groceries').replace('recurring', 'bills')}
+                </Link>
+              )}
+              <Link href="/compare" className="text-xs border border-white/10 rounded-lg px-3 py-1.5 text-muted-foreground hover:text-primary hover:border-primary/30 transition-all">
+                Compare Cards
+              </Link>
+            </div>
+          </div>
           <p className="text-xs text-gray-500 text-center leading-relaxed">
             Terms and conditions apply. We may earn a commission if you apply through our secure links. 
             All information is accurate as of the date of publication. Please verify current offers on the issuer's website.

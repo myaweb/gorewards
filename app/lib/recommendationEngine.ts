@@ -1,4 +1,9 @@
-import { CardService } from '@/lib/services/cardService'
+﻿import { CardService } from '@/lib/services/cardService'
+
+/**
+ * @deprecated Use EnhancedRecommendationEngine from '@/lib/services/enhancedRecommendationEngine' instead.
+ * This file is kept only for scripts/validate-production-db.ts compatibility.
+ */
 
 /**
  * User spending profile for monthly expenses
@@ -113,3 +118,4 @@ export async function calculateBestCards(
     .sort((a, b) => b.netValue - a.netValue)
     .slice(0, 3)
 }
+

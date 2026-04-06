@@ -36,6 +36,31 @@ export function BlogPostsClient() {
 
   if (!posts.length) return null
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://GoRewards.net'
+
+  const newsArticleSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "GoRewards Blog Posts",
+    "url": "https://blog.creditrich.net",
+    "itemListElement": posts.map((post, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "NewsArticle",
+        "headline": stripHtml(post.title.rendered),
+        "url": `https://blog.creditrich.net/${post.slug}`,
+        "datePublished": post.date,
+        "image": post._embedded?.["wp:featuredmedia"]?.[0]?.source_url,
+        "publisher": {
+          "@type": "Organization",
+          "name": "GoRewards",
+          "url": siteUrl,
+        },
+      },
+    })),
+  }
+
   const scroll = (dir: "left" | "right") => {
     if (!scrollRef.current) return
     const cardWidth = scrollRef.current.offsetWidth / 3
@@ -44,6 +69,10 @@ export function BlogPostsClient() {
 
   return (
     <section className="border-t border-white/5 pt-12 pb-6">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(newsArticleSchema) }}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -109,3 +138,4 @@ export function BlogPostsClient() {
     </section>
   )
 }
+

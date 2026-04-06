@@ -571,3 +571,4 @@ function StrategyCard({ strategy }: { strategy: any }) {
     </Card>
   )
 }
+

@@ -1,4 +1,4 @@
-'use server'
+﻿'use server'
 
 import { auth, currentUser } from '@clerk/nextjs/server'
 import { prisma } from '@/lib/prisma'
@@ -232,3 +232,4 @@ export async function deleteStrategy(strategyId: string) {
     }
   }
 }
+

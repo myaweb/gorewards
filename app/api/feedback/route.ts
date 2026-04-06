@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Beta Feedback API
  * 
  * STEP 8 FIX: Collects user feedback during beta phase
@@ -75,3 +75,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

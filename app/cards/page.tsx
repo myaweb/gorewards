@@ -1,11 +1,11 @@
-import { prisma } from "@/lib/prisma"
+﻿import { prisma } from "@/lib/prisma"
 import { CardsList } from "@/components/cards-list"
 import Link from "next/link"
 import { ChevronRight, Home } from "lucide-react"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Canadian Credit Cards | CreditRich",
+  title: "Canadian Credit Cards | GoRewards",
   description: "Browse 38+ Canadian credit cards. Filter by network, annual fee, and rewards program to find the best card for you.",
 }
 
@@ -76,3 +76,4 @@ export default async function CardsPage() {
     </div>
   )
 }
+

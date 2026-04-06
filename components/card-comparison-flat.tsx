@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,6 +19,8 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowLeftRight,
+  Brain,
+  Loader2,
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -41,9 +43,10 @@ interface CreditCardData {
 interface CardComparisonProps {
   card1: CreditCardData
   card2: CreditCardData
+  initialVerdict?: string | null
 }
 
-export function CardComparison({ card1, card2 }: CardComparisonProps) {
+export function CardComparison({ card1, card2, initialVerdict }: CardComparisonProps) {
   const [spending, setSpending] = useState({
     grocery: 1200,
     gas: 300,
@@ -58,6 +61,92 @@ export function CardComparison({ card1, card2 }: CardComparisonProps) {
     bills: '500',
   })
   const [spendingOpen, setSpendingOpen] = useState(false)
+  
+  // AI Verdict state - initialize with server-side data
+  const [aiVerdict, setAiVerdict] = useState<string | null>(initialVerdict || null)
+  const [verdictLoading, setVerdictLoading] = useState(!initialVerdict)
+  const [verdictError, setVerdictError] = useState<string | null>(null)
+
+  // Fetch AI verdict on mount (only if not provided by server)
+  useEffect(() => {
+    // Skip if we already have verdict from server
+    if (initialVerdict) {
+      return
+    }
+
+    const fetchVerdict = async () => {
+      try {
+        setVerdictLoading(true)
+        setVerdictError(null)
+        const slug = `${card1.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-vs-${card2.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+        
+        const response = await fetch('/api/comparison-verdict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            card1: {
+              id: card1.id,
+              name: card1.name,
+              bank: card1.bank,
+              annualFee: card1.annualFee,
+              bonuses: [{
+                bonusPoints: card1.welcomeBonusValue,
+                pointType: 'points',
+                minimumSpendAmount: 0,
+                spendPeriodMonths: 3
+              }],
+              multipliers: [
+                { category: 'GROCERY', multiplierValue: card1.groceryMultiplier },
+                { category: 'GAS', multiplierValue: card1.gasMultiplier },
+                { category: 'DINING', multiplierValue: card1.diningMultiplier },
+                { category: 'RECURRING', multiplierValue: card1.billsMultiplier },
+              ]
+            },
+            card2: {
+              id: card2.id,
+              name: card2.name,
+              bank: card2.bank,
+              annualFee: card2.annualFee,
+              bonuses: [{
+                bonusPoints: card2.welcomeBonusValue,
+                pointType: 'points',
+                minimumSpendAmount: 0,
+                spendPeriodMonths: 3
+              }],
+              multipliers: [
+                { category: 'GROCERY', multiplierValue: card2.groceryMultiplier },
+                { category: 'GAS', multiplierValue: card2.gasMultiplier },
+                { category: 'DINING', multiplierValue: card2.diningMultiplier },
+                { category: 'RECURRING', multiplierValue: card2.billsMultiplier },
+              ]
+            },
+            slug
+          })
+        })
+
+        const data = await response.json()
+        
+        // Handle rate limit
+        if (response.status === 429) {
+          setVerdictError(data.message || 'Too many requests. Please try again later.')
+          return
+        }
+        
+        if (data.success && data.verdict) {
+          setAiVerdict(data.verdict)
+        } else {
+          setVerdictError(data.error || 'Failed to generate verdict')
+        }
+      } catch (error) {
+        console.error('Error fetching verdict:', error)
+        setVerdictError('Failed to load AI verdict. Please try again later.')
+      } finally {
+        setVerdictLoading(false)
+      }
+    }
+
+    fetchVerdict()
+  }, [card1, card2, initialVerdict])
 
   const commitDraft = (key: keyof typeof spending) => {
     const val = Math.max(0, Number(draft[key]) || 0)
@@ -200,6 +289,80 @@ export function CardComparison({ card1, card2 }: CardComparisonProps) {
             <p className="text-xs text-muted-foreground mt-1">
               Based on your spending — adjust below to personalise
             </p>
+          </div>
+
+          {/* AI Expert Verdict */}
+          <div className="mt-4 rounded-xl relative overflow-hidden border border-purple-400/40 p-4 bg-gradient-to-br from-purple-900/20 via-indigo-900/20 to-cyan-900/20">
+            {/* Animated AI background effects */}
+            <div className="absolute inset-0 -z-0">
+              <div className="absolute top-0 left-0 w-32 h-32 bg-purple-500/10 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute bottom-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '0.5s' }} />
+              {/* Circuit pattern overlay */}
+              <div className="absolute inset-0 opacity-5" style={{
+                backgroundImage: `radial-gradient(circle at 2px 2px, rgba(168, 85, 247, 0.4) 1px, transparent 0)`,
+                backgroundSize: '32px 32px'
+              }} />
+            </div>
+
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-purple-500/30 rounded-lg blur-md animate-pulse" />
+                  <div className="relative p-1.5 rounded-lg bg-gradient-to-br from-purple-500/30 to-cyan-500/30 backdrop-blur-sm">
+                    <Brain className="h-4 w-4 text-purple-300" />
+                  </div>
+                </div>
+                <div>
+                  <span className="text-xs font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-cyan-300 uppercase tracking-wide">
+                    AI Expert Analysis
+                  </span>
+                </div>
+              </div>
+              
+              {verdictLoading && (
+                <div className="flex items-center gap-2 text-sm text-purple-300/80 py-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <span>Analyzing cards...</span>
+                </div>
+              )}
+
+              {verdictError && (
+                <div className="space-y-2">
+                  <p className="text-xs text-red-400/80">{verdictError}</p>
+                  {/* Fallback content */}
+                  <div className="mt-3 pt-3 border-t border-purple-400/20">
+                    <p className="text-sm text-gray-400">
+                      Compare the cards above to see which offers better value for your spending habits. 
+                      Consider annual fees, welcome bonuses, and category multipliers that match your lifestyle.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {aiVerdict && !verdictLoading && (
+                <div className="text-sm text-gray-300 leading-relaxed">
+                  {aiVerdict.split('\n\n').map((paragraph, idx) => {
+                    // Check if this is the "Winner:" line
+                    if (paragraph.startsWith('Winner:')) {
+                      const winnerName = paragraph.replace('Winner:', '').trim()
+                      return (
+                        <div key={idx} className="mt-3 pt-3 border-t border-purple-400/30">
+                          <div className="flex items-center gap-2">
+                            <Award className="h-4 w-4 text-purple-400" />
+                            <span className="text-purple-300 text-xs font-semibold">AI Verdict: </span>
+                          </div>
+                          <p className="font-bold text-base text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-200 to-cyan-200 mt-1">
+                            {winnerName}
+                          </p>
+                        </div>
+                      )
+                    }
+                    return <p key={idx} className="text-gray-300">{paragraph}</p>
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -439,3 +602,4 @@ export function CardComparison({ card1, card2 }: CardComparisonProps) {
     </div>
   )
 }
+

@@ -1,27 +1,28 @@
 "use client"
 
 import Link from 'next/link'
-import { CreditCard, Mail } from 'lucide-react'
+import Image from 'next/image'
+import { Mail } from 'lucide-react'
 
 export function Footer() {
   return (
     <footer className="border-t border-white/[0.08] bg-[#090A0F]">
       <div className="container mx-auto px-4 py-12 sm:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10 mb-12">
 
           {/* Brand */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center space-x-3 group hover:opacity-80 transition-opacity">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
-                <div className="relative bg-gradient-to-br from-primary to-blue-400 p-2 rounded-lg">
-                  <CreditCard className="h-5 w-5 text-background" />
-                </div>
-              </div>
-              <span className="text-lg font-bold text-gradient">CreditRich</span>
+            <Link href="/" className="group hover:opacity-80 transition-opacity inline-block">
+              <Image 
+                src="/images/logo.png" 
+                alt="GoRewards" 
+                width={140} 
+                height={32}
+                className="h-8 w-auto"
+              />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              CreditRich helps Canadians make smarter credit card decisions by telling you exactly which card to use for every purchase.
+              GoRewards helps Canadians make smarter credit card decisions by telling you exactly which card to use for every purchase.
             </p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Turn your everyday spending into a reward strategy.
@@ -33,9 +34,22 @@ export function Footer() {
             <h3 className="font-semibold mb-4 text-white">Product</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li><Link href="/sign-up" className="hover:text-white transition-colors inline-block">Get Started</Link></li>
-              <li><Link href="/#how-it-works" className="hover:text-white transition-colors inline-block">How It Works</Link></li>
-              <li><Link href="/cards" className="hover:text-white transition-colors inline-block">Card Strategy</Link></li>
-              <li><Link href="/compare" className="hover:text-white transition-colors inline-block">Rewards Optimization</Link></li>
+              <li><Link href="/cards" className="hover:text-white transition-colors inline-block">All Cards</Link></li>
+              <li><Link href="/compare" className="hover:text-white transition-colors inline-block">Compare Cards</Link></li>
+              <li><Link href="/cards/no-annual-fee" className="hover:text-white transition-colors inline-block">No Annual Fee Cards</Link></li>
+            </ul>
+          </div>
+
+          {/* Best For */}
+          <div>
+            <h3 className="font-semibold mb-4 text-white">Best Cards For</h3>
+            <ul className="space-y-3 text-sm text-muted-foreground">
+              <li><Link href="/cards/best-for/travel" className="hover:text-white transition-colors inline-block">Travel</Link></li>
+              <li><Link href="/cards/best-for/groceries" className="hover:text-white transition-colors inline-block">Groceries</Link></li>
+              <li><Link href="/cards/best-for/dining" className="hover:text-white transition-colors inline-block">Dining</Link></li>
+              <li><Link href="/cards/best-for/gas" className="hover:text-white transition-colors inline-block">Gas</Link></li>
+              <li><Link href="/cards/by-program/aeroplan" className="hover:text-white transition-colors inline-block">Aeroplan</Link></li>
+              <li><Link href="/cards/by-program/cashback" className="hover:text-white transition-colors inline-block">Cash Back</Link></li>
             </ul>
           </div>
 
@@ -53,9 +67,9 @@ export function Footer() {
             <h3 className="font-semibold mb-4 text-white">Contact</h3>
             <ul className="space-y-3 text-sm text-muted-foreground">
               <li>
-                <a href="mailto:support@creditrich.net" className="hover:text-white transition-colors flex items-center gap-2">
+                <a href="mailto:support@gorewards.ca" className="hover:text-white transition-colors flex items-center gap-2">
                   <Mail className="h-4 w-4" />
-                  support@creditrich.net
+                  support@gorewards.ca
                 </a>
               </li>
             </ul>
@@ -67,7 +81,7 @@ export function Footer() {
         <div className="pt-8 border-t border-white/[0.08]">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
             <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} CreditRich. All rights reserved.
+              © {new Date().getFullYear()} GoRewards. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
@@ -93,3 +107,4 @@ export function Footer() {
     </footer>
   )
 }
+

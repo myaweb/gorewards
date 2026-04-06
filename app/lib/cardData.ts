@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Master List of Canadian Credit Cards
  * 
  * ⚠️ IMPORTANT: This file is for REFERENCE and INITIAL SETUP only!
@@ -571,7 +571,7 @@ export const canadianCardsMasterList: CardData[] = [
     diningMultiplier: 0.04,
     billsMultiplier: 0.015,
     applyLink: "/api/go/simplii-cashback",
-    image: "",
+    image: "/images/cards/simplii-financial-cash-back-visa.png",
   },
 
   // ========================================
@@ -646,3 +646,4 @@ export const canadianCardsMasterList: CardData[] = [
     image: "",
   },
 ]
+

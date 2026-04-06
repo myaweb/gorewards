@@ -1,4 +1,4 @@
-import { currentUser } from '@clerk/nextjs/server'
+﻿import { currentUser } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -350,3 +350,4 @@ function renderDashboard(
     </div>
   )
 }
+

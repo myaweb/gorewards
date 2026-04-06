@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server'
+﻿import { NextRequest } from 'next/server'
 import { POST } from '../recommend/enhanced/route'
 
 // Mock the recommendation engine

@@ -49,6 +49,106 @@ const nextConfig = {
     return config
   },
   
+  // Redirects for old blog URLs moved to blog subdomain
+  async redirects() {
+    return [
+      // Old blog posts - redirect to new blog subdomain
+      {
+        source: '/are-canadian-mortgage-rates-finally-on-the-decline',
+        destination: 'https://blog.creditrich.net/are-canadian-mortgage-rates-finally-on-the-decline',
+        permanent: true,
+      },
+      {
+        source: '/good-credit-score-canada',
+        destination: 'https://blog.creditrich.net/good-credit-score-canada',
+        permanent: true,
+      },
+      {
+        source: '/no-credit-check-loans-canada',
+        destination: 'https://blog.creditrich.net/no-credit-check-loans-canada',
+        permanent: true,
+      },
+      {
+        source: '/best-credit-cards-canada',
+        destination: 'https://blog.creditrich.net/best-credit-cards-canada',
+        permanent: true,
+      },
+      {
+        source: '/no-fee-credit-cards-canada',
+        destination: 'https://blog.creditrich.net/no-fee-credit-cards-canada',
+        permanent: true,
+      },
+      {
+        source: '/how-net-30-accounts-can-boost-your-canadian-business-cash-flow',
+        destination: 'https://blog.creditrich.net/how-net-30-accounts-can-boost-your-canadian-business-cash-flow',
+        permanent: true,
+      },
+      {
+        source: '/mortgages',
+        destination: 'https://blog.creditrich.net/mortgages',
+        permanent: true,
+      },
+      {
+        source: '/improve-credit-score-canada',
+        destination: 'https://blog.creditrich.net/improve-credit-score-canada',
+        permanent: true,
+      },
+      {
+        source: '/forex-and-business-credit-canada-update',
+        destination: 'https://blog.creditrich.net/forex-and-business-credit-canada-update',
+        permanent: true,
+      },
+      {
+        source: '/multiple-orders-vendor-business-credit-canada',
+        destination: 'https://blog.creditrich.net/multiple-orders-vendor-business-credit-canada',
+        permanent: true,
+      },
+      {
+        source: '/personal-loans-canada',
+        destination: 'https://blog.creditrich.net/personal-loans-canada',
+        permanent: true,
+      },
+      {
+        source: '/5-essential-tips-for-first-time-home-buyers-in-canada',
+        destination: 'https://blog.creditrich.net/5-essential-tips-for-first-time-home-buyers-in-canada',
+        permanent: true,
+      },
+      {
+        source: '/taxes',
+        destination: 'https://blog.creditrich.net/taxes',
+        permanent: true,
+      },
+      {
+        source: '/7-tips-for-securing-the-best-personal-loan-in-canada',
+        destination: 'https://blog.creditrich.net/7-tips-for-securing-the-best-personal-loan-in-canada',
+        permanent: true,
+      },
+      // Catch-all for any other blog-related paths
+      {
+        source: '/tag/:slug*',
+        destination: 'https://blog.creditrich.net/tag/:slug*',
+        permanent: true,
+      },
+      {
+        source: '/category/:slug*',
+        destination: 'https://blog.creditrich.net/category/:slug*',
+        permanent: true,
+      },
+      // Redirect /lander to homepage
+      {
+        source: '/lander',
+        destination: '/',
+        permanent: true,
+      },
+      // Redirect /home to root (route group issue)
+      {
+        source: '/home',
+        destination: '/',
+        permanent: true,
+      },
+    ]
+  },
+
   // Headers for Core Web Vitals
   async headers() {
     return [

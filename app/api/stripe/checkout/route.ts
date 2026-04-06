@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { currentUser } from '@clerk/nextjs/server'
 import { stripe } from '@/lib/stripe'
 import { prisma } from '@/lib/prisma'
@@ -52,8 +52,8 @@ export async function POST(req: NextRequest) {
           price_data: {
             currency: 'cad',
             product_data: {
-              name: 'CreditRich Donation',
-              description: `Thank you for supporting CreditRich with a $${amount} CAD donation`,
+              name: 'GoRewards Donation',
+              description: `Thank you for supporting GoRewards with a $${amount} CAD donation`,
             },
             unit_amount: amount * 100,
           },
@@ -78,3 +78,4 @@ export async function POST(req: NextRequest) {
     )
   }
 }
+

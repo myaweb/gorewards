@@ -1,6 +1,6 @@
-export const metadata = {
-  title: 'Terms of Service | CreditRich',
-  description: 'Terms of Service for CreditRich - Rules and guidelines for using our service.',
+﻿export const metadata = {
+  title: 'Terms of Service | GoRewards',
+  description: 'Terms of Service for GoRewards - Rules and guidelines for using our service.',
 }
 
 export default function TermsPage() {
@@ -14,19 +14,19 @@ export default function TermsPage() {
             Effective Date: March 13, 2026
           </p>
           <p className="text-muted-foreground/80 mt-4 text-base leading-relaxed max-w-3xl">
-            These Terms govern your use of CreditRich's credit card optimization platform. By using our Service, you agree to these Terms in full.
+            These Terms govern your use of GoRewards's credit card optimization platform. By using our Service, you agree to these Terms in full.
           </p>
         </div>
 
         <article className="prose prose-invert prose-cyan max-w-none">
           <h2>Agreement to Terms</h2>
           <p>
-            By accessing or using CreditRich ("Service," "we," "our," or "us"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these Terms, you may not access the Service.
+            By accessing or using GoRewards ("Service," "we," "our," or "us"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these Terms, you may not access the Service.
           </p>
 
           <h2>Description of Service</h2>
           <p>
-            CreditRich is a credit card rewards optimization platform that provides:
+            GoRewards is a credit card rewards optimization platform that provides:
           </p>
           <ul>
             <li>Data-driven credit card recommendations using deterministic algorithms</li>
@@ -54,7 +54,7 @@ export default function TermsPage() {
             <li>Notify us immediately of any unauthorized access</li>
           </ul>
           <p className="text-sm text-muted-foreground/80 mt-3">
-            Your authentication credentials are managed by Clerk and are not stored by CreditRich.
+            Your authentication credentials are managed by Clerk and are not stored by GoRewards.
           </p>
 
           <h3>Account Termination</h3>
@@ -154,13 +154,13 @@ export default function TermsPage() {
               <li>Accept that we are not responsible for Plaid service interruptions or connection issues</li>
             </ul>
             <p className="text-sm text-muted-foreground/70 mt-4">
-              Important: Your bank login credentials are handled exclusively by Plaid and are never accessible to CreditRich. We receive only aggregated transaction information necessary for spend analysis.
+              Important: Your bank login credentials are handled exclusively by Plaid and are never accessible to GoRewards. We receive only aggregated transaction information necessary for spend analysis.
             </p>
           </div>
 
           <h2>Intellectual Property</h2>
           <p>
-            The Service and its original content, features, and functionality are owned by CreditRich and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws. You may not copy, modify, distribute, or reverse engineer any part of the Service without our express written permission.
+            The Service and its original content, features, and functionality are owned by GoRewards and are protected by international copyright, trademark, patent, trade secret, and other intellectual property laws. You may not copy, modify, distribute, or reverse engineer any part of the Service without our express written permission.
           </p>
 
           <h2>User Content and Data</h2>
@@ -187,7 +187,7 @@ export default function TermsPage() {
 
           <h2>Limitation of Liability</h2>
           <p>
-            To the maximum extent permitted by law, CreditRich shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or other intangible losses resulting from:
+            To the maximum extent permitted by law, GoRewards shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including loss of profits, data, or other intangible losses resulting from:
           </p>
           <ul>
             <li>Your use or inability to use the Service</li>
@@ -203,7 +203,7 @@ export default function TermsPage() {
 
           <h2>Indemnification</h2>
           <p>
-            You agree to indemnify, defend, and hold harmless CreditRich and its affiliates, officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including reasonable attorneys' fees) arising from:
+            You agree to indemnify, defend, and hold harmless GoRewards and its affiliates, officers, directors, employees, and agents from any claims, damages, losses, liabilities, and expenses (including reasonable attorneys' fees) arising from:
           </p>
           <ul>
             <li>Your use of the Service</li>
@@ -240,18 +240,18 @@ export default function TermsPage() {
 
           <h2>Entire Agreement</h2>
           <p>
-            These Terms, together with our Privacy Policy, constitute the entire agreement between you and CreditRich regarding the Service and supersede all prior agreements and understandings.
+            These Terms, together with our Privacy Policy, constitute the entire agreement between you and GoRewards regarding the Service and supersede all prior agreements and understandings.
           </p>
 
           <h2>Contact Information</h2>
           <p>If you have any questions about these Terms, please contact us:</p>
           <ul>
-            <li>Email: <a href="mailto:legal@CreditRich.com" className="text-cyan-400 hover:text-cyan-300">legal@CreditRich.com</a></li>
+            <li>Email: <a href="mailto:legal@GoRewards.com" className="text-cyan-400 hover:text-cyan-300">legal@GoRewards.com</a></li>
           </ul>
 
           <div className="mt-12 pt-8 border-t border-border/40">
             <p className="text-sm text-muted-foreground/70">
-              These Terms of Service were last updated on March 13, 2026. By using CreditRich, you acknowledge that you have read, understood, and agree to be bound by these Terms.
+              These Terms of Service were last updated on March 13, 2026. By using GoRewards, you acknowledge that you have read, understood, and agree to be bound by these Terms.
             </p>
           </div>
         </article>
@@ -259,3 +259,5 @@ export default function TermsPage() {
     </div>
   )
 }
+
+
