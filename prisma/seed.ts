@@ -44,11 +44,15 @@ function determinePointType(cardData: CardData): PointType {
   if (name.includes('cash') || name.includes('cashback')) return PointType.CASHBACK
   if (bank.includes('american express') || cardData.network === 'Amex') return PointType.MEMBERSHIP_REWARDS
   
+  // PC cards use PC Optimum points
+  if (bank.includes('pc financial')) return PointType.OTHER
+  
   // Default based on bank
   if (bank.includes('td') || bank.includes('cibc')) return PointType.AEROPLAN
   if (bank.includes('rbc')) return PointType.AVION
   if (bank.includes('scotia')) return PointType.SCENE_PLUS
-  if (bank.includes('bmo')) return PointType.CASHBACK
+  if (bank.includes('bmo')) return PointType.OTHER // BMO Rewards points
+  if (bank.includes('national bank')) return PointType.OTHER // National Bank rewards
   
   return PointType.CASHBACK // Default fallback
 }
@@ -102,6 +106,11 @@ async function seedCards() {
       let card
       if (existingCard) {
         // Update existing card
+        // Preserve existing imageUrl if cardData.image is empty
+        const imageUrl = cardData.image 
+          ? cardData.image 
+          : (existingCard.imageUrl || "/images/cards/placeholder-card.svg")
+        
         card = await prisma.card.update({
           where: { id: existingCard.id },
           data: {
@@ -110,7 +119,7 @@ async function seedCards() {
             network,
             annualFee: cardData.annualFee,
             baseRewardRate: cardData.baseRewardRate,
-            imageUrl: cardData.image || "/images/cards/placeholder-card.svg",
+            imageUrl,
             affiliateLink: cardData.applyLink,
             updatedAt: new Date()
           }
@@ -175,11 +184,13 @@ async function seedCards() {
       }
       
       // Create multipliers
+      // IMPORTANT: DB stores multipliers as decimals (0.05 = 5x points)
+      // cardData has them as whole numbers (5 = 5x), so divide by 100
       const multipliers = [
-        { category: SpendingCategory.GROCERY, value: cardData.groceryMultiplier },
-        { category: SpendingCategory.GAS, value: cardData.gasMultiplier },
-        { category: SpendingCategory.DINING, value: cardData.diningMultiplier },
-        { category: SpendingCategory.RECURRING, value: cardData.billsMultiplier }
+        { category: SpendingCategory.GROCERY, value: cardData.groceryMultiplier / 100 },
+        { category: SpendingCategory.GAS, value: cardData.gasMultiplier / 100 },
+        { category: SpendingCategory.DINING, value: cardData.diningMultiplier / 100 },
+        { category: SpendingCategory.RECURRING, value: cardData.billsMultiplier / 100 }
       ]
       
       for (const multiplier of multipliers) {
@@ -197,7 +208,8 @@ async function seedCards() {
               where: { id: existingMultiplier.id },
               data: {
                 multiplierValue: multiplier.value,
-                description: `${multiplier.value}x points on ${multiplier.category.toLowerCase()}`,
+                // Display value is 100x the stored value (0.05 stored = 5x displayed)
+                description: `${(multiplier.value * 100).toFixed(1)}x points on ${multiplier.category.toLowerCase()}`,
                 updatedAt: new Date()
               }
             })
@@ -207,7 +219,8 @@ async function seedCards() {
                 cardId: card.id,
                 category: multiplier.category,
                 multiplierValue: multiplier.value,
-                description: `${multiplier.value}x points on ${multiplier.category.toLowerCase()}`,
+                // Display value is 100x the stored value (0.05 stored = 5x displayed)
+                description: `${(multiplier.value * 100).toFixed(1)}x points on ${multiplier.category.toLowerCase()}`,
                 isActive: true
               }
             })
@@ -231,11 +244,11 @@ async function seedGoals() {
   
   const goals = [
     {
-      name: "Tokyo Flight",
-      requiredPoints: 75000,
+      name: "Domestic Flight",
+      requiredPoints: 25000,
       pointType: PointType.AEROPLAN,
-      description: "Round-trip flight to Tokyo in economy class",
-      estimatedValue: 1200
+      description: "Round-trip flight within Canada in economy class",
+      estimatedValue: 400
     },
     {
       name: "Europe Flight", 
@@ -245,11 +258,11 @@ async function seedGoals() {
       estimatedValue: 800
     },
     {
-      name: "Caribbean Flight",
-      requiredPoints: 35000,
+      name: "Tokyo Flight",
+      requiredPoints: 75000,
       pointType: PointType.AEROPLAN,
-      description: "Round-trip flight to Caribbean in economy class",
-      estimatedValue: 500
+      description: "Round-trip flight to Tokyo in economy class",
+      estimatedValue: 1200
     },
     {
       name: "Luxury Hotel Stay",

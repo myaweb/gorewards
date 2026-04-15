@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
+import { PointType } from "@prisma/client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,6 +17,7 @@ import {
 } from "lucide-react"
 import { CardImage } from "@/components/card-image"
 import Link from "next/link"
+import { formatRewardRate } from "@/lib/utils/formatRewards"
 
 // Determine if card earns cashback or points based on bonus point type
 function isCashbackCard(bonuses: any[]): boolean {
@@ -304,7 +306,6 @@ export default async function CardPage({ params }: CardPageProps) {
               <div className="space-y-3">
                 {topMultipliers.map((mult: any, index: number) => {
                   const val = Number(mult.multiplierValue)
-                  const pct = val < 1 ? val * 100 : val
                   
                   // Distribute $2000 across categories based on typical spending patterns
                   const categorySpending: Record<string, number> = {
@@ -320,7 +321,15 @@ export default async function CardPage({ params }: CardPageProps) {
                   }
                   
                   const monthlySpending = categorySpending[mult.category] || 200
-                  const annualEarnings = monthlySpending * 12 * val
+                  
+                  // Get the first bonus to determine point type
+                  const pointType = card.bonuses[0]?.pointType
+                  
+                  // Calculate earnings: for points cards, divide by 100 to get dollar value
+                  // For cashback cards, val is already a decimal (0.05 = 5%)
+                  const annualEarnings = pointType === PointType.CASHBACK 
+                    ? monthlySpending * 12 * val 
+                    : (monthlySpending * 12 * val) / 100
                   
                   return (
                     <div key={mult.id} className="flex items-center justify-between p-4 glass rounded-lg hover:bg-white/[0.02] transition-colors">
@@ -340,7 +349,7 @@ export default async function CardPage({ params }: CardPageProps) {
                           ${annualEarnings.toFixed(0)}
                         </div>
                         <div className="text-xs text-muted-foreground">
-                          {pct % 1 === 0 ? pct.toFixed(0) : pct.toFixed(1)}% back
+                          {formatRewardRate(val, pointType)}
                         </div>
                       </div>
                     </div>
@@ -376,7 +385,11 @@ export default async function CardPage({ params }: CardPageProps) {
                           'OTHER': 100
                         }
                         const monthlySpending = categorySpending[mult.category] || 200
-                        return sum + (monthlySpending * 12 * val)
+                        const pointType = card.bonuses[0]?.pointType
+                        const earnings = pointType === PointType.CASHBACK 
+                          ? monthlySpending * 12 * val 
+                          : (monthlySpending * 12 * val) / 100
+                        return sum + earnings
                       }, 0).toFixed(0)}
                     </div>
                     <div className="text-xs text-muted-foreground">

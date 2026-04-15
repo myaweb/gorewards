@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { Mail } from 'lucide-react'
+import { Mail, Twitter, Instagram, Linkedin, Facebook } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -73,6 +73,28 @@ export function Footer() {
                 </a>
               </li>
             </ul>
+            
+            <h3 className="font-semibold mb-4 mt-8 text-white">Follow Us</h3>
+            <div className="flex items-center gap-3">
+              <a 
+                href="https://x.com/gorewardsca" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:bg-cyan-500/10 hover:border-cyan-500/30 transition-all"
+                aria-label="Follow us on X (Twitter)"
+              >
+                <Twitter className="h-4 w-4" />
+              </a>
+              <a 
+                href="https://www.instagram.com/gorewards.ca" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-9 h-9 rounded-lg bg-white/5 border border-white/10 text-muted-foreground hover:text-white hover:bg-gradient-to-br hover:from-purple-500/10 hover:to-pink-500/10 hover:border-pink-500/30 transition-all"
+                aria-label="Follow us on Instagram"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+            </div>
           </div>
 
         </div>
@@ -80,9 +102,31 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-white/[0.08]">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} GoRewards. All rights reserved.
-            </p>
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <p className="text-sm text-muted-foreground">
+                © {new Date().getFullYear()} GoRewards. All rights reserved.
+              </p>
+              <div className="flex items-center gap-2">
+                <a 
+                  href="https://x.com/gorewardsca" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-cyan-400 hover:bg-cyan-500/10 transition-all"
+                  aria-label="X (Twitter)"
+                >
+                  <Twitter className="h-3.5 w-3.5" />
+                </a>
+                <a 
+                  href="https://www.instagram.com/gorewards.ca" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-pink-400 hover:bg-pink-500/10 transition-all"
+                  aria-label="Instagram"
+                >
+                  <Instagram className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            </div>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
               <span className="text-white/20">•</span>

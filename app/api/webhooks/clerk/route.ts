@@ -32,7 +32,7 @@ async function sendWelcomeEmail(
   clerkUserId: string
 ): Promise<boolean> {
   try {
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.net'}/users`
+    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.ca'}/users`
 
     const emailHtml = await render(
       WelcomeEmail({

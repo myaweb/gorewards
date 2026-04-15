@@ -18,6 +18,7 @@ import { BlogPostsClient } from "@/components/blog-posts-client"
 import { FeaturedCards } from "@/components/featured-cards"
 import { HeroCalculator } from "@/components/hero-calculator"
 import type { SpendingFormData } from "@/components/spending-form"
+import { formatRewardRate } from '@/lib/utils/formatRewards'
 
 export default function Home() {
   const [roadmap, setRoadmap] = useState<OptimalRoadmap | null>(null)
@@ -38,6 +39,95 @@ export default function Home() {
     window.addEventListener('reset-home', handler)
     return () => window.removeEventListener('reset-home', handler)
   }, [])
+
+  // Check for calculation results on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const showResults = urlParams.get('showResults')
+    
+    if (showResults === 'true') {
+      const resultsData = sessionStorage.getItem('calculationResults')
+      if (resultsData) {
+        sessionStorage.removeItem('calculationResults')
+        const { enhancedData, cardsData, formData } = JSON.parse(resultsData)
+        displayResults(enhancedData, cardsData, formData)
+      }
+    }
+  }, [])
+
+  const displayResults = (enhancedData: any, cardsData: any, formData: any) => {
+    setGoalName(formData.goalName)
+
+    if (enhancedData.success && enhancedData.data.recommendations.length > 0) {
+      const topRec = enhancedData.data.recommendations[0]
+      setRecommendedCard({
+        name: topRec.card.name,
+        bank: topRec.card.bank,
+        network: topRec.card.network,
+        annualFee: topRec.card.annualFee,
+        imageUrl: topRec.card.imageUrl,
+        affiliateLink: topRec.card.affiliateLink,
+        slug: topRec.card.slug,
+        netValue: topRec.scores.expectedYearlyValue / 100,
+        categoryEarnings: topRec.scores.yearlySpendRewards / 100,
+        welcomeBonusValue: topRec.scores.signupBonusValue / 100,
+        groceryMultiplier: topRec.breakdown.categoryRewards.find((r: any) => r.category === 'grocery')?.multiplier || 0.01,
+        gasMultiplier: topRec.breakdown.categoryRewards.find((r: any) => r.category === 'gas')?.multiplier || 0.01,
+        diningMultiplier: topRec.breakdown.categoryRewards.find((r: any) => r.category === 'dining')?.multiplier || 0.01,
+        billsMultiplier: topRec.breakdown.categoryRewards.find((r: any) => r.category === 'bills')?.multiplier || 0.01,
+        applyLink: topRec.card.affiliateLink || '#',
+        approvalProbability: topRec.scores.approvalProbability,
+        confidence: topRec.confidence,
+        monthsToGoal: topRec.monthsToGoal,
+        explanation: topRec.explanation,
+        allRecommendations: enhancedData.data.recommendations,
+      })
+    }
+
+    const spendingProfile = {
+      grocery: formData.grocery,
+      gas: formData.gas,
+      dining: formData.dining,
+      recurring: formData.bills,
+    }
+
+    const goal = {
+      id: formData.goalId,
+      name: formData.goalName,
+      requiredPoints: formData.requiredPoints,
+      pointType: formData.pointType,
+    }
+
+    let availableCards: CardWithDetails[] = []
+    if (cardsData.success && cardsData.data) {
+      const enhancedOrder = enhancedData?.data?.recommendations?.map((r: any) => r.card.id) || []
+      const allCards = cardsData.data as CardWithDetails[]
+      
+      const ordered: CardWithDetails[] = []
+      for (const id of enhancedOrder) {
+        const card = allCards.find((c: CardWithDetails) => c.id === id)
+        if (card) ordered.push(card)
+      }
+      for (const card of allCards) {
+        if (!enhancedOrder.includes(card.id)) ordered.push(card)
+      }
+      
+      availableCards = ordered
+    }
+
+    const result = RouteEngine.calculateOptimalRoadmap(
+      spendingProfile,
+      goal,
+      availableCards,
+      true
+    )
+
+    setRoadmap(result)
+
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, 100)
+  }
 
   const handleSaveStrategy = async () => {
     if (!roadmap || roadmap.status !== 'success') return
@@ -71,159 +161,11 @@ export default function Home() {
   }
 
   const handleGenerateRoute = async (formData: SpendingFormData) => {
-    setIsLoading(true)
-    setGoalName(formData.goalName)
-
-    setTimeout(() => {
-      document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }, 100)
-
-    await new Promise(resolve => setTimeout(resolve, 2000))
-
-    try {
-      // Use enhanced recommendation engine with point valuations and approval scoring
-      const enhancedResponse = await fetch('/api/recommend/enhanced', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          spending: {
-            grocery: formData.grocery,
-            gas: formData.gas,
-            dining: formData.dining,
-            bills: formData.bills,
-          },
-          creditScore: 'GOOD',
-          preferredPointTypes: [formData.pointType],
-          prioritizeSignupBonus: true,
-          timeHorizon: 'LONG_TERM',
-          goal: {
-            name: formData.goalName,
-            requiredPoints: formData.requiredPoints,
-            pointType: formData.pointType,
-          },
-        }),
-      })
-
-      if (!enhancedResponse.ok) {
-        throw new Error('Failed to get recommendations')
-      }
-
-      const enhancedData = await enhancedResponse.json()
-
-      if (enhancedData.success && enhancedData.data.recommendations.length > 0) {
-        const topRec = enhancedData.data.recommendations[0]
-        // Map enhanced response to the format the UI expects
-        setRecommendedCard({
-          name: topRec.card.name,
-          bank: topRec.card.bank,
-          network: topRec.card.network,
-          annualFee: topRec.card.annualFee,
-          imageUrl: topRec.card.imageUrl,
-          affiliateLink: topRec.card.affiliateLink,
-          slug: topRec.card.slug,
-          netValue: topRec.scores.expectedYearlyValue / 100,
-          categoryEarnings: topRec.scores.yearlySpendRewards / 100,
-          welcomeBonusValue: topRec.scores.signupBonusValue / 100,
-          groceryMultiplier: topRec.breakdown.categoryRewards.find((r: any) => r.category === 'grocery')?.multiplier || 0.01,
-          gasMultiplier: topRec.breakdown.categoryRewards.find((r: any) => r.category === 'gas')?.multiplier || 0.01,
-          diningMultiplier: topRec.breakdown.categoryRewards.find((r: any) => r.category === 'dining')?.multiplier || 0.01,
-          billsMultiplier: topRec.breakdown.categoryRewards.find((r: any) => r.category === 'bills')?.multiplier || 0.01,
-          applyLink: topRec.card.affiliateLink || '#',
-          approvalProbability: topRec.scores.approvalProbability,
-          confidence: topRec.confidence,
-          monthsToGoal: topRec.monthsToGoal,
-          explanation: topRec.explanation,
-          allRecommendations: enhancedData.data.recommendations,
-        })
-      }
-
-      posthog?.capture('recommendation_completed', {
-        engine: 'enhanced',
-        top_card: enhancedData.data?.recommendations?.[0]?.card?.name,
-        total_recommendations: enhancedData.data?.recommendations?.length,
-        spending_profile: {
-          grocery: formData.grocery,
-          gas: formData.gas,
-          dining: formData.dining,
-          bills: formData.bills
-        }
-      })
-
-      const spendingProfile = {
-        grocery: formData.grocery,
-        gas: formData.gas,
-        dining: formData.dining,
-        recurring: formData.bills,
-      }
-
-      const goal = {
-        id: formData.goalId,
-        name: formData.goalName,
-        requiredPoints: formData.requiredPoints,
-        pointType: formData.pointType,
-      }
-
-      let availableCards: CardWithDetails[] = []
-      try {
-        const response = await fetch(`/api/cards?pointType=${formData.pointType}`)
-        const data = await response.json()
-        
-        if (data.success && data.data) {
-          // Sort cards by enhanced engine's recommendation order
-          const enhancedOrder = enhancedData?.data?.recommendations?.map((r: any) => r.card.id) || []
-          const allCards = data.data as CardWithDetails[]
-          
-          // Put enhanced-recommended cards first, in order
-          const ordered: CardWithDetails[] = []
-          for (const id of enhancedOrder) {
-            const card = allCards.find((c: CardWithDetails) => c.id === id)
-            if (card) ordered.push(card)
-          }
-          // Add remaining cards that weren't in enhanced results
-          for (const card of allCards) {
-            if (!enhancedOrder.includes(card.id)) ordered.push(card)
-          }
-          
-          availableCards = ordered
-        } else {
-          console.warn('API returned no cards:', data)
-          availableCards = []
-        }
-      } catch (dbError) {
-        console.warn('API fetch failed:', dbError)
-        availableCards = []
-      }
-
-      const result = RouteEngine.calculateOptimalRoadmap(
-        spendingProfile,
-        goal,
-        availableCards,
-        true // Cards are pre-ranked by enhanced engine
-      )
-
-      setRoadmap(result)
-
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }, 100)
-    } catch (error) {
-      console.error("Error generating roadmap:", error)
-      setRoadmap({
-        status: 'no_cards_found',
-        steps: [],
-        totalMonths: 0,
-        totalPointsEarned: 0,
-        goalAchieved: false,
-        efficiency: {
-          pointsPerDollar: 0,
-          monthsToGoal: 0,
-          totalSpend: 0,
-        },
-        errorMessage: 'An unexpected error occurred while fetching card data',
-      })
-    } finally {
-      setIsLoading(false)
-    }
+    // Store form data in sessionStorage
+    sessionStorage.setItem('calculatorFormData', JSON.stringify(formData))
+    
+    // Redirect to loading page
+    window.location.href = '/analyze'
   }
 
   return (
@@ -237,10 +179,30 @@ export default function Home() {
       {/* Hero Section — hidden when results are shown */}
       {!roadmap && (
       <div className="relative overflow-hidden">
-        {/* Background image */}
-        <img src="/images/heroback.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-25 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B0F]/60 via-[#0A0B0F]/40 to-[#0A0B0F] pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(6,182,212,0.08),transparent)] pointer-events-none" />
+        {/* Modern gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0A0B0F] via-[#0D1117] to-[#0A0B0F]">
+          {/* Animated gradient orbs */}
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '4s' }} />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary/15 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '6s', animationDelay: '1s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: '8s', animationDelay: '2s' }} />
+          
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 opacity-[0.15]" style={{
+            backgroundImage: `
+              linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            maskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 0%, transparent 70%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 80% 60% at 50% 40%, black 0%, transparent 70%)'
+          }} />
+          
+          {/* Radial gradient overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(6,182,212,0.15),transparent)]" />
+        </div>
+        
+        {/* Top gradient fade */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0A0B0F]/60 via-transparent to-[#0A0B0F] pointer-events-none" />
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10">
           <div className="text-center mb-8">
@@ -409,7 +371,7 @@ export default function Home() {
             <div id="results-section" className="space-y-6">
               {recommendedCard && (
                 <Card className="glass-premium border-primary/30 glow-teal">
-                  <CardHeader className="sticky top-[80px] z-20 bg-[#0A0B10]/90 backdrop-blur-md rounded-t-xl border-b border-primary/10">
+                  <CardHeader className="rounded-t-xl border-b border-primary/10">
                     <div className="flex items-start justify-between">
                       <div>
                         <CardTitle className="text-3xl font-bold text-gradient mb-2">
@@ -464,19 +426,19 @@ export default function Home() {
                           <div className="grid grid-cols-2 gap-2">
                             <div className="text-xs bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.05]">
                               <span className="text-gray-400">Grocery:</span>
-                              <span className="ml-2 font-semibold text-primary">{(recommendedCard.groceryMultiplier * 100).toFixed(0)}x</span>
+                              <span className="ml-2 font-semibold text-primary">{formatRewardRate(recommendedCard.groceryMultiplier)}</span>
                             </div>
                             <div className="text-xs bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.05]">
                               <span className="text-gray-400">Gas:</span>
-                              <span className="ml-2 font-semibold text-primary">{(recommendedCard.gasMultiplier * 100).toFixed(0)}x</span>
+                              <span className="ml-2 font-semibold text-primary">{formatRewardRate(recommendedCard.gasMultiplier)}</span>
                             </div>
                             <div className="text-xs bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.05]">
                               <span className="text-gray-400">Dining:</span>
-                              <span className="ml-2 font-semibold text-primary">{(recommendedCard.diningMultiplier * 100).toFixed(0)}x</span>
+                              <span className="ml-2 font-semibold text-primary">{formatRewardRate(recommendedCard.diningMultiplier)}</span>
                             </div>
                             <div className="text-xs bg-white/[0.02] rounded-lg px-3 py-2 border border-white/[0.05]">
                               <span className="text-gray-400">Bills:</span>
-                              <span className="ml-2 font-semibold text-primary">{(recommendedCard.billsMultiplier * 100).toFixed(0)}x</span>
+                              <span className="ml-2 font-semibold text-primary">{formatRewardRate(recommendedCard.billsMultiplier)}</span>
                             </div>
                           </div>
                         </div>

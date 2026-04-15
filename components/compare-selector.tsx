@@ -110,7 +110,7 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
     const comparisonUrl = `/compare/${slug1}-vs-${slug2}`
     
     // Navigate to loading page with target URL
-    const loadingUrl = `/compare/loading-comparison?url=${encodeURIComponent(comparisonUrl)}`
+    const loadingUrl = `/compare/preparing?url=${encodeURIComponent(comparisonUrl)}`
     window.location.href = loadingUrl
   }
 
@@ -351,45 +351,6 @@ export function CompareSelector({ cards }: CompareSelectorProps) {
                 <ArrowRight className="ml-2 h-5 w-5 animate-[slide-x_1s_ease-in-out_infinite]" />
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Feature Highlights */}
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-        <Card className="glass-premium border-primary/20">
-          <CardContent className="p-6">
-            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-              <Sparkles className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-semibold mb-2">Fees & First-Year Value</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Compare annual fees, welcome bonuses, and net value calculations for your first year.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-premium border-primary/20">
-          <CardContent className="p-6">
-            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-              <Zap className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-semibold mb-2">Category Rewards</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              See earning rates across dining, travel, groceries, gas, and recurring bills.
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="glass-premium border-primary/20">
-          <CardContent className="p-6">
-            <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mb-4">
-              <ArrowRight className="h-6 w-6 text-primary" />
-            </div>
-            <h3 className="font-semibold mb-2">Spending-Based Analysis</h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Adjust your spending to see which card delivers better value for your lifestyle.
-            </p>
           </CardContent>
         </Card>
       </div>

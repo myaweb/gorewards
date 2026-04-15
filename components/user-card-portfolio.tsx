@@ -399,6 +399,43 @@ export function UserCardPortfolio({ onAddCard }: UserCardPortfolioProps) {
                     <div className="pt-2 border-t border-white/5">
                       {(() => {
                         const monthlyValue = calcMonthlyValue(cardStatus.multipliers, spendingProfile)
+                        
+                        // AI Suggestion: Annual fee decision
+                        if (showFeeWarning && monthlyValue !== null) {
+                          const yearlyValue = monthlyValue * 12
+                          const annualFee = cardStatus.annualFee || 0
+                          const netValue = yearlyValue - annualFee
+                          
+                          if (netValue > 0) {
+                            return (
+                              <div className="flex gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                                <Sparkles className="h-4 w-4 text-green-400 flex-shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                  <p className="text-xs font-semibold text-green-400">AI Recommendation: Keep this card</p>
+                                  <p className="text-xs text-gray-300 mt-1">
+                                    This card earns you ${yearlyValue.toFixed(0)}/year with your spending. 
+                                    After the ${annualFee} annual fee, you still gain ${netValue.toFixed(0)}/year.
+                                  </p>
+                                </div>
+                              </div>
+                            )
+                          } else {
+                            return (
+                              <div className="flex gap-2 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                                <AlertCircle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                  <p className="text-xs font-semibold text-amber-400">AI Recommendation: Consider downgrading</p>
+                                  <p className="text-xs text-gray-300 mt-1">
+                                    This card earns you ${yearlyValue.toFixed(0)}/year, but the ${annualFee} annual fee 
+                                    means you're losing ${Math.abs(netValue).toFixed(0)}/year. Look for a no-fee alternative.
+                                  </p>
+                                </div>
+                              </div>
+                            )
+                          }
+                        }
+                        
+                        // Regular optimization hint
                         if (monthlyValue !== null) {
                           return (
                             <p className="text-xs text-muted-foreground flex items-center gap-1.5">

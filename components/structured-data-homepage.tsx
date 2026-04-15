@@ -5,7 +5,7 @@
  */
 
 export function StructuredDataHomepage() {
-  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.net'
+  const siteUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.ca'
 
   const organizationSchema = {
     "@context": "https://schema.org",

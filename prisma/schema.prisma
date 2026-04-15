@@ -292,14 +292,15 @@ model PerformanceMetric {
 }
 
 model SavedStrategy {
-  id          String   @id @default(cuid())
-  userId      String
-  goalName    String
-  roadmapData Json
-  isCompleted Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  userId         String
+  goalName       String
+  roadmapData    Json
+  isCompleted    Boolean  @default(false)
+  completedSteps Json     @default("[]")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
   @@index([isCompleted])
@@ -506,21 +507,6 @@ model UserProfile {
   @@index([isComplete])
   @@index([preferredRewardType])
   @@index([userId])
-}
-
-model Waitlist {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  source    String   @default("homepage")
-  status    String   @default("pending")
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime
-
-  @@index([createdAt])
-  @@index([email])
-  @@index([status])
 }
 
 enum AuditCategory {

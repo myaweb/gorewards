@@ -1,38 +1,55 @@
-import { NextResponse } from 'next/server'
-import { auth } from '@clerk/nextjs/server'
-import { getAIUsageStats, getRecentErrors } from '@/lib/utils/aiMonitoring'
+import { NextRequest, NextResponse } from 'next/server'
+import { currentUser } from '@clerk/nextjs/server'
+import { isAdmin } from '@/lib/auth/adminAuth'
+import { PostHog } from 'posthog-node'
 
-/**
- * GET /api/admin/ai-stats
- * 
- * Get AI usage statistics (admin only)
- */
-export async function GET() {
+// Initialize PostHog server client
+const posthogClient = process.env.NEXT_PUBLIC_POSTHOG_KEY && 
+  process.env.NEXT_PUBLIC_POSTHOG_KEY !== 'phc_placeholder' &&
+  !process.env.NEXT_PUBLIC_POSTHOG_KEY.includes('placeholder')
+  ? new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+      host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+    })
+  : null
+
+export async function GET(request: NextRequest) {
   try {
-    const { userId } = auth()
-    
-    // Check if user is admin
-    const adminClerkId = process.env.ADMIN_CLERK_ID
-    if (!userId || userId !== adminClerkId) {
-      return NextResponse.json({
-        success: false,
-        error: 'Unauthorized'
-      }, { status: 401 })
+    // Check authentication
+    const user = await currentUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const stats = getAIUsageStats()
-    const recentErrors = getRecentErrors(5)
+    // Check admin authorization
+    const adminAccess = await isAdmin()
+    if (!adminAccess) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
+    // If PostHog is not configured, return empty stats
+    if (!posthogClient) {
+      return NextResponse.json({
+        success: true,
+        configured: false,
+        message: 'PostHog is not configured',
+      })
+    }
+
+    // Note: PostHog Node SDK doesn't provide analytics query API
+    // You need to use PostHog's REST API or view data in PostHog dashboard
+    // This endpoint confirms PostHog is configured
+    
     return NextResponse.json({
       success: true,
-      stats,
-      recentErrors,
+      configured: true,
+      posthogHost: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com',
+      message: 'PostHog is configured. View detailed analytics in PostHog dashboard.',
     })
   } catch (error) {
-    console.error('AI stats error:', error)
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch AI stats'
-    }, { status: 500 })
+    console.error('Error fetching AI stats:', error)
+    return NextResponse.json(
+      { error: 'Failed to fetch analytics stats' },
+      { status: 500 }
+    )
   }
 }

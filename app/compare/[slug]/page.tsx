@@ -2,7 +2,6 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { CardComparison } from "@/components/card-comparison-flat"
 import { prisma } from "@/lib/prisma"
-import { getComparisonVerdict } from "@/app/actions/ai.actions"
 
 interface ComparePageProps {
   params: {
@@ -141,6 +140,7 @@ function transformCardForComparison(card: any) {
   const welcomeBonusValue = welcomeBonus?.estimatedValue 
     ? Number(welcomeBonus.estimatedValue) 
     : 0
+  const pointType = welcomeBonus?.pointType || 'OTHER'
 
   return {
     id: card.id,
@@ -155,7 +155,8 @@ function transformCardForComparison(card: any) {
     diningMultiplier: getMultiplier('DINING'),
     billsMultiplier: getMultiplier('RECURRING'),
     applyLink: card.affiliateLink || '#',
-    image: card.imageUrl || '/images/placeholder-card.svg'
+    image: card.imageUrl || '/images/placeholder-card.svg',
+    pointType
   }
 }
 
@@ -180,12 +181,6 @@ export default async function ComparePage({ params }: ComparePageProps) {
   const card1 = transformCardForComparison(card1Raw)
   const card2 = transformCardForComparison(card2Raw)
 
-  // Fetch AI verdict server-side for SEO
-  // Note: Server-side fetch bypasses rate limiting (intentional for SEO)
-  // Rate limiting only applies to client-side API calls
-  const verdictResult = await getComparisonVerdict(params.slug)
-  const initialVerdict = verdictResult.success ? verdictResult.verdict : null
-
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://gorewards.ca'
 
   const breadcrumbSchema = {
@@ -204,7 +199,7 @@ export default async function ComparePage({ params }: ComparePageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
-      <CardComparison card1={card1} card2={card2} initialVerdict={initialVerdict} />
+      <CardComparison card1={card1} card2={card2} />
     </div>
   )
 }

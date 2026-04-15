@@ -25,9 +25,9 @@ interface SpendingFormProps {
 }
 
 const GOALS = [
-  { id: "tokyo-flight", name: "Tokyo Flight", points: 75000, type: "AEROPLAN" },
+  { id: "domestic-flight", name: "Domestic Flight", points: 25000, type: "AEROPLAN" },
   { id: "europe-flight", name: "Europe Flight", points: 60000, type: "AEROPLAN" },
-  { id: "caribbean-flight", name: "Caribbean Flight", points: 35000, type: "AEROPLAN" },
+  { id: "tokyo-flight", name: "Tokyo Flight", points: 75000, type: "AEROPLAN" },
   { id: "hotel-stay", name: "Luxury Hotel Stay", points: 50000, type: "MARRIOTT_BONVOY" },
   { id: "cashback-goal", name: "$1,000 Cashback", points: 100000, type: "CASHBACK" },
 ]

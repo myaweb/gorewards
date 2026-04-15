@@ -62,7 +62,13 @@ export const CardMultiplierSchema = z.object({
   id: z.string().cuid().optional(),
   cardId: z.string().cuid(),
   category: SpendingCategorySchema,
-  multiplierValue: z.number().positive('Multiplier must be positive').max(100, 'Multiplier seems unrealistic'),
+  // Multipliers stored as decimals: 0.01 = 1x, 0.05 = 5x, 0.10 = 10x
+  multiplierValue: z.number()
+    .positive('Multiplier must be positive')
+    .max(0.10, 'Multiplier must be ≤ 10x (stored as 0.10)')
+    .refine(val => val <= 0.10, {
+      message: 'Multiplier seems unrealistic. Maximum 10x allowed (0.10 in database).'
+    }),
   description: z.string().optional().nullable(),
   isActive: z.boolean().default(true),
 })

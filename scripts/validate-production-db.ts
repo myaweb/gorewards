@@ -7,7 +7,8 @@
 
 import { CardService } from '../lib/services/cardService'
 import { RouteEngine } from '../lib/services/routeEngine'
-import { calculateBestCards } from '../app/lib/recommendationEngine'
+import { EnhancedRecommendationEngine } from '../lib/services/enhancedRecommendationEngine'
+import { CreditScoreRange } from '../lib/types/recommendation'
 
 async function validateCardService() {
   console.log('🧪 Testing CardService...')
@@ -34,22 +35,33 @@ async function validateCardService() {
 async function validateRecommendationEngine() {
   console.log('\n🧪 Testing Recommendation Engine...')
   
-  const testSpending = {
-    grocery: 1000,
-    gas: 300,
-    dining: 500,
-    bills: 400
+  const testProfile = {
+    spending: {
+      grocery: 1000,
+      gas: 300,
+      dining: 500,
+      bills: 400,
+      travel: 100,
+      shopping: 200,
+      other: 150
+    },
+    creditScore: CreditScoreRange.GOOD,
+    annualIncome: 75000,
+    preferredPointTypes: ['AEROPLAN', 'CASHBACK'],
+    maxAnnualFee: 200,
+    prioritizeSignupBonus: true,
+    timeHorizon: 'LONG_TERM' as const
   }
   
-  const recommendations = await calculateBestCards(testSpending)
-  console.log(`   ✅ calculateBestCards: ${recommendations.length} recommendations`)
+  const result = await EnhancedRecommendationEngine.getRecommendations(testProfile)
+  console.log(`   ✅ getRecommendations: ${result.recommendations.length} recommendations`)
   
-  if (recommendations.length > 0) {
-    const topCard = recommendations[0]
-    console.log(`   ✅ Top recommendation: ${topCard.name} (Net Value: $${topCard.netValue.toFixed(2)})`)
+  if (result.recommendations.length > 0) {
+    const topCard = result.recommendations[0]
+    console.log(`   ✅ Top recommendation: ${topCard.card.name} (Approval: ${topCard.scores.approvalProbability}%)`)
   }
   
-  return recommendations
+  return result.recommendations
 }
 
 async function validateRouteEngine(cards: any[]) {
@@ -64,8 +76,8 @@ async function validateRouteEngine(cards: any[]) {
   
   const goal = {
     id: 'test-goal',
-    name: 'Tokyo Flight',
-    requiredPoints: 75000,
+    name: 'Domestic Flight',
+    requiredPoints: 25000,
     pointType: 'AEROPLAN'
   }
   

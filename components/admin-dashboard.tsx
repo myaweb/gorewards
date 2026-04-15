@@ -29,13 +29,13 @@ import {
   MousePointerClick,
   Database,
   RefreshCw,
-  Mail,
   AlertTriangle,
+  BarChart3,
 } from 'lucide-react'
 import { getAdminMetrics, getAllCards, updateCardAffiliateLink, getAllUsers, updateUserPlan, getAffiliateAnalytics, getAllCardsWithDetails } from '@/app/actions/admin.actions'
 import { CardDataUpdatePanel } from '@/components/admin/card-data-update-panel'
 import { PendingUpdatesPanel } from '@/components/admin/pending-updates-panel'
-import { WaitlistPanel } from '@/components/admin/waitlist-panel'
+import { formatRewardRate } from '@/lib/utils/formatRewards'
 
 interface Metrics {
   totalUsers: number
@@ -127,13 +127,25 @@ export function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('')
   const [detailsSearchQuery, setDetailsSearchQuery] = useState('')
   const [userSearchQuery, setUserSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'cards' | 'users' | 'updates' | 'analytics' | 'details' | 'waitlist'>('cards')
+  const [activeTab, setActiveTab] = useState<'cards' | 'users' | 'updates' | 'analytics' | 'details' | 'posthog'>('cards')
   const [isSyncing, setIsSyncing] = useState(false)
   const [syncResult, setSyncResult] = useState<any>(null)
+  const [posthogConfigured, setPosthogConfigured] = useState(false)
 
   useEffect(() => {
     loadData()
+    checkPostHogConfig()
   }, [])
+
+  async function checkPostHogConfig() {
+    try {
+      const response = await fetch('/api/admin/ai-stats')
+      const data = await response.json()
+      setPosthogConfigured(data.configured || false)
+    } catch (error) {
+      console.error('Error checking PostHog config:', error)
+    }
+  }
 
   async function loadData() {
     setLoading(true)
@@ -436,16 +448,16 @@ export function AdminDashboard() {
             )}
           </button>
           <button
-            onClick={() => setActiveTab('waitlist')}
+            onClick={() => setActiveTab('posthog')}
             className={`px-6 py-3 text-sm font-medium transition-colors relative whitespace-nowrap ${
-              activeTab === 'waitlist'
+              activeTab === 'posthog'
                 ? 'text-primary'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <Mail className="h-4 w-4 inline mr-2" />
-            Waitlist
-            {activeTab === 'waitlist' && (
+            <BarChart3 className="h-4 w-4 inline mr-2" />
+            PostHog Analytics
+            {activeTab === 'posthog' && (
               <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
             )}
           </button>
@@ -747,22 +759,22 @@ export function AdminDashboard() {
                         </td>
                         <td className="py-4 px-4">
                           <span className="text-xs text-muted-foreground">
-                            {(card.groceryMultiplier * 100).toFixed(1)}%
+                            {formatRewardRate(card.groceryMultiplier)}
                           </span>
                         </td>
                         <td className="py-4 px-4">
                           <span className="text-xs text-muted-foreground">
-                            {(card.gasMultiplier * 100).toFixed(1)}%
+                            {formatRewardRate(card.gasMultiplier)}
                           </span>
                         </td>
                         <td className="py-4 px-4">
                           <span className="text-xs text-muted-foreground">
-                            {(card.diningMultiplier * 100).toFixed(1)}%
+                            {formatRewardRate(card.diningMultiplier)}
                           </span>
                         </td>
                         <td className="py-4 px-4">
                           <span className="text-xs text-muted-foreground">
-                            {(card.billsMultiplier * 100).toFixed(1)}%
+                            {formatRewardRate(card.billsMultiplier)}
                           </span>
                         </td>
                         <td className="py-4 px-4 text-right">
@@ -1012,9 +1024,187 @@ export function AdminDashboard() {
           </Card>
         )}
 
-        {/* Waitlist Management */}
-        {activeTab === 'waitlist' && (
-          <WaitlistPanel />
+        {/* PostHog Analytics */}
+        {activeTab === 'posthog' && (
+          <Card className="glass-premium border-primary/20">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-2xl flex items-center gap-2">
+                    <BarChart3 className="h-6 w-6 text-primary" />
+                    PostHog Analytics Dashboard
+                  </CardTitle>
+                  <CardDescription>
+                    View detailed user behavior, events, and conversion metrics
+                  </CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {posthogConfigured ? (
+                <div className="space-y-6">
+                  {/* PostHog Dashboard Link */}
+                  <div className="p-6 rounded-xl bg-gradient-to-br from-primary/10 to-cyan-400/10 border border-primary/20">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <BarChart3 className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold mb-2">PostHog Dashboard</h3>
+                        <p className="text-sm text-muted-foreground mb-4">
+                          View real-time analytics, user sessions, feature flags, and detailed event tracking in your PostHog dashboard.
+                        </p>
+                        <a
+                          href={process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-[#090A0F] font-medium hover:bg-primary/90 transition-colors"
+                        >
+                          Open PostHog Dashboard
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Key Metrics Overview */}
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="p-4 rounded-lg bg-white/[0.02] border border-white/10">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <MousePointerClick className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Tracked Events</p>
+                          <p className="text-xs text-muted-foreground/70">View in PostHog</p>
+                        </div>
+                      </div>
+                      <ul className="space-y-1 text-xs text-muted-foreground">
+                        <li>• Page views ($pageview)</li>
+                        <li>• Plaid connections</li>
+                        <li>• Card recommendations</li>
+                        <li>• Affiliate link clicks</li>
+                        <li>• Beta feedback</li>
+                      </ul>
+                    </div>
+
+                    <div className="p-4 rounded-lg bg-white/[0.02] border border-white/10">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Users className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">User Tracking</p>
+                          <p className="text-xs text-muted-foreground/70">Clerk integration</p>
+                        </div>
+                      </div>
+                      <ul className="space-y-1 text-xs text-muted-foreground">
+                        <li>• User identification</li>
+                        <li>• Session recording</li>
+                        <li>• User properties</li>
+                        <li>• Cohort analysis</li>
+                      </ul>
+                    </div>
+
+                    <div className="p-4 rounded-lg bg-white/[0.02] border border-white/10">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <TrendingUp className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Features</p>
+                          <p className="text-xs text-muted-foreground/70">Available tools</p>
+                        </div>
+                      </div>
+                      <ul className="space-y-1 text-xs text-muted-foreground">
+                        <li>• Autocapture enabled</li>
+                        <li>• Feature flags ready</li>
+                        <li>• Funnel analysis</li>
+                        <li>• A/B testing</li>
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* Quick Links */}
+                  <div className="p-4 rounded-lg bg-white/[0.02] border border-white/10">
+                    <h4 className="font-semibold mb-3 flex items-center gap-2">
+                      <ExternalLink className="h-4 w-4 text-primary" />
+                      Quick Links
+                    </h4>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <a
+                        href={`${process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}/insights`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-primary/30 transition-all text-sm"
+                      >
+                        <BarChart3 className="h-4 w-4 text-primary" />
+                        <span>Insights & Trends</span>
+                      </a>
+                      <a
+                        href={`${process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}/events`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-primary/30 transition-all text-sm"
+                      >
+                        <MousePointerClick className="h-4 w-4 text-primary" />
+                        <span>Live Events</span>
+                      </a>
+                      <a
+                        href={`${process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}/persons`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-primary/30 transition-all text-sm"
+                      >
+                        <Users className="h-4 w-4 text-primary" />
+                        <span>Users & Sessions</span>
+                      </a>
+                      <a
+                        href={`${process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://app.posthog.com'}/dashboard`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 p-3 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] border border-white/5 hover:border-primary/30 transition-all text-sm"
+                      >
+                        <TrendingUp className="h-4 w-4 text-primary" />
+                        <span>Dashboards</span>
+                      </a>
+                    </div>
+                  </div>
+
+                  {/* Configuration Info */}
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-sm font-medium mb-1">PostHog is configured and active</p>
+                        <p className="text-xs text-muted-foreground">
+                          Analytics are being tracked across the application. Events include page views, user interactions, 
+                          Plaid connections, card recommendations, and affiliate link clicks.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-4">
+                    <AlertTriangle className="h-8 w-8 text-amber-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">PostHog Not Configured</h3>
+                  <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
+                    PostHog analytics is not configured. Set the NEXT_PUBLIC_POSTHOG_KEY environment variable to enable tracking.
+                  </p>
+                  <div className="p-4 rounded-lg bg-white/[0.02] border border-white/10 max-w-2xl mx-auto text-left">
+                    <p className="text-xs text-muted-foreground mb-2">Add to your .env.local file:</p>
+                    <code className="block p-3 rounded bg-black/50 text-xs font-mono text-primary">
+                      NEXT_PUBLIC_POSTHOG_KEY="phc_your_key_here"<br />
+                      NEXT_PUBLIC_POSTHOG_HOST="https://app.posthog.com"
+                    </code>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* Cards Management Table */}

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { CardCategoryPage } from "@/components/card-category-page"
 import { getCachedSeoContent } from "@/lib/services/seoContentService"
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://GoRewards.net"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://GoRewards.ca"
 
 export const metadata: Metadata = {
   title: "Best No Annual Fee Credit Cards in Canada (2026) | GoRewards",

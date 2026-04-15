@@ -8,7 +8,7 @@ import OptimizationReportEmail from '@/emails/OptimizationReportEmail'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.net'
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://GoRewards.ca'
 
 export async function POST(req: NextRequest) {
   try {

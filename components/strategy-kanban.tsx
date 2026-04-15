@@ -15,7 +15,7 @@ import {
   Sparkles,
   ChevronDown
 } from 'lucide-react'
-import { updateStrategyCompletion, deleteStrategy } from '@/app/actions/strategy.actions'
+import { updateStrategyCompletion, deleteStrategy, updateStrategySteps } from '@/app/actions/strategy.actions'
 import confetti from 'canvas-confetti'
 
 interface StrategyKanbanProps {
@@ -47,32 +47,56 @@ export function StrategyKanban({ strategies }: StrategyKanbanProps) {
     return (
       <Card className="glass-premium border-primary/20">
         <CardContent className="py-16 text-center">
-          <Target className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold mb-2">No Saved Strategies</h3>
-          <p className="text-muted-foreground mb-6">
-            Calculate your first optimization strategy to get started
-          </p>
-          <Button asChild className="bg-gradient-to-r from-primary to-cyan-400">
-            <a href="/product#calculator">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Calculate Strategy
-            </a>
-          </Button>
+          <div className="max-w-md mx-auto">
+            <div className="relative w-20 h-20 mx-auto mb-6">
+              <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
+              <div className="relative w-full h-full rounded-full bg-primary/10 flex items-center justify-center">
+                <Target className="h-10 w-10 text-primary" />
+              </div>
+            </div>
+            
+            <h3 className="text-2xl font-bold mb-3">Start Your First Strategy</h3>
+            <p className="text-muted-foreground mb-6">
+              Build a personalized roadmap to earn maximum rewards and reach your travel goals
+            </p>
+            
+            <div className="space-y-2 mb-8 text-left max-w-xs mx-auto">
+              <div className="flex items-center gap-2 text-sm">
+                <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                <span>Get personalized card recommendations</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                <span>Track welcome bonuses step-by-step</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0" />
+                <span>Reach your travel goals faster</span>
+              </div>
+            </div>
+            
+            <Button asChild size="lg" className="bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-[#090A0F] shadow-[0_0_20px_rgba(6,182,212,0.6)]">
+              <a href="/">
+                <Sparkles className="mr-2 h-5 w-5" />
+                Calculate My Strategy
+              </a>
+            </Button>
+          </div>
         </CardContent>
       </Card>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Your Strategies</h2>
-        <Badge variant="outline" className="text-sm">
+        <h2 className="text-xl sm:text-2xl font-bold">Your Strategies</h2>
+        <Badge variant="outline" className="text-xs sm:text-sm">
           {strategies.length} {strategies.length === 1 ? 'Strategy' : 'Strategies'}
         </Badge>
       </div>
 
-      <div className="grid gap-6">
+      <div className="grid gap-4 sm:gap-6">
         {strategies.map((strategy) => (
           <StrategyCard key={strategy.id} strategy={strategy} />
         ))}
@@ -84,17 +108,23 @@ export function StrategyKanban({ strategies }: StrategyKanbanProps) {
 function StrategyCard({ strategy }: { strategy: any }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
-  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set())
+  
+  // Initialize completedSteps from database
+  const initialCompletedSteps = strategy.completedSteps 
+    ? new Set<number>(
+        Array.isArray(strategy.completedSteps) 
+          ? strategy.completedSteps 
+          : JSON.parse(strategy.completedSteps as string)
+      )
+    : new Set<number>()
+  
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(initialCompletedSteps)
 
   const roadmapData = strategy.roadmapData as RoadmapData
   const steps = roadmapData.steps || []
 
   // Get the first card from the roadmap (recommended card)
   const recommendedCard = steps.length > 0 ? steps[0] : null
-  
-  // Mock Plaid spending data for demo (in production, fetch from actual Plaid data)
-  const mockSpendingProgress = 1200
-  const mockSpendingTarget = 3000
 
   // Calculate progress
   const totalSteps = steps.length
@@ -112,17 +142,21 @@ function StrategyCard({ strategy }: { strategy: any }) {
     
     setCompletedSteps(newCompleted)
 
+    // Save to database
+    const completedArray = Array.from(newCompleted)
+    await updateStrategySteps(strategy.id, completedArray)
+
     // Check if all 5 steps are completed
     const totalRoadmapSteps = 5
     if (newCompleted.size === totalRoadmapSteps && !strategy.isCompleted) {
       // Mark strategy as completed
-      await updateStrategyCompletion(strategy.id, true)
+      await updateStrategyCompletion(strategy.id, true, completedArray)
       
       // Trigger confetti!
       triggerConfetti()
     } else if (newCompleted.size < totalRoadmapSteps && strategy.isCompleted) {
       // Mark as incomplete if user unchecks
-      await updateStrategyCompletion(strategy.id, false)
+      await updateStrategyCompletion(strategy.id, false, completedArray)
     }
   }
 
@@ -174,63 +208,84 @@ function StrategyCard({ strategy }: { strategy: any }) {
   }
 
   return (
-    <Card className={`glass-premium ${strategy.isCompleted ? 'border-primary/30 glow-teal' : 'border-primary/20'}`}>
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <CardTitle className="text-xl">{strategy.goalName}</CardTitle>
-              {strategy.isCompleted && (
-                <Badge className="bg-gradient-to-r from-primary to-cyan-400 text-background">
+    <Card className={`glass-premium transition-all ${
+      strategy.isCompleted 
+        ? 'border-green-500/30 bg-green-500/5' 
+        : 'border-amber-500/30 bg-amber-500/5'
+    }`}>
+      <CardHeader className="p-4 sm:p-6">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+              <CardTitle className="text-base sm:text-xl truncate">{strategy.goalName}</CardTitle>
+              {strategy.isCompleted ? (
+                <Badge className="bg-green-600 hover:bg-green-600 text-white border-0 text-xs w-fit shadow-lg">
                   <CheckCircle2 className="h-3 w-3 mr-1" />
                   Completed
                 </Badge>
+              ) : (
+                <Badge className="bg-purple-500/20 text-purple-300 border-purple-500/30 text-xs w-fit">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  {completedCount === 0 ? 'Ready to Start' : 'In Progress'}
+                </Badge>
               )}
             </div>
-            <CardDescription className="flex items-center gap-4 text-sm">
+            <CardDescription className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm">
               <span className="flex items-center gap-1">
-                <Calendar className="h-3 w-3" />
-                {new Date(strategy.createdAt).toLocaleDateString()}
+                <Calendar className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{new Date(strategy.createdAt).toLocaleDateString()}</span>
               </span>
               <span className="flex items-center gap-1">
-                <TrendingUp className="h-3 w-3" />
-                {roadmapData.totalPointsEarned?.toLocaleString() || 0} points
+                <TrendingUp className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{roadmapData.totalPointsEarned?.toLocaleString() || 0} points</span>
               </span>
               <span className="flex items-center gap-1">
-                <Target className="h-3 w-3" />
-                {roadmapData.totalMonths || 0} months
+                <Target className="h-3 w-3 flex-shrink-0" />
+                <span className="truncate">{roadmapData.totalMonths || 0} months</span>
               </span>
             </CardDescription>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsExpanded(!isExpanded)}
-              className="text-muted-foreground hover:text-foreground transition-transform duration-300"
+              className="text-muted-foreground hover:text-[#090A0F] hover:bg-cyan-400 transition-all duration-300 h-8 w-8 p-0"
             >
-              <ChevronDown className={`h-5 w-5 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
           </div>
         </div>
 
         {/* Progress Bar */}
         <div className="mt-4">
-          <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-muted-foreground">Progress</span>
+          <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="text-muted-foreground">Progress</span>
+              <div className="flex gap-1">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full transition-all ${
+                      completedSteps.has(i) ? 'bg-cyan-400' : 'bg-white/20'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
             <span className="font-semibold">{completedCount} / 5 steps</span>
           </div>
-          <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+          <div className="h-1.5 sm:h-2 bg-white/5 rounded-full overflow-hidden">
             <div 
               className="h-full bg-gradient-to-r from-primary to-cyan-400 transition-all duration-500 ease-out"
               style={{ width: `${(completedCount / 5) * 100}%` }}
@@ -239,27 +294,54 @@ function StrategyCard({ strategy }: { strategy: any }) {
         </div>
       </CardHeader>
 
+      {/* Next Action - Collapsed View */}
+      {!isExpanded && !strategy.isCompleted && recommendedCard && (
+        <CardContent className="pt-0 pb-4 px-4 sm:px-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-primary/10 border border-primary/30 rounded-lg">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium truncate">
+                  {completedCount === 0 ? 'Start: ' : 'Next: '}
+                  Apply for {recommendedCard.cardName}
+                </p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Step 1 of 5</p>
+              </div>
+            </div>
+            <Button size="sm" className="bg-primary hover:bg-primary/90 w-full sm:w-auto text-xs sm:text-sm" asChild>
+              <a 
+                href={`/go/${recommendedCard.cardName.toLowerCase().replace(/\s+/g, '-')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Apply →
+              </a>
+            </Button>
+          </div>
+        </CardContent>
+      )}
+
       {isExpanded && (
-        <CardContent className="border-t border-white/10 bg-white/[0.02] transition-all duration-300">
-          <div className="space-y-6 p-6">
+        <CardContent className="border-t border-white/10 bg-white/[0.02] transition-all duration-300 p-0">
+          <div className="space-y-4 sm:space-y-6 p-4 sm:p-6">
             {/* 5-Step Interactive Roadmap */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               
               {/* Step 1: Apply for Recommended Card */}
-              <div className="relative pl-8">
+              <div className="relative pl-6 sm:pl-8">
                 {/* Timeline connector */}
-                <div className="absolute left-2 top-8 bottom-0 w-0.5 bg-white/10" />
+                <div className="absolute left-1.5 sm:left-2 top-8 bottom-0 w-0.5 bg-white/10" />
                 
-                <div className="flex items-start gap-4">
-                  <div className={`w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
+                <div className="flex items-start gap-2 sm:gap-4">
+                  <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
                     completedSteps.has(0) 
                       ? 'bg-cyan-400 border-cyan-400' 
                       : 'bg-background border-gray-400'
                   }`} />
                   
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className={`font-semibold ${
+                      <h4 className={`text-sm sm:text-base font-semibold ${
                         completedSteps.has(0) ? 'text-cyan-400' : 'text-white'
                       }`}>
                         Step 1: Apply for Recommended Card
@@ -267,13 +349,13 @@ function StrategyCard({ strategy }: { strategy: any }) {
                     </div>
                     
                     {recommendedCard && (
-                      <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4 mb-3">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-3">
-                            <CreditCard className="h-5 w-5 text-cyan-400" />
-                            <div>
-                              <p className="font-medium">{recommendedCard.cardName}</p>
-                              <p className="text-xs text-muted-foreground">
+                      <div className="bg-white/[0.03] border border-white/10 rounded-lg p-3 sm:p-4 mb-3">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                            <CreditCard className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400 flex-shrink-0" />
+                            <div className="min-w-0">
+                              <p className="text-sm sm:text-base font-medium truncate">{recommendedCard.cardName}</p>
+                              <p className="text-[10px] sm:text-xs text-muted-foreground">
                                 Earn {recommendedCard.bonusProgress?.bonusPoints.toLocaleString() || 0} bonus points
                               </p>
                             </div>
@@ -282,42 +364,44 @@ function StrategyCard({ strategy }: { strategy: any }) {
                         
                         <Button 
                           asChild
-                          className="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-600 hover:to-cyan-500 text-background font-semibold"
+                          className="w-full bg-gradient-to-r from-cyan-500 to-cyan-400 hover:from-cyan-600 hover:to-cyan-500 text-background font-semibold text-xs sm:text-sm"
                         >
                           <a 
-                            href={`/api/go/${recommendedCard.cardName.toLowerCase().replace(/\s+/g, '-')}`}
+                            href={`/go/${recommendedCard.cardName.toLowerCase().replace(/\s+/g, '-')}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <Sparkles className="mr-2 h-4 w-4" />
+                            <Sparkles className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
                             Apply Now
                           </a>
                         </Button>
                       </div>
                     )}
                     
-                    <Checkbox
-                      id={`step-1-${strategy.id}`}
-                      checked={completedSteps.has(0)}
-                      onCheckedChange={(checked) => handleStepToggle(0, checked as boolean)}
-                      className="mt-2"
-                    />
-                    <label 
-                      htmlFor={`step-1-${strategy.id}`}
-                      className="ml-2 text-sm text-muted-foreground cursor-pointer"
-                    >
-                      Mark as completed
-                    </label>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`step-1-${strategy.id}`}
+                        checked={completedSteps.has(0)}
+                        onCheckedChange={(checked) => handleStepToggle(0, checked as boolean)}
+                        className="mt-2"
+                      />
+                      <label 
+                        htmlFor={`step-1-${strategy.id}`}
+                        className="text-xs sm:text-sm text-muted-foreground cursor-pointer mt-2"
+                      >
+                        Mark as completed
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Step 2: Connect Card */}
-              <div className="relative pl-8">
-                <div className="absolute left-2 top-8 bottom-0 w-0.5 bg-white/10" />
+              {/* Step 2: Add to Portfolio */}
+              <div className="relative pl-6 sm:pl-8">
+                <div className="absolute left-1.5 sm:left-2 top-8 bottom-0 w-0.5 bg-white/10" />
                 
-                <div className="flex items-start gap-4">
-                  <div className={`w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
+                <div className="flex items-start gap-2 sm:gap-4">
+                  <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
                     completedSteps.has(1) 
                       ? 'bg-cyan-400 border-cyan-400' 
                       : completedSteps.has(0)
@@ -325,37 +409,39 @@ function StrategyCard({ strategy }: { strategy: any }) {
                       : 'bg-background border-gray-400'
                   }`} />
                   
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className={`font-semibold ${
+                      <h4 className={`text-sm sm:text-base font-semibold ${
                         completedSteps.has(1) 
                           ? 'text-cyan-400' 
                           : completedSteps.has(0)
                           ? 'text-white'
                           : 'text-gray-400'
                       }`}>
-                        Step 2: Connect Card
+                        Step 2: Add Card to Portfolio
                       </h4>
                     </div>
                     
-                    <p className={`text-sm mb-3 ${
+                    <p className={`text-xs sm:text-sm mb-3 ${
                       completedSteps.has(0) ? 'text-muted-foreground' : 'text-gray-500'
                     }`}>
-                      Once your {recommendedCard?.cardName || 'new card'} arrives, link it via Plaid to track your spending automatically.
+                      Once your {recommendedCard?.cardName || 'new card'} arrives, add it to your Cards section to track bonuses and annual fees.
                     </p>
                     
-                    <Checkbox
-                      id={`step-2-${strategy.id}`}
-                      checked={completedSteps.has(1)}
-                      onCheckedChange={(checked) => handleStepToggle(1, checked as boolean)}
-                      className="mt-2"
-                    />
-                    <label 
-                      htmlFor={`step-2-${strategy.id}`}
-                      className="ml-2 text-sm text-muted-foreground cursor-pointer"
-                    >
-                      Mark as completed
-                    </label>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`step-2-${strategy.id}`}
+                        checked={completedSteps.has(1)}
+                        onCheckedChange={(checked) => handleStepToggle(1, checked as boolean)}
+                        className="mt-2"
+                      />
+                      <label 
+                        htmlFor={`step-2-${strategy.id}`}
+                        className="text-xs sm:text-sm text-muted-foreground cursor-pointer mt-2"
+                      >
+                        Mark as completed
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -364,8 +450,8 @@ function StrategyCard({ strategy }: { strategy: any }) {
               <div className="relative pl-8">
                 <div className="absolute left-2 top-8 bottom-0 w-0.5 bg-white/10" />
                 
-                <div className="flex items-start gap-4">
-                  <div className={`w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
+                <div className="flex items-start gap-2 sm:gap-4">
+                  <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
                     completedSteps.has(2) 
                       ? 'bg-cyan-400 border-cyan-400' 
                       : completedSteps.has(1)
@@ -373,9 +459,9 @@ function StrategyCard({ strategy }: { strategy: any }) {
                       : 'bg-background border-gray-400'
                   }`} />
                   
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h4 className={`font-semibold ${
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+                      <h4 className={`text-sm sm:text-base font-semibold ${
                         completedSteps.has(2) 
                           ? 'text-cyan-400' 
                           : completedSteps.has(1)
@@ -384,61 +470,48 @@ function StrategyCard({ strategy }: { strategy: any }) {
                       }`}>
                         Step 3: Hit Minimum Spend
                       </h4>
-                      <Badge variant="outline" className="text-xs border-cyan-400/50 text-cyan-400">
+                      <Badge variant="outline" className="text-[10px] sm:text-xs border-cyan-400/50 text-cyan-400 w-fit">
                         CRITICAL
                       </Badge>
                     </div>
                     
-                    <p className={`text-sm mb-3 ${
+                    <p className={`text-xs sm:text-sm mb-3 ${
                       completedSteps.has(1) ? 'text-muted-foreground' : 'text-gray-500'
                     }`}>
-                      Spend ${mockSpendingTarget.toLocaleString()} in 3 months to unlock your welcome bonus
+                      Meet the minimum spending requirement within the specified timeframe to unlock your welcome bonus. Check your card's terms for the exact amount and deadline.
                     </p>
                     
-                    {/* Progress Bar with Plaid Data */}
-                    <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4 mb-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium">Spending Progress</span>
-                        <span className="text-sm font-semibold text-cyan-400">
-                          ${mockSpendingProgress.toLocaleString()} / ${mockSpendingTarget.toLocaleString()}
-                        </span>
-                      </div>
-                      
-                      <div className="h-3 bg-white/5 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full bg-gradient-to-r from-cyan-500 to-cyan-400 transition-all duration-500"
-                          style={{ width: `${(mockSpendingProgress / mockSpendingTarget) * 100}%` }}
-                        />
-                      </div>
-                      
-                      <p className="text-xs text-muted-foreground mt-2">
-                        ${(mockSpendingTarget - mockSpendingProgress).toLocaleString()} remaining • 
-                        {' '}{Math.ceil((mockSpendingTarget - mockSpendingProgress) / 30)} days left
+                    <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2 sm:p-3 mb-3">
+                      <p className="text-[10px] sm:text-xs text-amber-400 flex items-center gap-2">
+                        <Sparkles className="h-3 w-3 flex-shrink-0" />
+                        <span>Tip: Track your progress in the Cards section after adding your card to the portfolio</span>
                       </p>
                     </div>
                     
-                    <Checkbox
-                      id={`step-3-${strategy.id}`}
-                      checked={completedSteps.has(2)}
-                      onCheckedChange={(checked) => handleStepToggle(2, checked as boolean)}
-                      className="mt-2"
-                    />
-                    <label 
-                      htmlFor={`step-3-${strategy.id}`}
-                      className="ml-2 text-sm text-muted-foreground cursor-pointer"
-                    >
-                      Mark as completed
-                    </label>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`step-3-${strategy.id}`}
+                        checked={completedSteps.has(2)}
+                        onCheckedChange={(checked) => handleStepToggle(2, checked as boolean)}
+                        className="mt-2"
+                      />
+                      <label 
+                        htmlFor={`step-3-${strategy.id}`}
+                        className="text-xs sm:text-sm text-muted-foreground cursor-pointer mt-2"
+                      >
+                        Mark as completed
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Step 4: Receive Welcome Bonus */}
-              <div className="relative pl-8">
-                <div className="absolute left-2 top-8 bottom-0 w-0.5 bg-white/10" />
+              <div className="relative pl-6 sm:pl-8">
+                <div className="absolute left-1.5 sm:left-2 top-8 bottom-0 w-0.5 bg-white/10" />
                 
-                <div className="flex items-start gap-4">
-                  <div className={`w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
+                <div className="flex items-start gap-2 sm:gap-4">
+                  <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
                     completedSteps.has(3) 
                       ? 'bg-cyan-400 border-cyan-400' 
                       : completedSteps.has(2)
@@ -446,9 +519,9 @@ function StrategyCard({ strategy }: { strategy: any }) {
                       : 'bg-background border-gray-400'
                   }`} />
                   
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className={`font-semibold ${
+                      <h4 className={`text-sm sm:text-base font-semibold ${
                         completedSteps.has(3) 
                           ? 'text-cyan-400' 
                           : completedSteps.has(2)
@@ -459,42 +532,44 @@ function StrategyCard({ strategy }: { strategy: any }) {
                       </h4>
                     </div>
                     
-                    <div className="bg-white/[0.03] border border-white/10 rounded-lg p-4 mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-cyan-400/20 flex items-center justify-center flex-shrink-0">
-                          <Sparkles className="h-5 w-5 text-cyan-400" />
+                    <div className="bg-white/[0.03] border border-white/10 rounded-lg p-3 sm:p-4 mb-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-cyan-400/20 flex items-center justify-center flex-shrink-0">
+                          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400" />
                         </div>
-                        <div>
-                          <p className="font-semibold text-cyan-400">
+                        <div className="min-w-0">
+                          <p className="text-sm sm:text-base font-semibold text-cyan-400 truncate">
                             {recommendedCard?.bonusProgress?.bonusPoints.toLocaleString() || '30,000'} Points
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground">
                             Pending welcome bonus drop
                           </p>
                         </div>
                       </div>
                     </div>
                     
-                    <Checkbox
-                      id={`step-4-${strategy.id}`}
-                      checked={completedSteps.has(3)}
-                      onCheckedChange={(checked) => handleStepToggle(3, checked as boolean)}
-                      className="mt-2"
-                    />
-                    <label 
-                      htmlFor={`step-4-${strategy.id}`}
-                      className="ml-2 text-sm text-muted-foreground cursor-pointer"
-                    >
-                      Mark as completed
-                    </label>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`step-4-${strategy.id}`}
+                        checked={completedSteps.has(3)}
+                        onCheckedChange={(checked) => handleStepToggle(3, checked as boolean)}
+                        className="mt-2"
+                      />
+                      <label 
+                        htmlFor={`step-4-${strategy.id}`}
+                        className="text-xs sm:text-sm text-muted-foreground cursor-pointer mt-2"
+                      >
+                        Mark as completed
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Step 5: Transfer & Book */}
-              <div className="relative pl-8">
-                <div className="flex items-start gap-4">
-                  <div className={`w-4 h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
+              <div className="relative pl-6 sm:pl-8">
+                <div className="flex items-start gap-2 sm:gap-4">
+                  <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full border-2 mt-1 flex-shrink-0 ${
                     completedSteps.has(4) 
                       ? 'bg-cyan-400 border-cyan-400' 
                       : completedSteps.has(3)
@@ -502,9 +577,9 @@ function StrategyCard({ strategy }: { strategy: any }) {
                       : 'bg-background border-gray-400'
                   }`} />
                   
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className={`font-semibold ${
+                      <h4 className={`text-sm sm:text-base font-semibold ${
                         completedSteps.has(4) 
                           ? 'text-cyan-400' 
                           : completedSteps.has(3)
@@ -515,36 +590,38 @@ function StrategyCard({ strategy }: { strategy: any }) {
                       </h4>
                     </div>
                     
-                    <p className={`text-sm mb-3 ${
+                    <p className={`text-xs sm:text-sm mb-3 ${
                       completedSteps.has(3) ? 'text-muted-foreground' : 'text-gray-500'
                     }`}>
                       Transfer your points to your preferred loyalty program and book your {strategy.goalName}!
                     </p>
                     
-                    <div className="bg-gradient-to-r from-cyan-500/10 to-cyan-400/10 border border-cyan-400/30 rounded-lg p-4 mb-3">
-                      <div className="flex items-center gap-3">
-                        <Target className="h-5 w-5 text-cyan-400 flex-shrink-0" />
-                        <div>
-                          <p className="font-medium text-cyan-400">Goal: {strategy.goalName}</p>
-                          <p className="text-xs text-muted-foreground">
+                    <div className="bg-gradient-to-r from-cyan-500/10 to-cyan-400/10 border border-cyan-400/30 rounded-lg p-3 sm:p-4 mb-3">
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <Target className="h-4 w-4 sm:h-5 sm:w-5 text-cyan-400 flex-shrink-0" />
+                        <div className="min-w-0">
+                          <p className="text-sm sm:text-base font-medium text-cyan-400 truncate">Goal: {strategy.goalName}</p>
+                          <p className="text-[10px] sm:text-xs text-muted-foreground">
                             Total points earned: {roadmapData.totalPointsEarned?.toLocaleString() || 0}
                           </p>
                         </div>
                       </div>
                     </div>
                     
-                    <Checkbox
-                      id={`step-5-${strategy.id}`}
-                      checked={completedSteps.has(4)}
-                      onCheckedChange={(checked) => handleStepToggle(4, checked as boolean)}
-                      className="mt-2"
-                    />
-                    <label 
-                      htmlFor={`step-5-${strategy.id}`}
-                      className="ml-2 text-sm text-muted-foreground cursor-pointer"
-                    >
-                      Mark as completed
-                    </label>
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id={`step-5-${strategy.id}`}
+                        checked={completedSteps.has(4)}
+                        onCheckedChange={(checked) => handleStepToggle(4, checked as boolean)}
+                        className="mt-2"
+                      />
+                      <label 
+                        htmlFor={`step-5-${strategy.id}`}
+                        className="text-xs sm:text-sm text-muted-foreground cursor-pointer mt-2"
+                      >
+                        Mark as completed
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -552,14 +629,14 @@ function StrategyCard({ strategy }: { strategy: any }) {
           </div>
 
           {strategy.isCompleted && (
-            <div className="mx-6 mb-6 p-4 rounded-lg bg-gradient-to-r from-primary/20 to-cyan-400/20 border border-primary/30">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/30 flex items-center justify-center">
-                  <CheckCircle2 className="h-6 w-6 text-primary" />
+            <div className="mx-4 sm:mx-6 mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg bg-gradient-to-r from-primary/20 to-cyan-400/20 border border-primary/30">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/30 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
-                <div>
-                  <p className="font-semibold text-primary">Strategy Completed! 🎉</p>
-                  <p className="text-sm text-muted-foreground">
+                <div className="min-w-0">
+                  <p className="text-sm sm:text-base font-semibold text-primary">Strategy Completed! 🎉</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground truncate">
                     You've earned {roadmapData.totalPointsEarned?.toLocaleString()} points toward your goal
                   </p>
                 </div>

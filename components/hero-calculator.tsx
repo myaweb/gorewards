@@ -7,9 +7,9 @@ import { Loader2, ShoppingCart, Fuel, UtensilsCrossed, Smartphone, Target, Spark
 import type { SpendingFormData } from "@/components/spending-form"
 
 const GOALS = [
-  { id: "tokyo-flight",     name: "Tokyo Flight",      points: 75000,  type: "AEROPLAN" },
+  { id: "domestic-flight",  name: "Domestic Flight",   points: 25000,  type: "AEROPLAN" },
   { id: "europe-flight",    name: "Europe Flight",     points: 60000,  type: "AEROPLAN" },
-  { id: "caribbean-flight", name: "Caribbean Flight",  points: 35000,  type: "AEROPLAN" },
+  { id: "tokyo-flight",     name: "Tokyo Flight",      points: 75000,  type: "AEROPLAN" },
   { id: "hotel-stay",       name: "Luxury Hotel Stay", points: 50000,  type: "MARRIOTT_BONVOY" },
   { id: "cashback-goal",    name: "$1,000 Cashback",   points: 100000, type: "CASHBACK" },
 ]
@@ -134,7 +134,7 @@ export function HeroCalculator({ onSubmit, isLoading }: Props) {
       <button
         onClick={handleSubmit}
         disabled={isLoading}
-        className="w-full h-12 rounded-xl bg-cyan-500 hover:bg-cyan-600 text-[#090A0F] font-bold text-sm transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)] hover:shadow-[0_0_28px_rgba(6,182,212,0.6)] disabled:opacity-60 flex items-center justify-center gap-2"
+        className="w-full h-12 rounded-xl bg-gradient-to-r from-primary to-cyan-400 hover:from-primary/90 hover:to-cyan-400/90 text-[#090A0F] font-bold text-sm transition-all shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:shadow-[0_0_30px_rgba(6,182,212,0.8)] hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none flex items-center justify-center gap-2"
       >
         {isLoading ? (
           <><Loader2 className="h-4 w-4 animate-spin" /> Analyzing Cards...</>

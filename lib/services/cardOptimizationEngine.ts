@@ -8,6 +8,7 @@ import {
   CATEGORY_MAPPING
 } from '../types/cardOptimization'
 import { SpendingCategory, PointType } from '@prisma/client'
+import { formatRewardRate, getPointTypeName } from '../utils/formatRewards'
 
 /**
  * Card Optimization Engine
@@ -254,10 +255,23 @@ export class CardOptimizationEngine {
     monthlyRewards: number
   ): string {
     const categoryName = category.toLowerCase().replace('_', ' ')
-    const pointTypeName = pointType.replace('_', ' ').toLowerCase()
+    const pointTypeName = getPointTypeName(pointType)
     const rewardsDollars = (monthlyRewards / 100).toFixed(2)
+    const rateText = formatRewardRate(multiplier, pointType)
     
-    return `${card.name} offers ${multiplier}x ${pointTypeName} points on ${categoryName}, earning approximately $${rewardsDollars} monthly in rewards.`
+    return `${card.name} gives you ${rateText} ${pointTypeName} on ${categoryName}. ${
+      monthlyRewards >= 2000 
+        ? `That's $${rewardsDollars} back every month, or $${((monthlyRewards * 12) / 100).toFixed(0)} per year - significant savings on this category alone.`
+        : monthlyRewards >= 1000
+        ? `You'll earn $${rewardsDollars} monthly ($${((monthlyRewards * 12) / 100).toFixed(0)}/year) in rewards from this category.`
+        : `This earns you approximately $${rewardsDollars} per month in rewards.`
+    }${
+      multiplier >= 5 
+        ? ` This is an exceptional rate - one of the best available for ${categoryName}.`
+        : multiplier >= 3
+        ? ` This is a strong earning rate for ${categoryName}.`
+        : ''
+    }`
   }
   
   /**

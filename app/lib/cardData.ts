@@ -35,6 +35,7 @@ export interface CardData {
   billsMultiplier: number
   applyLink: string
   image?: string // Optional - will use placeholder if not provided
+  pointType?: string // Optional - for determining display format (CASHBACK, AEROPLAN, etc.)
 }
 
 // Default placeholder image for cards without custom images
@@ -55,11 +56,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Amex",
     annualFee: 191.88, // $15.99/month ($12.99/month outside Quebec)
     welcomeBonusValue: 150, // 15,000 MR points (1,250 points/month for 12 months when spending $750/month)
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.05, // 5x MR points on groceries
-    gasMultiplier: 0.02, // 2x MR points on gas
-    diningMultiplier: 0.05, // 5x MR points on dining and food delivery
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 5, // 5x MR points on groceries
+    gasMultiplier: 2, // 2x MR points on gas
+    diningMultiplier: 5, // 5x MR points on dining and food delivery
+    billsMultiplier: 1,
     applyLink: "/api/go/amex-cobalt",
     image: "",
   },
@@ -69,11 +70,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Amex",
     annualFee: 799,
     welcomeBonusValue: 1000, // 100,000-110,000 MR points (spend $10,000 in first 3 months)
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.02, // 2x MR points
-    gasMultiplier: 0.01,
-    diningMultiplier: 0.02, // 2x MR points on dining and travel
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 2, // 2x MR points
+    gasMultiplier: 1,
+    diningMultiplier: 2, // 2x MR points on dining and travel
+    billsMultiplier: 1,
     applyLink: "/api/go/amex-platinum",
     image: "",
   },
@@ -83,11 +84,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Amex",
     annualFee: 250,
     welcomeBonusValue: 600, // 60,000 MR points (5,000 points/month for 12 months when spending $1,000/month)
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.02, // 2x MR points
-    gasMultiplier: 0.02, // 2x MR points
-    diningMultiplier: 0.02, // 2x MR points
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 2, // 2x MR points
+    gasMultiplier: 2, // 2x MR points
+    diningMultiplier: 2, // 2x MR points
+    billsMultiplier: 1,
     applyLink: "/api/go/amex-gold",
     image: "",
   },
@@ -115,11 +116,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 139, // First year free with current offer
     welcomeBonusValue: 450, // Up to 45,000 Aeroplan points (10k first purchase + 15k after $3k spend + 20k anniversary bonus)
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.015, // 1.5x Aeroplan points
-    gasMultiplier: 0.015, // 1.5x Aeroplan points
-    diningMultiplier: 0.01,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 1.5, // 1.5x Aeroplan points
+    gasMultiplier: 1.5, // 1.5x Aeroplan points
+    diningMultiplier: 1,
+    billsMultiplier: 1,
     applyLink: "/api/go/td-aeroplan-infinite",
     image: "/images/cards/td-aeroplan.png",
   },
@@ -129,11 +130,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 599,
     welcomeBonusValue: 850, // Up to 85,000 Aeroplan points
-    baseRewardRate: 0.015, // 1.5x Aeroplan points
-    groceryMultiplier: 0.02, // 2x Aeroplan points
-    gasMultiplier: 0.02, // 2x Aeroplan points
-    diningMultiplier: 0.015,
-    billsMultiplier: 0.015,
+    baseRewardRate: 1.5, // 1.5x Aeroplan points
+    groceryMultiplier: 2, // 2x Aeroplan points
+    gasMultiplier: 2, // 2x Aeroplan points
+    diningMultiplier: 1.5,
+    billsMultiplier: 1.5,
     applyLink: "/api/go/td-aeroplan-privilege",
     image: "",
   },
@@ -157,11 +158,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 139,
     welcomeBonusValue: 300,
-    baseRewardRate: 0.015,
-    groceryMultiplier: 0.015,
-    gasMultiplier: 0.015,
-    diningMultiplier: 0.015,
-    billsMultiplier: 0.015,
+    baseRewardRate: 1.5,
+    groceryMultiplier: 1.5,
+    gasMultiplier: 1.5,
+    diningMultiplier: 1.5,
+    billsMultiplier: 1.5,
     applyLink: "/api/go/td-first-class",
     image: "",
   },
@@ -175,11 +176,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 120,
     welcomeBonusValue: 550, // Up to 55,000 Avion points (35k on approval + 20k after $5k spend in 6 months)
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.0125, // 1.25x Avion points
-    gasMultiplier: 0.0125, // 1.25x Avion points
-    diningMultiplier: 0.0125, // 1.25x Avion points on travel
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 1.25, // 1.25x Avion points
+    gasMultiplier: 1.25, // 1.25x Avion points
+    diningMultiplier: 1.25, // 1.25x Avion points on travel
+    billsMultiplier: 1,
     applyLink: "/api/go/rbc-avion-infinite",
     image: "",
   },
@@ -189,11 +190,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 399,
     welcomeBonusValue: 700, // Up to 70,000 Avion points (35k on approval + 20k after $5k + 15k after 12 months)
-    baseRewardRate: 0.0125,
-    groceryMultiplier: 0.015, // 1.5x Avion points
-    gasMultiplier: 0.015, // 1.5x Avion points
-    diningMultiplier: 0.015, // 1.5x Avion points
-    billsMultiplier: 0.0125,
+    baseRewardRate: 1.25,
+    groceryMultiplier: 1.5, // 1.5x Avion points
+    gasMultiplier: 1.5, // 1.5x Avion points
+    diningMultiplier: 1.5, // 1.5x Avion points
+    billsMultiplier: 1.25,
     applyLink: "/api/go/rbc-avion-privilege",
     image: "",
   },
@@ -217,11 +218,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 0,
     welcomeBonusValue: 50,
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.01,
-    gasMultiplier: 0.01,
-    diningMultiplier: 0.01,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 1,
+    gasMultiplier: 1,
+    diningMultiplier: 1,
+    billsMultiplier: 1,
     applyLink: "/api/go/rbc-ion",
     image: "",
   },
@@ -235,11 +236,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 139,
     welcomeBonusValue: 450, // Up to 45,000 Aeroplan points (10k first purchase + 10k after $6k spend + 25k anniversary bonus)
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.015, // 1.5x Aeroplan points
-    gasMultiplier: 0.015, // 1.5x Aeroplan points and EV charging
-    diningMultiplier: 0.01,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 1.5, // 1.5x Aeroplan points
+    gasMultiplier: 1.5, // 1.5x Aeroplan points and EV charging
+    diningMultiplier: 1,
+    billsMultiplier: 1,
     applyLink: "/api/go/cibc-aeroplan-infinite",
     image: "/images/cards/cibc-aeroplan.png",
   },
@@ -249,11 +250,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 0,
     welcomeBonusValue: 100, // Up to 10,000 Aeroplan points
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.015, // 1.5x Aeroplan points
-    gasMultiplier: 0.01,
-    diningMultiplier: 0.01,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 1.5, // 1.5x Aeroplan points
+    gasMultiplier: 1,
+    diningMultiplier: 1,
+    billsMultiplier: 1,
     applyLink: "/api/go/cibc-aeroplan",
     image: "",
   },
@@ -277,11 +278,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 139,
     welcomeBonusValue: 400, // Up to 40,000 Aventura points
-    baseRewardRate: 0.015, // 1.5x Aventura points
-    groceryMultiplier: 0.015,
-    gasMultiplier: 0.015,
-    diningMultiplier: 0.015,
-    billsMultiplier: 0.015,
+    baseRewardRate: 1.5, // 1.5x Aventura points
+    groceryMultiplier: 1.5,
+    gasMultiplier: 1.5,
+    diningMultiplier: 1.5,
+    billsMultiplier: 1.5,
     applyLink: "/api/go/cibc-aventura",
     image: "",
   },
@@ -323,11 +324,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Amex",
     annualFee: 120, // First year waived (offer until July 1, 2026)
     welcomeBonusValue: 450, // Up to 45,000 Scene+ points (25k after $2k spend + 20k after $7.5k spend in first year)
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.06, // 6x Scene+ points at select grocers (5x at others)
-    gasMultiplier: 0.03, // 3x Scene+ points
-    diningMultiplier: 0.05, // 5x Scene+ points on dining and food delivery
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 6, // 6x Scene+ points at select grocers (5x at others)
+    gasMultiplier: 3, // 3x Scene+ points
+    diningMultiplier: 5, // 5x Scene+ points on dining and food delivery
+    billsMultiplier: 1,
     applyLink: "/api/go/scotia-gold-amex",
     image: "",
   },
@@ -337,11 +338,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 0,
     welcomeBonusValue: 100,
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.015,
-    gasMultiplier: 0.015,
-    diningMultiplier: 0.015,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 1.5,
+    gasMultiplier: 1.5,
+    diningMultiplier: 1.5,
+    billsMultiplier: 1,
     applyLink: "/api/go/scotia-scene",
     image: "",
   },
@@ -355,11 +356,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 120, // First year free with current offer
     welcomeBonusValue: 400, // Up to 70,000 BMO Rewards points (30k after $3k spend in 90 days + 30k after additional spend)
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.05, // 5x BMO Rewards points
-    gasMultiplier: 0.05, // 5x BMO Rewards points
-    diningMultiplier: 0.05, // 5x BMO Rewards points
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 5, // 5x BMO Rewards points
+    gasMultiplier: 5, // 5x BMO Rewards points
+    diningMultiplier: 5, // 5x BMO Rewards points
+    billsMultiplier: 1,
     applyLink: "/api/go/bmo-eclipse",
     image: "",
   },
@@ -369,11 +370,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Mastercard",
     annualFee: 150,
     welcomeBonusValue: 500, // Up to 80,000 BMO Rewards points (after $6,000 spend in 110 days)
-    baseRewardRate: 0.015,
-    groceryMultiplier: 0.02, // 2x BMO Rewards points
-    gasMultiplier: 0.02, // 2x BMO Rewards points
-    diningMultiplier: 0.02, // 2x BMO Rewards points
-    billsMultiplier: 0.015,
+    baseRewardRate: 1.5,
+    groceryMultiplier: 2, // 2x BMO Rewards points
+    gasMultiplier: 2, // 2x BMO Rewards points
+    diningMultiplier: 2, // 2x BMO Rewards points
+    billsMultiplier: 1.5,
     applyLink: "/api/go/bmo-ascend",
     image: "",
   },
@@ -397,11 +398,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Mastercard",
     annualFee: 120,
     welcomeBonusValue: 300,
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.015,
-    gasMultiplier: 0.015,
-    diningMultiplier: 0.015,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 1.5,
+    gasMultiplier: 1.5,
+    diningMultiplier: 1.5,
+    billsMultiplier: 1,
     applyLink: "/api/go/bmo-airmiles",
     image: "/images/cards/bmo-airmiles.png",
   },
@@ -415,11 +416,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Mastercard",
     annualFee: 150,
     welcomeBonusValue: 350, // Up to 35,000 rewards points (varies by offer)
-    baseRewardRate: 0.01, // 1-2x points depending on spend tier
-    groceryMultiplier: 0.05, // 5x points (up to $2,500/month, then 2x)
-    gasMultiplier: 0.02, // 2x points
-    diningMultiplier: 0.05, // 5x points (up to $2,500/month, then 2x)
-    billsMultiplier: 0.01,
+    baseRewardRate: 1, // 1-2x points depending on spend tier
+    groceryMultiplier: 5, // 5x points (up to $2,500/month, then 2x)
+    gasMultiplier: 2, // 2x points
+    diningMultiplier: 5, // 5x points (up to $2,500/month, then 2x)
+    billsMultiplier: 1,
     applyLink: "/api/go/nbc-world-elite",
     image: "",
   },
@@ -479,11 +480,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Amex",
     annualFee: 120,
     welcomeBonusValue: 400,
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.02,
-    gasMultiplier: 0.01,
-    diningMultiplier: 0.02,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 2,
+    gasMultiplier: 1,
+    diningMultiplier: 2,
+    billsMultiplier: 1,
     applyLink: "/api/go/marriott-bonvoy",
     image: "",
   },
@@ -533,11 +534,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Mastercard",
     annualFee: 0,
     welcomeBonusValue: 20,
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.025,
-    gasMultiplier: 0.01,
-    diningMultiplier: 0.01,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 2.5,
+    gasMultiplier: 1,
+    diningMultiplier: 1,
+    billsMultiplier: 1,
     applyLink: "/api/go/pc-mastercard",
     image: "",
   },
@@ -547,11 +548,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Mastercard",
     annualFee: 0,
     welcomeBonusValue: 20,
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.03,
-    gasMultiplier: 0.01,
-    diningMultiplier: 0.01,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 3,
+    gasMultiplier: 1,
+    diningMultiplier: 1,
+    billsMultiplier: 1,
     applyLink: "/api/go/pc-world-elite",
     image: "",
   },
@@ -583,11 +584,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Mastercard",
     annualFee: 0,
     welcomeBonusValue: 0,
-    baseRewardRate: 0.015,
-    groceryMultiplier: 0.015,
-    gasMultiplier: 0.015,
-    diningMultiplier: 0.015,
-    billsMultiplier: 0.015,
+    baseRewardRate: 1.5,
+    groceryMultiplier: 1.5,
+    gasMultiplier: 1.5,
+    diningMultiplier: 1.5,
+    billsMultiplier: 1.5,
     applyLink: "/api/go/rogers-world-elite",
     image: "",
   },
@@ -619,11 +620,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Visa",
     annualFee: 0,
     welcomeBonusValue: 0,
-    baseRewardRate: 0.01,
-    groceryMultiplier: 0.01,
-    gasMultiplier: 0.01,
-    diningMultiplier: 0.01,
-    billsMultiplier: 0.01,
+    baseRewardRate: 1,
+    groceryMultiplier: 1,
+    gasMultiplier: 1,
+    diningMultiplier: 1,
+    billsMultiplier: 1,
     applyLink: "/api/go/home-trust-preferred",
     image: "",
   },
@@ -637,11 +638,11 @@ export const canadianCardsMasterList: CardData[] = [
     network: "Mastercard",
     annualFee: 0,
     welcomeBonusValue: 0,
-    baseRewardRate: 0.005,
-    groceryMultiplier: 0.015,
-    gasMultiplier: 0.015,
-    diningMultiplier: 0.005,
-    billsMultiplier: 0.005,
+    baseRewardRate: 0.5,
+    groceryMultiplier: 1.5,
+    gasMultiplier: 1.5,
+    diningMultiplier: 0.5,
+    billsMultiplier: 0.5,
     applyLink: "/api/go/triangle-mastercard",
     image: "",
   },

@@ -45,10 +45,14 @@ function determinePointType(cardData: CardData): PointType {
   if (name.includes('cash') || name.includes('cashback')) return PointType.CASHBACK
   if (bank.includes('american express') || cardData.network === 'Amex') return PointType.MEMBERSHIP_REWARDS
   
+  // PC cards use PC Optimum points
+  if (bank.includes('pc financial')) return PointType.OTHER
+  
   if (bank.includes('td') || bank.includes('cibc')) return PointType.AEROPLAN
   if (bank.includes('rbc')) return PointType.AVION
   if (bank.includes('scotia')) return PointType.SCENE_PLUS
-  if (bank.includes('bmo')) return PointType.CASHBACK
+  if (bank.includes('bmo')) return PointType.OTHER // BMO Rewards points
+  if (bank.includes('national bank')) return PointType.OTHER // National Bank rewards
   
   return PointType.CASHBACK
 }
@@ -115,6 +119,11 @@ async function syncCardsHandler(request: NextRequest, context: { userId: string 
         let card
         if (existingCard) {
           // Update existing card
+          // Preserve existing imageUrl if cardData doesn't have one
+          const imageUrl = getCardImage(cardData) !== "/images/cards/placeholder-card.svg"
+            ? getCardImage(cardData)
+            : (existingCard.imageUrl || "/images/cards/placeholder-card.svg")
+          
           card = await prisma.card.update({
             where: { id: existingCard.id },
             data: {
@@ -123,7 +132,7 @@ async function syncCardsHandler(request: NextRequest, context: { userId: string 
               network,
               annualFee: cardData.annualFee,
               baseRewardRate: cardData.baseRewardRate,
-              imageUrl: getCardImage(cardData),
+              imageUrl,
               affiliateLink: cardData.applyLink,
               updatedAt: new Date()
             }

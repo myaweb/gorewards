@@ -6,21 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  X, 
-  CreditCard, 
-  TrendingUp, 
-  Award, 
-  DollarSign, 
-  ShoppingCart, 
-  Fuel, 
-  UtensilsCrossed, 
-  Smartphone,
-  Sparkles,
-  Loader2,
-  Zap,
-  Plus
-} from 'lucide-react'
+import { formatRewardRate } from '@/lib/utils/formatRewards'
+import { ShoppingCart, Fuel, UtensilsCrossed, Smartphone, Award, DollarSign, Zap, Sparkles, Loader2, X, Plus, TrendingUp, CreditCard } from 'lucide-react'
 
 interface CreditCardData {
   id: string
@@ -36,6 +23,7 @@ interface CreditCardData {
   billsMultiplier: number
   applyLink: string
   image: string
+  pointType?: string
 }
 
 interface CompareToolProps {
@@ -471,7 +459,7 @@ export function CompareTool({ cards }: CompareToolProps) {
                         return (
                           <td key={index} className="p-4 text-center">
                             <span className={isBest ? 'text-cyan-400 font-bold text-lg' : 'text-lg'}>
-                              {(card.baseRewardRate * 100).toFixed(1)}%
+                              {formatRewardRate(card.baseRewardRate)}
                             </span>
                           </td>
                         )
@@ -492,7 +480,7 @@ export function CompareTool({ cards }: CompareToolProps) {
                         return (
                           <td key={index} className="p-4 text-center">
                             <span className={isBest ? 'text-cyan-400 font-bold text-lg' : 'text-lg'}>
-                              {(card.groceryMultiplier * 100).toFixed(1)}%
+                              {formatRewardRate(card.groceryMultiplier)}
                             </span>
                           </td>
                         )
@@ -513,7 +501,7 @@ export function CompareTool({ cards }: CompareToolProps) {
                         return (
                           <td key={index} className="p-4 text-center">
                             <span className={isBest ? 'text-cyan-400 font-bold text-lg' : 'text-lg'}>
-                              {(card.gasMultiplier * 100).toFixed(1)}%
+                              {formatRewardRate(card.gasMultiplier)}
                             </span>
                           </td>
                         )
@@ -534,7 +522,7 @@ export function CompareTool({ cards }: CompareToolProps) {
                         return (
                           <td key={index} className="p-4 text-center">
                             <span className={isBest ? 'text-cyan-400 font-bold text-lg' : 'text-lg'}>
-                              {(card.diningMultiplier * 100).toFixed(1)}%
+                              {formatRewardRate(card.diningMultiplier)}
                             </span>
                           </td>
                         )
@@ -555,7 +543,7 @@ export function CompareTool({ cards }: CompareToolProps) {
                         return (
                           <td key={index} className="p-4 text-center">
                             <span className={isBest ? 'text-cyan-400 font-bold text-lg' : 'text-lg'}>
-                              {(card.billsMultiplier * 100).toFixed(1)}%
+                              {formatRewardRate(card.billsMultiplier)}
                             </span>
                           </td>
                         )
@@ -591,20 +579,23 @@ export function CompareTool({ cards }: CompareToolProps) {
                   const annualDining = spending.dining * 12
                   const annualBills = spending.bills * 12
 
-                  const groceryEarnings = annualGrocery * card.groceryMultiplier
-                  const gasEarnings = annualGas * card.gasMultiplier
-                  const diningEarnings = annualDining * card.diningMultiplier
-                  const billsEarnings = annualBills * card.billsMultiplier
+                  // For points cards, divide by 100 to get dollar value
+                  const isCashback = card.pointType === 'CASHBACK'
+                  const groceryEarnings = isCashback ? annualGrocery * card.groceryMultiplier : (annualGrocery * card.groceryMultiplier) / 100
+                  const gasEarnings = isCashback ? annualGas * card.gasMultiplier : (annualGas * card.gasMultiplier) / 100
+                  const diningEarnings = isCashback ? annualDining * card.diningMultiplier : (annualDining * card.diningMultiplier) / 100
+                  const billsEarnings = isCashback ? annualBills * card.billsMultiplier : (annualBills * card.billsMultiplier) / 100
 
                   const categoryEarnings = groceryEarnings + gasEarnings + diningEarnings + billsEarnings
                   const netValue = categoryEarnings + card.welcomeBonusValue - card.annualFee
 
                   // Determine if this is the winner
                   const allNetValues = selectedCards.map(c => {
-                    const ce = (spending.grocery * 12 * c.groceryMultiplier) +
-                               (spending.gas * 12 * c.gasMultiplier) +
-                               (spending.dining * 12 * c.diningMultiplier) +
-                               (spending.bills * 12 * c.billsMultiplier)
+                    const isCb = c.pointType === 'CASHBACK'
+                    const ce = (isCb ? spending.grocery * 12 * c.groceryMultiplier : (spending.grocery * 12 * c.groceryMultiplier) / 100) +
+                               (isCb ? spending.gas * 12 * c.gasMultiplier : (spending.gas * 12 * c.gasMultiplier) / 100) +
+                               (isCb ? spending.dining * 12 * c.diningMultiplier : (spending.dining * 12 * c.diningMultiplier) / 100) +
+                               (isCb ? spending.bills * 12 * c.billsMultiplier : (spending.bills * 12 * c.billsMultiplier) / 100)
                     return ce + c.welcomeBonusValue - c.annualFee
                   })
                   const isWinner = isBestValue(netValue, allNetValues)

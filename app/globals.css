@@ -39,6 +39,32 @@
     background: linear-gradient(to bottom, #090A0F 0%, #0D0E14 100%);
   }
   
+  /* Global Scrollbar Styles */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(6, 182, 212, 0.4) rgba(9, 10, 15, 0.8);
+  }
+  
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  
+  *::-webkit-scrollbar-track {
+    background: rgba(9, 10, 15, 0.8);
+    border-radius: 5px;
+  }
+  
+  *::-webkit-scrollbar-thumb {
+    background: rgba(6, 182, 212, 0.4);
+    border-radius: 5px;
+    border: 2px solid rgba(9, 10, 15, 0.8);
+  }
+  
+  *::-webkit-scrollbar-thumb:hover {
+    background: rgba(6, 182, 212, 0.6);
+  }
+  
   /* PWA optimizations */
   html {
     -webkit-tap-highlight-color: transparent;

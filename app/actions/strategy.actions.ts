@@ -119,9 +119,9 @@ export async function getUserStrategies() {
 }
 
 /**
- * Update strategy completion status
+ * Update strategy completion status and completed steps
  */
-export async function updateStrategyCompletion(strategyId: string, isCompleted: boolean) {
+export async function updateStrategyCompletion(strategyId: string, isCompleted: boolean, completedSteps?: number[]) {
   try {
     const { userId: clerkUserId } = auth()
 
@@ -155,10 +155,15 @@ export async function updateStrategyCompletion(strategyId: string, isCompleted: 
       }
     }
 
-    // Update completion status
+    // Update completion status and steps
     await prisma.savedStrategy.update({
       where: { id: strategyId },
-      data: { isCompleted },
+      data: {
+        isCompleted,
+        ...(completedSteps !== undefined && { 
+          completedSteps: JSON.stringify(completedSteps) as any
+        }),
+      } as any,
     })
 
     revalidatePath('/users')
@@ -172,6 +177,65 @@ export async function updateStrategyCompletion(strategyId: string, isCompleted: 
     return {
       success: false,
       error: 'Failed to update strategy',
+    }
+  }
+}
+
+/**
+ * Update completed steps for a strategy
+ */
+export async function updateStrategySteps(strategyId: string, completedSteps: number[]) {
+  try {
+    const { userId: clerkUserId } = auth()
+
+    if (!clerkUserId) {
+      return {
+        success: false,
+        error: 'You must be logged in',
+      }
+    }
+
+    // Verify ownership
+    const user = await prisma.user.findUnique({
+      where: { clerkUserId },
+    })
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'User not found',
+      }
+    }
+
+    const strategy = await prisma.savedStrategy.findUnique({
+      where: { id: strategyId },
+    })
+
+    if (!strategy || strategy.userId !== user.id) {
+      return {
+        success: false,
+        error: 'Strategy not found or unauthorized',
+      }
+    }
+
+    // Update completed steps
+    await prisma.savedStrategy.update({
+      where: { id: strategyId },
+      data: { 
+        completedSteps: JSON.stringify(completedSteps) 
+      } as any,
+    })
+
+    revalidatePath('/users')
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    console.error('Error updating strategy steps:', error)
+    return {
+      success: false,
+      error: 'Failed to update strategy steps',
     }
   }
 }

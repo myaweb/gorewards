@@ -36,7 +36,7 @@ export function BlogPostsClient() {
 
   if (!posts.length) return null
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://GoRewards.net'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://GoRewards.ca'
 
   const newsArticleSchema = {
     "@context": "https://schema.org",

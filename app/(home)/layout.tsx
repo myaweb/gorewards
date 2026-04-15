@@ -1,6 +1,6 @@
 ﻿import type { Metadata } from "next"
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://GoRewards.net"
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://GoRewards.ca"
 
 export const metadata: Metadata = {
   title: "GoRewards - AI-Powered Credit Card Rewards Optimizer for Canadians",
