@@ -72,22 +72,6 @@ export class SecurityHeadersService {
       'camera=(), microphone=(), geolocation=(), interest-cohort=()'
     )
 
-    // X-Robots-Tag - Allow indexing in production (unless explicitly set to noindex)
-    // Only set noindex for admin and user-specific routes
-    if (request) {
-      const pathname = request.nextUrl.pathname
-      const isAdminRoute = pathname.startsWith('/admin')
-      const isUserRoute = pathname.startsWith('/users')
-      const isApiRoute = pathname.startsWith('/api')
-      
-      if (isAdminRoute || isUserRoute || isApiRoute) {
-        response.headers.set('X-Robots-Tag', 'noindex, nofollow')
-      } else {
-        // Explicitly allow indexing for public pages
-        response.headers.set('X-Robots-Tag', 'index, follow')
-      }
-    }
-
     // Log security headers application
     if (request) {
       securityLogger.logInfo('Security headers applied', {

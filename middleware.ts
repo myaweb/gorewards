@@ -15,18 +15,31 @@ const isProtectedRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware((auth, request) => {
-  // Protect specific routes
-  if (isProtectedRoute(request)) {
+  // First, determine if this is a protected route and set appropriate headers
+  const pathname = request.nextUrl.pathname
+  const needsAuth = isProtectedRoute(request)
+  
+  // Create response
+  let response = NextResponse.next()
+  
+  // Set X-Robots-Tag header based on route BEFORE any redirect
+  if (pathname.startsWith('/admin') || pathname.startsWith('/users') || pathname.startsWith('/api')) {
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+  } else {
+    response.headers.set('X-Robots-Tag', 'index, follow')
+  }
+  
+  // Apply other security headers
+  response = securityHeaders.applySecurityHeaders(response, request)
+  
+  // Now handle authentication (this may redirect, but headers are already set)
+  if (needsAuth) {
     auth().protect({
       unauthenticatedUrl: new URL('/sign-in', request.url).toString(),
     })
   }
-
-  // Create response
-  const response = NextResponse.next()
   
-  // Apply security headers
-  return securityHeaders.applySecurityHeaders(response, request)
+  return response
 })
 
 // Apply to all routes
