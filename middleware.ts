@@ -15,14 +15,28 @@ const isProtectedRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware((auth, request) => {
-  // First, determine if this is a protected route and set appropriate headers
   const pathname = request.nextUrl.pathname
-  const needsAuth = isProtectedRoute(request)
   
-  // Create response
+  // Check if user is authenticated
+  const { userId } = auth()
+  
+  // If protected route and not authenticated, redirect to sign-in
+  if (isProtectedRoute(request) && !userId) {
+    const signInUrl = new URL('/sign-in', request.url)
+    signInUrl.searchParams.set('redirect_url', request.url)
+    const redirectResponse = NextResponse.redirect(signInUrl)
+    
+    // Set noindex header on redirect response for protected routes
+    redirectResponse.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    
+    // Apply other security headers
+    return securityHeaders.applySecurityHeaders(redirectResponse, request)
+  }
+  
+  // Create normal response
   let response = NextResponse.next()
   
-  // Set X-Robots-Tag header based on route BEFORE any redirect
+  // Set X-Robots-Tag header based on route
   if (pathname.startsWith('/admin') || pathname.startsWith('/users') || pathname.startsWith('/api')) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow')
   } else {
@@ -30,16 +44,7 @@ export default clerkMiddleware((auth, request) => {
   }
   
   // Apply other security headers
-  response = securityHeaders.applySecurityHeaders(response, request)
-  
-  // Now handle authentication (this may redirect, but headers are already set)
-  if (needsAuth) {
-    auth().protect({
-      unauthenticatedUrl: new URL('/sign-in', request.url).toString(),
-    })
-  }
-  
-  return response
+  return securityHeaders.applySecurityHeaders(response, request)
 })
 
 // Apply to all routes
