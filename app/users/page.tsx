@@ -10,6 +10,13 @@ import { Sparkles, Building2, CheckCircle2, Target, TrendingUp, CreditCard, Arro
 import { StrategyKanban } from '@/components/strategy-kanban'
 import { DashboardAIInsights } from '@/components/dashboard-ai-insights'
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Dashboard - GoRewards',
+  description: 'Your personal credit card optimization dashboard',
+  robots: 'noindex, nofollow',
+}
 
 export default async function DashboardPage() {
   const user = await currentUser()

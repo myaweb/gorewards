@@ -5,6 +5,13 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ChevronRight, CreditCard, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'My Cards - GoRewards',
+  description: 'Manage your credit card portfolio',
+  robots: 'noindex, nofollow',
+}
 
 export default async function CardsPage() {
   const user = await currentUser()

@@ -2,9 +2,16 @@ import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { RedirectCountdown } from '@/components/redirect-countdown'
 import { Shield } from 'lucide-react'
+import type { Metadata } from 'next'
 
 interface GoPageProps {
   params: { slug: string }
+}
+
+export const metadata: Metadata = {
+  title: 'Redirecting to Card Application',
+  description: 'You are being redirected to the credit card application page.',
+  robots: 'noindex, nofollow', // Don't index affiliate redirect pages
 }
 
 export default async function GoPage({ params }: GoPageProps) {

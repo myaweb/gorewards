@@ -4,6 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Heart, Coffee, Sparkles, Check } from 'lucide-react'
 import { DonateButton } from '@/components/donate-button'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Support GoRewards - Help Keep Us Free',
+  description: 'Support GoRewards and help us keep the platform free for all Canadians. Your contribution helps us maintain and improve our credit card optimization tools.',
+  robots: 'noindex, nofollow', // Don't index donation page
+}
 
 export default async function BillingPage() {
   const user = await currentUser()

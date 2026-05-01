@@ -5,6 +5,13 @@ import { Card, CardContent } from '@/components/ui/card'
 import { TrendingUp, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { SendOptimizationReportButton } from '../../../components/send-optimization-report-button'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Card Optimization - GoRewards',
+  description: 'Optimize your credit card portfolio',
+  robots: 'noindex, nofollow',
+}
 
 export default async function OptimizationPage() {
   const user = await currentUser()
